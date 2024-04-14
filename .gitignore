@@ -1,3 +1,7 @@
+#Netbeans Ide
+/nbproject
+/build
+
 # Compiled class file
 *.class
 
