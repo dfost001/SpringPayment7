@@ -1,0 +1,28 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Aug 23, 2016, 7:38:56 PM
+    Author     : Dinah
+*/
+
+.orderInfo label {
+    width:115px;
+    float:left;
+}
+.orderInfo {
+    float:left;
+    width:400px;
+}
+.lineItems {
+    float:left;
+    width:450px;
+    padding-left:70px;    
+}
+.itemTitle {
+    font-weight:bold;
+    border-bottom:dashed;
+    color:#036fab;
+}

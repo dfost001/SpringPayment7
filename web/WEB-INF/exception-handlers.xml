@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"    
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">   
+    
+    <!-- property paymentAttrs defined in applicationBeans.xml -->
+  
+   <bean id="payPalHttp" class="exception_handler.PayPalHttpExceptionMappingResolver">         
+        <property name="exceptionMappings">
+            <map>                      
+                <entry key="httpUtil.HttpClientException" value="error/paypalError" />
+                <entry key="httpUtil.HttpConnectException" value="error/connectionError" />                                  
+            </map>   
+        </property> 
+         <property name="paymentAttrs" ref="paymentAttributes" />                     
+         <property name="exceptionAttribute" value="exception"/>
+         <property name="warnLogCategory" value="exception_handler.PayPalHttpExceptionMappingResolver" />         
+    </bean> 
+      
+    <bean id="payPalState" class="exception_handler.PayPalStateErrorMappingResolver">         
+        <property name="exceptionMappings">
+            <map>                
+                <entry key="paypal.PayPalExecuteException" value="error/executeState" />                        
+            </map>   
+        </property>                      
+         <property name="exceptionAttribute" value="exception"/> 
+         <property name="paymentAttrs" ref="paymentAttributes" />     
+    </bean>
+    <!--
+     <bean id="paypalOnRedirectExceptionResolver"
+          class="exception_handler.PayPalIOExceptionOnRedirectResolver" >  
+        <property name="paymentAttrs" ref="paymentAttributes" />
+    </bean>   
+    -->
+    <bean id="dataAccessException" class="exception_handler.DataExceptionResolver" > 
+        <property name="paymentAttrs" ref="paymentAttributes" /> 
+    </bean>    
+    
+    <bean id="sessionRequired" class="exception_handler.HttpSessionRequiredExceptionResolver" > 
+        <property name="paymentAttrs" ref="paymentAttributes" />
+    </bean>                
+    
+    <bean id="myMethodNotSupported" class="exception_handler.MyMethodNotSupportedExceptionResolver" > 
+         <property name="paymentAttrs" ref="paymentAttributes" />
+    </bean>                               
+    
+    <bean id="paymentAccessExceptionHandler" class="exception_handler.PaymentAccessExceptionResolver" >
+        <property name="exceptionMappings">
+            <map>                
+                <entry key="exceptions.ConfirmCartException" value="navigation_error/errNavigation" />
+                <entry key="exceptions.PaymentTimeException" value="navigation_error/errNavigation" />
+                <entry key="exceptions.ReceiptCartNotEmptyException" value="navigation_error/errNavigation" />
+                <entry key="exceptions.PaymentStartedException"
+                       value="navigation_error/errTransactionStarted" />                
+                <entry key="exceptions.PaymentStartedPaymentOnlyException"
+                       value="navigation_error/errTransactionStartedPaymentOnly" />                                       
+            </map>   
+        </property>
+        <property name="exceptionList">
+            <list>
+                <value>exceptions.ConfirmCartException</value>
+                <value>exceptions.PaymentTimeException</value>
+                <value>exceptions.PaymentStartedException</value>
+                <value>exceptions.ReceiptCartNotEmptyException</value>
+                <value>exceptions.PaymentStartedPaymentOnlyException</value>
+            </list>
+        </property>                      
+         <property name="exceptionAttribute" value="exception"/>
+         <property name="paymentAttrs" ref="paymentAttributes" />
+    </bean> 
+    
+     <bean id="myDefaultExceptionHandler" class="exception_handler.MyDefaultHandlerExceptionResolver" > 
+         <property name="paymentAttrs" ref="paymentAttributes" />
+     </bean>                   
+    
+    <bean class="org.springframework.web.servlet.handler.HandlerExceptionResolverComposite">
+       <property name="exceptionResolvers">
+           <list>
+               <ref bean="dataAccessException" />                
+               <ref bean="paymentAccessExceptionHandler" /> 
+               <ref bean="myMethodNotSupported" />
+               <ref bean="sessionRequired" /> 
+               <ref bean="payPalHttp" />
+               <ref bean="payPalState" />                                        
+               <bean 
+                class="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver" />
+               <bean 
+               class="org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver" />
+               <ref bean="myDefaultExceptionHandler" />                                                                                          
+           </list>
+       </property>
+       <property name="order" value="0" />
+      
+   </bean>     
+   
+  
+</beans>

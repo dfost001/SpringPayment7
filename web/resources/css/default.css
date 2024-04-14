@@ -1,0 +1,282 @@
+.nav li {
+    padding: 7px
+}
+
+span {
+    display:block;
+}
+
+h1 {
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    border-bottom: 1px solid #AFAFAF; 
+    font-size:  20pt;
+    font-weight: bold;
+    margin: 0px;
+    padding: 0px;
+    color:#036fab;
+   /* color: #D20005; */   
+}
+ 
+.captionTop{
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    font-size:36pt;
+    font-weight:bold;
+    padding-top: 15px;
+    padding-left:50px;
+    color:white;
+    float:left;
+}
+.divLogin {
+    float:right;
+    width:300px;    
+}
+.divCart {
+    float:right;
+    margin-right:125px;
+    width: 125px
+}
+.divOrderHistory {
+    float:right;
+   /* margin-right:250px;*/
+   margin-right:125px;
+   color:#045491;
+   width:125px;
+   /* background-image: url(../images/cart.gif);
+    background-repeat:no-repeat;
+    background-position:top left;
+    padding-left:30px;*/   
+}
+.divSearch {
+    float:right;
+    margin-right:125px;
+    width:125px;
+    
+}
+.divHome {
+    padding-left:50px;
+}
+.dropdownLogin {
+    width:300px;
+    height:250px;
+    background-color:white;
+    border:1px solid black;
+    z-index:1;
+    position:absolute;
+    padding-left:10px;
+    padding-top:25px;
+    margin-top:0;
+    display:none; 
+    
+}
+.dropdownLogin label{
+    color:black;
+}
+#custInputError{
+    color:red;
+    font-size:9pt
+}
+.errorStyle{
+    color:#ff6600;
+    font-size:9pt;
+    font-style:italic;
+}
+    
+.rowEven {
+    background-color:#999999;
+}
+.rowOdd{
+    background-color:#BBBBBB;
+}
+.filmTable {
+    padding: 5px;
+    border-style:none;
+   /* width:100%  ; */
+    margin-left:10px;
+    height:700px;  
+    font-size:10pt;
+    font-weight:600;
+}
+.filmTable td, .filmTable th {
+    padding: 10px;
+}
+
+.viewCartTable td {
+    
+    padding: 10px;
+}
+
+#top {
+    position: relative;  
+   /* color: #036fab;*/
+   color:white;
+    padding: 10px 10px 10px 10px;
+    margin: 0px 0px 10px 0px;
+    padding-bottom:25px;
+    height:140px;
+    background: url(../images/stars-back.jpg) no-repeat left top;
+}
+
+#top img {
+    border:0;
+    float:left;
+    
+}
+
+#bottom {
+    position: absolute;
+    background-color: #c2dfef;
+    padding: 5px;
+    margin: 10px 0px 0px 155px;
+    height: 45px;
+    border: 1px solid #AFAFAF;
+    width:70%;
+    clear:both
+}
+
+#bottom table  {
+   width:100% 
+}
+
+#bottom table td {
+    padding:10px;
+    font-style: italic;
+    font-size:10pt;
+}
+
+#left {
+    float: left;
+    background-color: #ece3a5;
+    padding-bottom:20%;
+    padding-top:55px;
+    width: 150px;
+    margin-top:50px;
+}
+
+#left ul {
+    list-style-type: none;
+    width:140px;
+    margin-left:5px;
+    margin-right:5px;
+}
+
+#left ul li {
+    
+    padding:5px;
+    height:25px;
+    display:block;
+        
+}
+
+#right {
+    float: right;
+    background-color: #ece3a5;
+    padding: 5px;
+    width: 150px;
+}
+
+.center_content {
+    position: relative;
+    background-color: #ffffff;
+    padding: 5px 5px 5px 12px;   
+    margin-top:0px;
+    margin-left:160px;
+}
+
+
+.panel-body a:link, .panel-body a:visited {
+  color: #045491;
+  font-weight : bold;
+  text-decoration: none;
+}
+
+.panel-body a:link:hover, .panel-body a:visited:hover  {
+  color: #045491;
+  font-weight : bold;
+  text-decoration : underline;
+}
+a:link, a:visited {
+  color: #045491;
+  font-weight : bold;
+  text-decoration: underline;
+}
+
+a:link:hover, a:visited:hover  {
+  color: #045491;
+  font-weight : bold;
+  text-decoration : underline;
+}
+
+.paymentViewWrapper {
+    width:800px;
+    margin:50px auto auto auto;
+}
+.paymentButtons {
+    width:500px;
+    /*float:right;*/
+}
+.rightAlign {
+    text-align:right;
+}
+
+.selectedCategoryTitle {
+   
+   /* width:50%; */
+    margin:20px auto;
+    text-align: center;
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    border-bottom: 1px solid #AFAFAF; 
+    font-size:  24pt;
+    font-weight: bold;
+    padding: 5px;
+    color: #ff6600;
+}
+
+.categoryContent {
+    
+    background-color:white;
+    margin:auto;
+    /*width:975px*/
+}
+.categoryContent ul, .categoryContent li {
+    padding-left: 8px;
+    display: block;
+}
+
+.categoryContent table {
+    font-size:10pt;
+    font-weight:600;
+    width: 975px
+
+}        
+
+.categoryMessages{
+    font-size:9pt;
+    font-family:Helvetica;
+    font-weight:600;
+    padding-left:10px;
+}
+.rowHidden {
+    display:none;
+}
+.loginCloseGlyph{
+    float:right;
+    width:40px;
+    height:40px;
+    margin:auto
+}
+.divOrderHistoryLogin {
+    width:600px;
+    height:200px;
+    margin: auto;
+    border:2px inset #AAAAAA;
+    font-size:14pt;
+    font-weight:bold;
+    padding:20px;
+}
+
+#paginationTbl td {
+    width:12pt;
+}
+
+
+

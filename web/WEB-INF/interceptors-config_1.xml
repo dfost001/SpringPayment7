@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:mvc="http://www.springframework.org/schema/mvc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:aop="http://www.springframework.org/schema/aop" 
+   xsi:schemaLocation="http://www.springframework.org/schema/mvc
+   http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+   http://www.springframework.org/schema/beans     
+   http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+   http://www.springframework.org/schema/aop 
+   http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+    
+    <mvc:interceptors>
+        <mvc:interceptor>            
+            <mvc:mapping path="/updateCustomer" />
+            <mvc:mapping path="/product/update" />
+            <mvc:mapping path="/category/updateSelected" />
+            <mvc:mapping path="/cancelLogin" />
+            <ref bean="updateNotSupportedInterceptor" />    
+        </mvc:interceptor> 
+        <mvc:interceptor>
+            <mvc:mapping path="/paypalAuthorizeRedirect" />
+            <mvc:mapping path="/paypalReceiptRedirect" />
+            <ref bean="paymentTimeInterceptor" />            
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/customer/verifySvcResults" />
+            <ref bean="confirmCartPaymentStartedInterceptor" />
+        </mvc:interceptor>                           
+    </mvc:interceptors>    
+    
+    
+    <!--Property paymentAttributes defined in applicationBeans -->
+    <bean id="updateNotSupportedInterceptor" class="interceptors.UpdateNotSupportedInteceptor">
+        <property name="paymentAttrs" ref="paymentAttributes" />
+    </bean>
+    
+   <!--Property paymentAttributes defined in applicationBeans -->
+    <bean id="paymentTimeInterceptor" class="interceptors.EvalPaymentTimeInterceptor">
+        <property name="paymentAttrs" ref="paymentAttributes" />
+    </bean>
+    
+    <!--Property paymentAttributes defined in applicationBeans -->
+    <bean id="confirmCartPaymentStartedInterceptor" class="interceptors.ConfirmCartPaymentStartedInterceptor">
+        <property name="paymentAttrs" ref="paymentAttributes" />
+    </bean>
+
+ </beans>

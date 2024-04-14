@@ -1,0 +1,120 @@
+ <beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:mvc="http://www.springframework.org/schema/mvc"
+   xmlns:context="http://www.springframework.org/schema/context"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:p="http://www.springframework.org/schema/p"
+   xmlns:tx="http://www.springframework.org/schema/tx"
+   xmlns:aop="http://www.springframework.org/schema/aop" 
+   xsi:schemaLocation="http://www.springframework.org/schema/mvc
+   http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+   http://www.springframework.org/schema/beans     
+   http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+   http://www.springframework.org/schema/context 
+   http://www.springframework.org/schema/context/spring-context-4.0.xsd
+   http://www.springframework.org/schema/tx
+   http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+   http://www.springframework.org/schema/aop
+   http://www.springframework.org/schema/aop/spring-aop.xsd">  
+    
+    <import resource="applicationBeans.xml" />   
+      
+    <import resource="transaction-config.xml" />
+    
+    <import resource="interceptors-config.xml" />
+    
+    <import resource="exception-handlers.xml" />
+    
+    <import resource="view-resolution.xml" />
+    
+    <mvc:resources mapping="/resources/**" location="/resources/" cache-period="10"/>
+    <!--
+    <mvc:resources mapping="/resources/**" location="/WEB-INF/tiles/layouts/resources/" cache-period="10"/>
+    -->
+    <!--
+    <mvc:default-servlet-handler/>     
+    -->    
+    
+    <!--objectMapper declared in applicationBeans.xml -->
+    <mvc:annotation-driven content-negotiation-manager="negotiationManager" 
+         conversion-service="myConversionSvc"> 
+                            
+        <mvc:path-matching
+            suffix-pattern="true"
+            registered-suffixes-only="true"
+            path-helper="pathHelper"
+            path-matcher="pathMatcher"
+            trailing-slash="true"
+        />      
+       <mvc:message-converters>
+	    <bean
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		     <property name="objectMapper" ref="objectMapper" />
+	    </bean>
+	</mvc:message-converters>           
+    </mvc:annotation-driven> 
+    
+     <!--
+     <mvc:view-controller path="/customerSupport" view-name="customerSupport"/>   
+     -->
+    
+    <bean id="pathHelper" class="org.springframework.web.util.UrlPathHelper">
+        <property name="alwaysUseFullPath" value="false" /> 
+    </bean>  
+                                  
+    <bean id="pathMatcher" class="org.springframework.util.AntPathMatcher" />   
+   
+      
+    <context:component-scan base-package="com.dvd" />
+    <context:component-scan base-package="com.dvd.redirect_control" />
+    <context:component-scan base-package="com.cart" />
+    <context:component-scan base-package="dao" />
+    <context:component-scan base-package="restCustomerService"/>
+    <context:component-scan base-package="restAddressService"/>
+    <context:component-scan base-package="paypal" />
+    <context:component-scan base-package="validation" />
+    <context:component-scan base-package="validation.constraints" /> 
+    <context:component-scan base-package="exception_handler" />
+    <context:component-scan base-package="view.attributes" /> 
+    <context:component-scan base-package="interceptors" /> 
+    <context:component-scan base-package="servletContext" />   
+    <context:component-scan base-package="debug_1" />
+    <context:component-scan base-package="test.modelattribute" />
+    <context:component-scan base-package="httpUtil" />  
+    
+    <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/> 
+    
+       
+     <bean id="customEditorRegistrar" class="formatter.CustomPropertyEditorRegistrar" />
+         
+     <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+         <property name="propertyEditorRegistrars">
+             <list>
+                 <ref bean="customEditorRegistrar" />
+             </list>
+         </property>
+    </bean>
+    
+    <bean id="myConversionSvc" 
+         class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+       
+       <property name="formatters">
+           <set>
+               <bean class="formatter.annotations.MyTextFormatAnnotationFactory" />
+               <bean class="formatter.MyPhoneFormatAnnotationFactory" />
+           </set>
+       </property>   
+   </bean>  
+  
+   
+     <bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+         
+         <property name="basenames">
+             <array>
+                 <value>classpath:messages/ValidationMessages</value>
+                 <value>classpath:messages/message</value>
+             </array>
+         </property>   
+     
+     </bean>
+</beans>

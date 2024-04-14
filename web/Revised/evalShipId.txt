@@ -1,0 +1,56 @@
+public void evalShipIdParam(Customer modelCustomer, Short paramShipId, 
+             Long paramTime, String formHash) 
+                       throws LoginIdChangedException, UnequalHashTimeCurrentException {
+         
+        boolean isCurrentTime = this.isCurrentFormTime(paramTime, 
+                customerAttrs.getFormTime(), "evalShipIdParam");
+         
+        ShipAddress shipAddress = this.custManager.getShipAddressById(paramShipId);
+         
+       if(shipAddress == null) {
+            
+           if(!this.customerAttrs.isDeletedAddress(paramShipId))  
+               
+             throwIllegalArgumentException("evalShipIdParam", 
+                     "'paramShipId' failed to retrieve a ShipAddress entity "
+                     + "and id '" + paramShipId + "' is not in deleted map.");
+           
+           else {
+               
+               ShipAddress deleted = customerAttrs.getDeletedAddress(paramShipId);
+               
+               if(deleted.getCustomerId() == null) 
+                 this.throwIllegalArgumentException("evalShipIdParam",
+                         "Cloned deleted ShipAddress has a null @ManyToOne Customer");
+               
+               else if(!isRelated(modelCustomer, deleted)) {
+                   
+                   if(!isCurrentTime) 
+                        throwLoginIdChangedException(deleted.getCustomerId(), modelCustomer,
+                                AddressTypeEnum.ShipAddress, 
+                                deleted.getFirstName() + " " + deleted.getLastName()
+                                + " deleted");
+                   
+                   else this.throwIllegalArgumentException("evalShipIdParam", 
+                           "ShipAddress in deleted map is not related to current customer. "
+                           + "This procedure should be called for a current deletion request.");
+               } 
+               else this.throwUnequalHashTimeCurrent(deleted, formHash, paramTime,
+                       AddressTypeEnum.ShipAddress, paramShipId); //deleted and related
+               
+           } 
+           
+      } else if(!isRelated(modelCustomer, shipAddress)) { //found and not related
+          
+            if(!isCurrentTime) 
+               throwLoginIdChangedException(shipAddress.getCustomerId(),
+                      modelCustomer, AddressTypeEnum.ShipAddress, 
+                      "#" + shipAddress.getShipId()
+                       + " " + shipAddress.getLastName() + " not related");
+            
+            else this.throwIllegalArgumentException("evalShipIdParam", 
+                    "Form time is current and selected ShipAddress unrelated to session Customer");
+            
+      } else this.throwUnequalHashTimeCurrent(shipAddress, formHash, paramTime, 
+              AddressTypeEnum.ShipAddress, paramShipId); //found and unequal hash
+  }

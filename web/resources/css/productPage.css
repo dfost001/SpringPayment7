@@ -1,0 +1,97 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Sep 12, 2015, 8:30:59 PM
+    Author     : Dinah
+*/
+
+.productContent {
+    width:800px;
+    background-color:white;
+    margin:auto;
+    padding: 20px 10px;
+}
+
+.productTitle {
+   /* width:50%; */
+    margin:20px auto;
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    border-bottom: 1px solid #AFAFAF; 
+    font-size:  20pt;
+    font-weight: bold;
+    padding: 5px;
+    color: #FF6600;
+   
+}
+
+
+.productDesc {
+    font-size:12pt;
+    margin:auto;
+}
+
+table.filmInfo_1 {
+    width:375px;
+      
+        
+}
+table.filmInfo_1 td {
+    border-bottom: 1px solid #AFAFAF;
+    padding-top: 8px;
+    font-size:11pt;    
+}
+table.filmInfo_1 td.leftCol {
+    width: 160px;
+    font-weight:600;
+}
+table.filmInfo_1 td.rightCol {
+    width:190px
+}
+.actors {
+    width:300px;
+    
+}
+.actors h4 {
+    color: red;
+    font-family:Arial;
+    font-size:12pt;
+    font-weight:bold;
+}
+.divActor{
+    width:150px;
+    font-size:10pt;
+    float:left;
+}
+table.filmInfo_2 {
+    width:300px;
+    padding-top:30px    
+}
+table.filmInfo_2 td.leftCol {
+    width: 160px;
+    height: 20px;
+    background-image:url(../images/bkg-blkheader.png);
+    background-repeat:repeat-x;
+    background-position: top left;
+    color:#FFFFFF;
+}
+table.filmInfo_2 td.rightCol {
+    width:140px;
+    text-align:right;
+    font-weight:bold;
+    display:block;
+    color:black
+}
+table.filmInfo_2 td {
+    
+    padding: 8px;
+        
+}
+.qtyDiv {
+    width:300px;
+    padding-top:40px
+    
+}
+

@@ -1,0 +1,536 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package validation;
+
+import exceptions.shipAddressController.UnequalHashTimeCurrentException;
+import exceptions.shipAddressController.ExpiredEditViewRequest;
+import exceptions.shipAddressController.LoginIdChangedException;
+import dao.CustomerManager;
+import dao.exception.CustomerNotFoundException;
+import error_util.EhrLogger;
+import exceptions.SelectedShipAddressCompareException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.http.HttpSession;
+import model.customer.Address;
+import model.customer.AddressTypeEnum;
+import model.customer.Customer;
+import model.customer.PostalAddress;
+import model.customer.ShipAddress;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
+import view.attributes.CustomerAttributes;
+
+/**
+ *
+ * @author dinah
+ * 
+ */
+@Component
+@Scope(WebApplicationContext.SCOPE_SESSION) //sessionScope required to inject CustomerAttributes
+public class CompareAddressUtil2 implements Serializable {
+    
+     public static final String COMPARE_EXCEPTION = 
+             "selectedShipAddressCompareException";
+    
+     @Autowired
+     private CustomerManager custManager;
+     
+     @Autowired
+     private CustomerAttributes customerAttrs;     
+     
+    // private HttpSession httpSession; 
+     
+     public List<String> generateHashCode(Customer customer, List<ShipAddress> shipAddressList) {          
+          
+          List<String> hash = new ArrayList<>();
+          
+          hash.add(customerHashCode(customer));
+          
+          for(PostalAddress addr : shipAddressList) {
+              
+              hash.add(customerHashCode(addr));
+          }
+          return hash;
+      }
+     
+     public List<String> generateHashList(List<? super PostalAddress> list) {
+         
+          List<String> hash = new ArrayList<>();
+          
+          for(Object addr : list) {
+              PostalAddress postal = (PostalAddress)addr;
+              hash.add(customerHashCode(postal));
+          }
+          
+          return hash;
+     }
+     
+     public void compareSelectedPostalAddressToDb(HttpSession httpSession,
+                          Customer modelCustomer, 
+                          PostalAddress selectedShipAddress,
+                          String invokingTitle)
+                      throws IllegalArgumentException,
+                      SelectedShipAddressCompareException,
+                      CustomerNotFoundException {
+         
+        // this.httpSession = httpSession;        
+        
+         compareCustomerToDb(modelCustomer, invokingTitle);
+         
+         if(modelCustomer.getClass().isAssignableFrom(selectedShipAddress.getClass())) {
+                 this.throwCompareModelCustomerToSelectedPostalAddress(modelCustomer,
+                         selectedShipAddress, invokingTitle); //Throws if Id's not equal
+                 return ; 
+         }        
+         
+         this.throwCompareSessionShipAddressToDb(modelCustomer, 
+                 (ShipAddress)selectedShipAddress,
+                  invokingTitle);       
+         
+     }   
+    
+      public void compareCustomerToDb(Customer customer, String title)
+              throws IllegalArgumentException,
+              CustomerNotFoundException {
+          
+         String err = title + ": Customer fields are not equal to retrieved customer. ";  
+         
+         Customer dbCust = custManager.loadByEntityDef(Customer.class,customer.getCustomerId());
+         
+         String hashDb = customerHashCode(dbCust);
+         
+         String hashSession = customerHashCode(customer);
+         
+         if(hashSession.compareTo(hashDb) != 0)
+             throw new IllegalArgumentException(
+                     EhrLogger.doError(this.getClass().getCanonicalName(), "compareCustomerToDb", err));
+         
+         this.compareCustomerRelatedShipAddressToDb(customer.getShipAddressList(),
+                 dbCust.getShipAddressList());             
+     }
+      
+       private void compareCustomerRelatedShipAddressToDb(List<ShipAddress> sessionList, List<ShipAddress> dbList) {
+         
+         String title = "Comparing related ship addresses in Customer entity to Customer retrieved from storage: ";
+         String sizeErr = "Lists of type ShipAddress do not have equal size." ;
+         String hashErr = "ShipAddress entities do not have an equal hash";
+         
+         if(sessionList.size() != dbList.size()) {
+             
+             throw new IllegalArgumentException(
+                     EhrLogger.doError(this.getClass().getCanonicalName(),
+                             "compareCustomerRelatedShipAddressToDb", title + sizeErr));
+             
+         }
+        
+        System.out.println("CompareAddressUtil#compareCustomerRelatedShipAddressToDb:" + title);
+        
+        for(int i=0; i < sessionList.size(); i++) {
+            
+            String sessionHash = customerHashCode(sessionList.get(i));
+            String dbHash = customerHashCode(dbList.get(i));
+            
+            /*String txt = MessageFormat.format("sessionHash={0} dbHash={1}", sessionHash, dbHash);
+            System.out.println(txt);*/
+           
+            if(!sessionHash.equals(dbHash))
+                throw new IllegalArgumentException(
+                     EhrLogger.doError(this.getClass().getCanonicalName(),
+                             "compareCustomerRelatedShipAddressToDb", 
+                             title + hashErr + " at storage shipId="
+                                     + dbList.get(i).getShipId()));
+        } //end for         
+     }
+      
+       public void throwCompareModelCustomerToSelectedPostalAddress
+        (Customer modelAttr, PostalAddress selected, String invokingTitle)  
+            throws 
+                SelectedShipAddressCompareException {
+            
+          Customer selectedCustomer = (Customer) selected;
+          
+          if(!modelAttr.getCustomerId().equals(selectedCustomer.getCustomerId())) {
+              
+              String err = "Non-current customer in selected PostalAddress" ;
+              
+              this.throwIllegalArgumentException("throwCompareModelCustomerToSelectedPostalAddress", err);
+          }
+              
+            
+          String message = "Customer information selected as delivery address has changed.";
+          
+          String technical = "Customer hash in model and hash referenced by selectedShipAddress"
+                  + " do not compare.";
+          
+          String modelAttrHash = customerHashCode(modelAttr);
+          
+          String selectedHash = customerHashCode(selected);
+          
+          if(!modelAttrHash.equals(selectedHash)) {              
+              
+              String updatedName = selected.getFirstName() + " "
+                     +  selected.getLastName()
+                     + " has changed. " ;
+              
+              throw this.initCompareException(message, technical, updatedName, invokingTitle);              
+              
+          }           
+      }  
+        
+         public void throwCompareSessionShipAddressToDb(Customer customer, 
+             ShipAddress selected, String invokingTitle)
+                   throws SelectedShipAddressCompareException {
+         
+         String friendlyDeleted = "Selected delivery address has been deleted. Please reselect.";  
+         
+         String friendlyUpdated = "Delivery address has changed. Please reselect.";
+         
+         String technical = "ShipAddress may have been updated/deleted and "
+                 + "not selected from selectShippingAddress.jsp";             
+         
+         ShipAddress shipAddressDb = this.findDbShipAddress(customer.getShipAddressList(), selected) ;
+         
+         if (shipAddressDb == null) {  
+             
+           if(!this.isRelated(customer, selected))
+                this.throwIllegalArgumentException("throwCompareShipAddressToDb", 
+                     "Selected ShipAddress not related to session Customer. "
+                     + "ShipAddress possibly not removed from Session on CancelLogin?");  
+             
+           else if (!customerAttrs.isDeletedAddress(selected.getShipId())) {
+               
+                String err = "Selected ShipAddress is not in customer relationship. " +
+                         "Not added to deleted array or array removed from session on CancelLogin?";
+                 
+                 this.throwIllegalArgumentException("throwCompareShipAddressToDb", err);                
+                 
+           } else {
+
+                 String updatedName = selected.getFirstName() + " "
+                         + selected.getLastName()
+                         + " has been deleted. ";
+                 
+                 throw initCompareException(friendlyDeleted, technical,
+                         updatedName, invokingTitle);
+             }
+         } //end null evaluation           
+         
+         String hashDb = customerHashCode(shipAddressDb);
+         
+         String hashSelected =customerHashCode(selected);       
+         
+         if(hashDb.compareTo(hashSelected) != 0) {
+             String updatedName = selected.getFirstName() + " " 
+                     + selected.getLastName() + " has changed. ";
+             throw initCompareException(friendlyUpdated, technical, 
+                     updatedName, invokingTitle);    
+         }
+     }  
+     
+      /*
+       * Fix: Assumes non-null ShipAddress
+       * Note: evalShipId throws if param does not retrieve
+      */
+      public boolean compareSelectedAddressHashToDbHash(String hash, Short id, AddressTypeEnum type)
+            throws CustomerNotFoundException {          
+          
+          PostalAddress postal = null;
+          
+          if(type.equals(AddressTypeEnum.Customer))
+              postal = custManager.loadByEntityDef(Customer.class, id);
+          
+          else if(type.equals(AddressTypeEnum.ShipAddress))
+              postal = custManager.getShipAddressById(id);
+          
+         String dbHash = customerHashCode(postal);
+         
+         if(dbHash.equals(hash)){
+             System.out.println("CompareAddressUtil#compareSelectedAddressHashToDbHash: "
+                     + ": returning equal");
+             return true;
+         }
+         System.out.println("CompareAddressUtil#compareSelectedAddressHashToDbHash: "
+                     + ": returning not equal");
+         return false;          
+      }      
+     
+     
+     private void evalUnequalHashTimeCurrent(PostalAddress dbAddress, String formHash,
+             Long formTime, AddressTypeEnum type, Short id)
+                     throws UnequalHashTimeCurrentException {
+         
+         boolean valid = true;
+         
+         if(!this.isCurrentFormTime(formTime, customerAttrs.getFormTime(), "throwUnequlHashIfCurrent"))
+             return;
+         
+         String err = "Form time is equal to CustomerAttributes#formTime "
+                 + " and form hash is not equal to underlying storage. ";
+         
+         if(type.equals(AddressTypeEnum.ShipAddress) && 
+                 customerAttrs.isDeletedAddress(id)) {
+                 
+                 err += "Selected ShipAddress ID is in the deleted array";                 
+                 valid = false;
+                 
+         } else if(!customerHashCode(dbAddress).equals(formHash)){
+                 
+                 valid = false;
+         }
+         if(!valid)
+             throw new UnequalHashTimeCurrentException(err);
+         
+     } //end throw 
+     
+    
+     /*
+      * Invoked from ShippingAddressController#processEdit
+      * Form parameter used to retrieve an entity.
+      * If successful, and form parameter not equal to session model, 
+      * throw LoginChangedException if form time not current
+     */
+     public void evalCustomerIdParam(Short paramCustomerId, 
+             Customer modelCustomer, Long formTime, String hash) 
+                throws UnequalHashTimeCurrentException,
+                LoginIdChangedException, ExpiredEditViewRequest {
+         
+         boolean isCurrentTime = this.isCurrentFormTime(formTime,
+                 customerAttrs.getFormTime(), "evalCustomerIdParam") ;
+         
+         Customer dbCustomer = this.custManager.customerById(paramCustomerId);
+         
+         if(dbCustomer == null) {             
+         
+             throwIllegalArgumentException("evalCustomerIdParam", 
+                     "'paramCustomerId' failed to retrieve a customer entity");
+         }
+         else if(!paramCustomerId.equals(modelCustomer.getCustomerId())){
+             
+             if(!isCurrentTime)
+                 initLoginIdChangedException(dbCustomer, 
+                         modelCustomer, AddressTypeEnum.Customer, "Form paramId not equal to model ID");
+                 //return;
+             
+             else throw new UnequalHashTimeCurrentException("Time current: " +
+                     "Request Parameter 'customerId' not equal to @ModelAttribute customerId");
+         }
+         else if(!isCurrentTime) {
+             
+             throw new ExpiredEditViewRequest();
+             
+         } else this.evalUnequalHashTimeCurrent(dbCustomer,hash, formTime, 
+                 AddressTypeEnum.Customer, paramCustomerId); //throws time current exception
+     }
+    
+     
+     public void evalShipIdParam(Customer modelCustomer, Short paramShipId, 
+             Long paramTime, String formHash) 
+                       throws UnequalHashTimeCurrentException,
+                              LoginIdChangedException, ExpiredEditViewRequest {
+         
+        boolean isCurrentTime = this.isCurrentFormTime(paramTime, 
+                customerAttrs.getFormTime(), "evalShipIdParam");
+         
+        ShipAddress shipAddress = this.custManager.getShipAddressById(paramShipId);
+         
+        if(shipAddress == null) {
+            
+           if(!this.customerAttrs.isDeletedAddress(paramShipId)) {  
+               
+               this.throwIllegalArgumentException("evalShipIdParam", 
+                     "'paramShipId' failed to retrieve a ShipAddress entity "
+                     + "and id '" + paramShipId + "' is not in deleted map.");
+           
+           } else if(!isCurrentTime) {
+           
+               throw new ExpiredEditViewRequest();
+             
+           }  else throw new UnequalHashTimeCurrentException(
+                    this.doError("evalShipIdParam", 
+                    "Selected model.customer.ShipAddress is in deleted array and form time is current.")) ; 
+               
+     }  else if(!isRelated(modelCustomer, shipAddress)) { 
+           
+            if(isCurrentTime)
+            
+                throw new UnequalHashTimeCurrentException(
+                    this.doError("evalShipIdParam", 
+                    "Form time is current and selected ShipAddress unrelated to session Customer. ")) ; 
+            
+            else this.initLoginIdChangedException(shipAddress.getCustomerId(), 
+                    modelCustomer, AddressTypeEnum.ShipAddress, "");
+            
+      } else if(!isCurrentTime) {
+          
+          throw new ExpiredEditViewRequest();
+          
+      } else this.evalUnequalHashTimeCurrent(shipAddress, formHash, paramTime, 
+              AddressTypeEnum.ShipAddress, paramShipId); 
+  }
+     
+     private boolean isRelated(Customer customer, ShipAddress shipAddress) {  
+         
+        ShipAddress cloned =  this.customerAttrs.getDeletedAddress(shipAddress.getShipId());
+        
+        ShipAddress compare = cloned != null ? cloned : shipAddress;
+         
+        if(customer.getCustomerId()
+                   .equals(compare.getCustomerId().getCustomerId())) 
+            return true;
+        
+        return false;      
+     
+     }
+     
+     private ShipAddress findDbShipAddress(List<ShipAddress> list, ShipAddress selected) {
+         
+         if(list == null)
+             return null;
+         
+         for(ShipAddress addr : list){
+             if(addr.getShipId().equals(selected.getShipId()))
+                 return addr;
+         }
+         
+         return null;
+     }   
+     
+     private SelectedShipAddressCompareException 
+          initCompareException(String message, String technical, 
+                  String updatedName, String invokingTitle){
+         
+        SelectedShipAddressCompareException ex = 
+                 new SelectedShipAddressCompareException(message, technical);
+        
+        ex.setUpdatedNameFld(updatedName);
+        
+        ex.setInvokingTitle(invokingTitle);
+        
+        //httpSession.setAttribute(COMPARE_EXCEPTION, ex);
+         
+        return ex;
+     }
+          
+     private void initLoginIdChangedException(Customer prevLogin, 
+             Customer currentLogin, AddressTypeEnum addressType, String detail) 
+                 throws LoginIdChangedException {
+         
+         String prev = prevLogin.getFirstName() + " " + prevLogin.getLastName();
+         
+         String current = currentLogin.getFirstName() + " " + currentLogin.getLastName();       
+        
+         
+         LoginIdChangedException ex = new LoginIdChangedException(addressType,
+                    prev, current);
+         
+         ex.setDetail(detail);
+         
+         throw ex;
+         
+     }    
+          
+     public boolean isCurrentFormTime(Long paramTime, Long compareTime, String invoking) {
+         
+         if(compareTime == null)
+             this.throwIllegalArgumentException(invoking + 
+                     "->isCurrentFormTime", "Comparison time has not been initialized.");
+         if(paramTime == null)
+             this.throwIllegalArgumentException(invoking + 
+                     "->isCurrentFormTime", "Time request parameter is null");
+         int compare = paramTime.compareTo(compareTime);
+         if(compare > 0)
+           this.throwIllegalArgumentException(invoking + "->isCurrentFormTime", 
+                   "Time request parameter is greater than system time");
+         if(compare < 0)
+               return false;
+         return true;
+         
+     }   
+     
+     public boolean isCurrentFormTime(String formTime, Long compareTime, String invoking) {
+       
+         Long param = null;
+         
+         try {
+             
+             param = Long.parseLong(formTime);
+             
+         } catch (NumberFormatException e) {
+             this.throwIllegalArgumentException(invoking + "->isCurrentFormTime", 
+                  "Form time parameter failed to parse: " + e.getMessage());
+         }
+         
+        return isCurrentFormTime(param, compareTime, invoking);
+       
+     }
+     
+     private void throwIllegalArgumentException(String method, String message) {
+         
+         throw new IllegalArgumentException(
+                     EhrLogger.doError(this.getClass().getCanonicalName(),
+                             method, message));
+         
+     }  
+     
+     private String doError(String method, String message){
+         
+         return EhrLogger.doError(this.getClass().getCanonicalName(),
+                             method, message);
+     }
+    
+     public static String customerHashCode(PostalAddress addr){
+         
+        if(addr == null)
+            throw new IllegalArgumentException(EhrLogger.doError(
+                    "CompareAddressUtil", "customerHashCode", "PostalAddress.Address field is null")); 
+        
+        String email = addr.getEmail()==null ? "" : addr.getEmail();
+        String firstName = addr.getFirstName() == null ? "" : addr.getFirstName();
+        String lastName = addr.getLastName() == null ? "" : addr.getLastName();        
+        
+        String hash =  Integer.toString(email.hashCode()) + " " +
+                    Integer.toString(firstName.hashCode()) + " " +
+                    Integer.toString(lastName.hashCode()) + " " +
+                    addressHashCode(addr.getAddressId());      
+                
+        return hash;             
+    }
+     
+      private static String addressHashCode(Address addr) {
+        
+        if(addr == null)
+            throw new IllegalArgumentException(EhrLogger.doError(
+                    "CompareAddressUtil", "addressHashCode", "PostalAddress.Address field is null"));
+        
+        String addr2 = addr.getAddress2() == null ? "" : addr.getAddress2();          
+        
+        String hash = Integer.toString(addr.getAddress1().hashCode()) +
+                   Integer.toString(addr2.hashCode()) +
+                   Integer.toString(addr.getCityId().getCityId().hashCode()) +
+                   Integer.toString(addr.getDistrict().hashCode()) +
+                   Integer.toString(addr.getPhone().hashCode()) +
+                   Integer.toString(addr.getPostalCode().hashCode());
+        return hash;
+    } 
+    
+       public static String addressSvcHash(Address addr) {
+        
+        if(addr == null) return "";
+        
+        String hash = Integer.toString(addr.getAddress1().hashCode()) +                  
+                   Integer.toString(addr.getCityId().getCityId().hashCode()) +
+                   Integer.toString(addr.getDistrict().hashCode()) +
+                   Integer.toString(addr.getPostalCode().hashCode()) +
+                   Integer.toString(addr.getCityId().getCountryId().getCountryId().hashCode()) ;
+        return hash;
+    }  
+   
+    
+} //end class

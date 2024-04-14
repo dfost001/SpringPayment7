@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">    
+
+<tiles-definitions>
+    <definition name="defaultTemplate" template="/WEB-INF/tiles/layouts/mainTemplate.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="navigation" value="/WEB-INF/tiles/layouts/navigation.jsp"/>
+        <put-attribute name="logo" value="/WEB-INF/tiles/layouts/logo.jsp" />
+        <put-attribute name="sidebar" value="/WEB-INF/tiles/layouts/sidebar.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/tiles/layouts/footer.jsp" />
+        <put-attribute name="body" value="" />               
+    </definition>
+    <definition name="index_tile" extends="defaultTemplate">
+        <put-attribute name="title" value="Welcome to Spring MVC" />
+        <put-attribute name="body" value="/WEB-INF/tiles/views/index.jsp" />
+        <put-attribute name="sidebar" value="/WEB-INF/tiles/views/sidebarCategories.jsp" />      
+    </definition>
+    <definition name="selectedProduct_tile" extends="defaultTemplate">
+        <put-attribute name="title" value="Product Title Selected" />
+        <put-attribute name="body" value="/WEB-INF/tiles/views/selectedProduct.jsp" />
+        <put-attribute name="sidebar" value="/WEB-INF/tiles/views/sidebarCategories.jsp" />   
+    </definition>
+    <definition name="selectedCategory_tile" extends="defaultTemplate">
+        <put-attribute name="title" value="Category Selected" />
+        <put-attribute name="body" value="/WEB-INF/tiles/views/selectedCategory.jsp" />
+        <put-attribute name="sidebar" value="/WEB-INF/tiles/views/sidebarCategories.jsp" />   
+    </definition>
+    <definition name="viewCart_tile" extends="defaultTemplate">
+        <put-attribute name="title" value="View Cart" />
+        <put-attribute name="body" value="/WEB-INF/tiles/views/viewCart.jsp" />
+        <put-attribute name="sidebar" value="/WEB-INF/tiles/views/sidebarCategories.jsp" />   
+    </definition>
+     <definition name="searchResult_tile" extends="defaultTemplate">
+        <put-attribute name="title" value="Search By Title" />
+        <put-attribute name="body" value="/WEB-INF/tiles/views/searchResult.jsp" />
+        <put-attribute name="sidebar" value="/WEB-INF/tiles/views/sidebarCategories.jsp" />   
+    </definition> 
+     <definition name="exceptionExample_tile" extends="defaultTemplate">
+        <put-attribute name="title" value="Exception Example" />
+        <put-attribute name="body" value="/WEB-INF/tiles/views/exceptionExample.jsp" />       
+    </definition>      
+</tiles-definitions>

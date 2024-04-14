@@ -1,0 +1,135 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 10, 2015, 8:29:15 AM
+    Author     : Dinah
+*/
+
+.customerForm {
+    background-color:white;
+}
+.myPanel {
+    position: relative;
+    background-color: #EEEEEE;    
+    /*padding: 15px auto auto 15px;*/
+    /*margin: 0px 0px 0px 0px;*/
+    border:1px solid #DDDDDD;
+    height:65px;
+    border-radius:6px;
+    width:100%;
+}
+.customerCaption {
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    font-size:22pt;
+    font-weight:bold;
+    padding-top: 15px;
+    padding-left:50px;
+    color:#036fab;
+}
+.custInfoTbl {
+    border:none;
+    width: 550px;
+    margin: 20px auto 40px 190px;
+   /* margin: 20px auto 40px 40px;*/
+   /* float:left */
+}
+.custInfoTbl td {
+    padding:5px;
+}
+.divCommands{
+    width: 150px;
+    float:left;
+    padding:17px;
+}
+.divCommands input {
+    width:150px;
+}
+.custInfoTbl label {
+    border: 1px solid #BBBBBB;
+    width: 150px;
+    display: block;
+    color:rgb(0,0,64);
+    padding: 4px;    
+}
+
+.custInfoTbl input {
+    border: 1px solid black;
+    width: 320px;
+    color:rgb(0,0,64);
+    /*display:block;*/
+    padding:4px;
+    font-weight:bold;
+}
+/* Not used since interface revised */
+.custInfoTbl input.countryId {
+    border: 1px solid #CCCCCC;
+    width: 60px;
+    padding: 3px    
+}
+
+#citySelect, #countrySelect {
+    height:30px;
+    padding:4px;
+}
+.spaceStyle{
+    display:block;
+    width: 35px;
+    float:left;
+}
+
+.globalMessage {
+    margin-left:215px;
+    background-color: #FFFFFF;
+    padding-top: 15px;
+}
+.bindingErr {
+    font-size:9pt;
+    color:#EA5200;
+    font-family:Helvetica;
+    font-weight:bold;
+}
+.successMsg {
+    font-size:10pt;
+    color:#000088;
+    font-family:Helvetica;
+    font-weight:bold;
+}
+.infoMsg {
+    font-size:10pt;
+    color:#00AA00;
+    font-family:Helvetica;
+    font-weight:bold;
+}
+.supportMsg {
+    font-size: 8pt;
+    font-style: italic;
+    color: #000088;
+    font-family:Helvetica, Sans-Serif;
+}
+.addressTblDiv{
+    border: 1px solid #DDDDDD;
+    padding: 5px;
+}
+.btn-default {
+    border:1px solid black
+}
+.divAddrInfo {
+    position:relative;
+    /*top: -10px;*/
+    display:none;
+}
+#alertVerify.alert{
+    line-height:2;
+}
+.asterick {
+    vertical-align: top; 
+    text-align: left;
+    display:block;
+    color:#EA5200;
+    font-weight:700;
+    padding-left: 5px;
+}
+
