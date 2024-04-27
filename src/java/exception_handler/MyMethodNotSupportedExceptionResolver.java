@@ -31,10 +31,7 @@ import view.attributes.PaymentAttributes.TransactionState;
  * or errNavigation.jsp  
  * 
  */
-public class MyMethodNotSupportedExceptionResolver extends AbstractHandlerExceptionResolver{
-    
-    private final String TITLE_KEY = "title" ;
-    
+public class MyMethodNotSupportedExceptionResolver extends AbstractHandlerExceptionResolver {    
     /*
      * Property set by Spring framework. Session-scoped proxy.
      */

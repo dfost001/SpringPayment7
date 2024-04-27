@@ -343,11 +343,13 @@ public class CustomerAttrsValidator {
            }
         }
     }
-    
+    /*
+     * Programmtic constraint messages generated at validation.CustomerValidator
+     */
     private boolean compareFieldError(FieldError mvc, FieldError err) {  
       
         
-         if(err.getDefaultMessage().contains(mvc.getDefaultMessage()) 
+         if(err.getDefaultMessage().equals(mvc.getDefaultMessage()) 
                         && err.getField().equals(mvc.getField())){
                     return true;
          }
@@ -391,16 +393,6 @@ public class CustomerAttrsValidator {
             }
     }
     
-    private String formatUnequalMessage(FieldError feBinder, FieldError feValidator){
-        
-        String pattern = "Mvc BindingResult: field={0} default={1}" +
-                " Validator: field={2} default={3}; ";
-        
-        String formatted = MessageFormat.format(pattern, 
-                feBinder.getField(), feBinder.getDefaultMessage(),
-                feValidator.getField(), feValidator.getDefaultMessage());
-        
-        return formatted;
-    }
+  
     
 } //end class

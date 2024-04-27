@@ -197,14 +197,9 @@ public class CompareAddressUtil2 implements Serializable {
          
          ShipAddress shipAddressDb = this.findDbShipAddress(customer.getShipAddressList(), selected) ;
          
-         if (shipAddressDb == null) {  
+         if (shipAddressDb == null) {            
              
-           if(!this.isRelated(customer, selected))
-                this.throwIllegalArgumentException("throwCompareShipAddressToDb", 
-                     "Selected ShipAddress not related to session Customer. "
-                     + "ShipAddress possibly not removed from Session on CancelLogin?");  
-             
-           else if (!customerAttrs.isDeletedAddress(selected.getShipId())) {
+            if (!customerAttrs.isDeletedAddress(selected.getShipId())) {
                
                 String err = "Selected ShipAddress is not in customer relationship. " +
                          "Not added to deleted array or array removed from session on CancelLogin?";
@@ -375,7 +370,7 @@ public class CompareAddressUtil2 implements Serializable {
               AddressTypeEnum.ShipAddress, paramShipId); 
   }
      
-     private boolean isRelated(Customer customer, ShipAddress shipAddress) {  
+  /*   private boolean isRelated(Customer customer, ShipAddress shipAddress) {  
          
         ShipAddress cloned =  this.customerAttrs.getDeletedAddress(shipAddress.getShipId());
         
@@ -387,7 +382,21 @@ public class CompareAddressUtil2 implements Serializable {
         
         return false;      
      
-     }
+     } */
+     private boolean isRelated(Customer customer, ShipAddress shipAddress) {  
+         
+        if(shipAddress == null || customer == null)
+           EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(), 
+                   "isRelated", "Unexpected null value for a parameter: ShipAddress/Customer");
+         
+        if(customer.getCustomerId()
+                   .equals(shipAddress.getCustomerId().getCustomerId())) 
+            return true;
+        
+        return false;      
+     
+     } 
+     
      
      private ShipAddress findDbShipAddress(List<ShipAddress> list, ShipAddress selected) {
          
