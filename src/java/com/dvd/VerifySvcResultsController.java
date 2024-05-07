@@ -51,11 +51,7 @@ public class VerifySvcResultsController {
     private CompareAddressUtil2 compareUtil;
     
     @Autowired
-    private Cart cart; 
-    
-    @Autowired
-    private CustomerAttributes customerAttrs;
-    
+    private Cart cart;     
     
     @RequestMapping(value="/customer/verifySvcResults", method=RequestMethod.GET)
     public String verifyResults(

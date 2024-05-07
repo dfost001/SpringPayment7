@@ -141,7 +141,7 @@ public class CheckoutButtonController implements Serializable{
          
          PostalAddress postal = (PostalAddress)session.getAttribute(ShippingAddressController.SELECTED_POSTALADDRESS);   
          
-         this.checkPostalSelectedFlag(postal);
+         compareUtil.checkInconsistentSelectedFlag(postal);
                 
          if(postal == null)        
               return this.selectShipAddressUrl;
@@ -185,23 +185,8 @@ public class CheckoutButtonController implements Serializable{
            
                 this.throwIllegalArg(msg, "evalInconsistentNullCustomerState");
             
-        }      
-       
-    }
-    
-    private void checkPostalSelectedFlag(PostalAddress postal) {
-        
-         if(postal == null){
-             if(customerAttrs.isShipAddressSelected())
-                     this.throwIllegalArg("Session SELECTED_POSTALADDRESS is null and CustomerAttrs#flag is set", 
-                     "processButtonRequest");
-         }
-         else if(customerAttrs.isShipAddressSelected() == false){
-                     this.throwIllegalArg("Session SELECTED_POSTALADDRESS is NOT null and CustomerAttrs#flag is false", 
-                     "processButtonRequest");
-         }
-        
-    }
+        }          
+    } 
     
     private void throwEmptyCart() {
          if(cart.mapAsList().isEmpty())

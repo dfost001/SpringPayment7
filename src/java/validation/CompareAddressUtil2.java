@@ -197,21 +197,27 @@ public class CompareAddressUtil2 implements Serializable {
          
          ShipAddress shipAddressDb = this.findDbShipAddress(customer.getShipAddressList(), selected) ;
          
+         this.checkInconsistentSelectedFlag(selected);
+         
          if (shipAddressDb == null) {            
              
             if (!customerAttrs.isDeletedAddress(selected.getShipId())) {
                
                 String err = "Selected ShipAddress is not in customer relationship. " +
-                         "Not added to deleted array or array removed from session on CancelLogin?";
+                         "Not added to deleted array or deleted array was removed from session on CancelLogin?";                 
+                 this.throwIllegalArgumentException("throwCompareSessionShipAddressToDb", err);                
                  
-                 this.throwIllegalArgumentException("throwCompareShipAddressToDb", err);                
-                 
+           } else if(!this.isRelated(customer, customerAttrs.getDeletedAddress(selected.getShipId()))) { //In deleted array and not related
+               
+               String err = "Selected ShipAddress is in the deleted array and not related to current Customer. " +
+                         "Selection probably not removed from session when Login cancelled. ";                 
+               this.throwIllegalArgumentException("throwCompareSessionShipAddressToDb", err);
+               
            } else {
 
                  String updatedName = selected.getFirstName() + " "
                          + selected.getLastName()
-                         + " has been deleted. ";
-                 
+                         + " has been deleted. ";                 
                  throw initCompareException(friendlyDeleted, technical,
                          updatedName, invokingTitle);
              }
@@ -420,9 +426,7 @@ public class CompareAddressUtil2 implements Serializable {
         
         ex.setUpdatedNameFld(updatedName);
         
-        ex.setInvokingTitle(invokingTitle);
-        
-        //httpSession.setAttribute(COMPARE_EXCEPTION, ex);
+        ex.setInvokingTitle(invokingTitle);   
          
         return ex;
      }
@@ -492,6 +496,20 @@ public class CompareAddressUtil2 implements Serializable {
          
          return EhrLogger.doError(this.getClass().getCanonicalName(),
                              method, message);
+     }
+     public void checkInconsistentSelectedFlag(PostalAddress selectedAddress) {
+         
+         boolean selected = customerAttrs.isShipAddressSelected();
+         
+         if(selectedAddress == null){
+             if(selected)
+                     this.throwIllegalArgumentException("Session SELECTED_POSTALADDRESS is null and CustomerAttrs#flag is set", 
+                     "checkInconsistentSelectedFlag");
+         }
+         else if(!selected){
+                       this.throwIllegalArgumentException("checkInconsistentSelectedFlag",
+                       "Session SELECTED_POSTALADDRESS is NOT null and CustomerAttrs#flag is false");
+         }        
      }
     
      public static String customerHashCode(PostalAddress addr){

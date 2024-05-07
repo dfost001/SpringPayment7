@@ -127,7 +127,7 @@ public class HttpSessionRequiredExceptionResolver
             throw new IllegalArgumentException(
                     this.getClass().getCanonicalName()
                     + ":" + url
-                    + ": cart in session is null");
+                    + ": Cart in session is null");
         }
     }
     

@@ -64,8 +64,7 @@ public class ShippingAddressController {
     /*
      * Property read by UpdateShipAddressController to determine the type of edit
      * see enum SelectAddressAction
-     */
-    
+     */    
     private SelectShipAction selectShipAction; 
     
     public SelectShipAction getSelectShipAction() {
@@ -175,7 +174,7 @@ public class ShippingAddressController {
         EhrLogger.printToConsole(this.getClass(),"doShowSelectAddress", 
                  "showSelect executing: formTime=" + customerAttrs.getFormTime());
         
-        this.setPreviousSelectedIndex(session, map);  
+        this.setPreviousSelectedIndex(session);  
         
         this.assignAddressNotFoundMessage(map, session, customer);
         
@@ -509,15 +508,15 @@ public class ShippingAddressController {
    /*
     * To do: If flag not set and ShipAddress selected
    */
-    private void setPreviousSelectedIndex(HttpSession session, ModelMap model) {
+    private void setPreviousSelectedIndex(HttpSession session) {
         
-        previousSelected = null;
+       previousSelected = null;
         
-        PostalAddress address = (PostalAddress)session.getAttribute(ShippingAddressController.SELECTED_POSTALADDRESS);
+       PostalAddress address = (PostalAddress)session.getAttribute(ShippingAddressController.SELECTED_POSTALADDRESS);
+            
+       compareUtil.checkInconsistentSelectedFlag(address);    
         
-        this.checkSelectedFlag(address, this.customerAttrs.isShipAddressSelected());
-        
-        if (address == null) {
+       if (address == null) {
             
                 this.previousSelected = 0;
                 return;
@@ -538,14 +537,17 @@ public class ShippingAddressController {
         //Deleted and not reselected
         if(previousSelected == -1)
             if(!customerAttrs.isDeletedAddress(selectedAddress.getShipId())) 
-               
-               throw new IllegalArgumentException(EhrLogger.doError(
-                   this.getClass().getCanonicalName(),
-                   "setPreviousSelectedIndex",
-                   "ID of session ShipAddress is null and has not been deleted"));  
-            else previousSelected = 0;        
+                
+                EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(), 
+                        "setPreviousSelectedIndex",  
+                        "ID of selected ShipAddress cannot be found and has not been deleted");
+            
+            else previousSelected = 0;         
     }
     
+    /*
+     * Order of evaluation is important
+     */
     private void assignAddressNotFoundMessage(ModelMap model,
             HttpSession session, Customer customer) 
             throws SelectedShipAddressCompareException {     
@@ -553,17 +555,12 @@ public class ShippingAddressController {
         
        if(model.containsKey(ConstantUtil.SHIPADDRESS_UPDATED)
                || model.containsKey(ConstantUtil.CUSTOMER_UPDATED)){
-           //display customerAttributes#message only
-           return;
+           
+           return;   //display customerAttributes#message only
             
        } else if(model.containsKey(this.EXPIRED_REQUEST_MSG)) {             
            
-            shipAddressNotFoundMessage = (String)model.get(this.EXPIRED_REQUEST_MSG);
-            
-       /*} else if(model.containsKey(ConstantUtil.SHIPADDRESS_PREVIOUS_DELETION_MSG)){    
-           
-           shipAddressNotFoundMessage =
-                   (String)model.get(ConstantUtil.SHIPADDRESS_PREVIOUS_DELETION_MSG);*/
+            shipAddressNotFoundMessage = (String)model.get(this.EXPIRED_REQUEST_MSG);     
             
        } else if(model.containsKey(CompareAddressUtil2.COMPARE_EXCEPTION)) {
            
@@ -601,7 +598,7 @@ public class ShippingAddressController {
     
     private void addSelectModelAttributes(ModelMap map, Customer customer){
         
-        map.addAttribute("customer", customer);
+        map.addAttribute("customer", customer); //Not referenced?
         map.addAttribute("cart", cart); //widget       
         map.addAttribute("customerAttributes", customerAttrs); //success message, expiredTime
         map.addAttribute("shippingAddressController", this); //shipList, previousSelected 
@@ -629,20 +626,7 @@ public class ShippingAddressController {
         
         this.redirectAttributes.addFlashAttribute(this.EXPIRED_REQUEST_MSG, expiredMessage); 
         
-    }
-    
-    private void checkSelectedFlag(PostalAddress entity, Boolean selected) {
-        
-        if(entity == null) {
-            if(selected)
-                this.throwIllegalArg("checkSelectedFlag", "Selected entity is null and CustomerAttributes#shipAddressSelected "
-                        + "flag is set to true. ");
-        }
-        else if(!selected) { //not null
-            this.throwIllegalArg("checkSelectedFlag", "Selected entity is NOT null and CustomerAttributes#shipAddressSelected "
-                    + "flag is NOT set to true. ");
-        }
-    }
+    } 
     
     private void throwIllegalArg(String method, String message) {
         
