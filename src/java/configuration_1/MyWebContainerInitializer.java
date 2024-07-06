@@ -20,7 +20,7 @@ public class MyWebContainerInitializer extends
     /*
      * Super creates AnnotationConfigWebApplicationContext
      * Calls into getRootConfigClasses
-     * see base class ContextLoaderInitializer
+     * See base class ContextLoaderInitializer
     */
     @Override
     protected WebApplicationContext createRootApplicationContext() {
