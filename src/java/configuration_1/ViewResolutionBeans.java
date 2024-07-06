@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 
 /**
@@ -31,6 +32,7 @@ public  class ViewResolutionBeans  {
     @Bean
     public InternalResourceViewResolver jspViewResolver() {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+        resolver.setViewClass(JstlView.class); //Optional
         resolver.setPrefix("/WEB-INF/jsp/");
         resolver.setSuffix(".jsp");
         return resolver;
@@ -56,11 +58,11 @@ public  class ViewResolutionBeans  {
     }
     
     @Bean
-    public TilesViewResolver tilesResolver() {
+    public TilesViewResolver tilesViewResolver() {
         
         TilesViewResolver resolver = new TilesViewResolver();
         return resolver;
-    } 
+    }
     
     @Bean
     public TilesConfigurer tilesConfigurer() {
