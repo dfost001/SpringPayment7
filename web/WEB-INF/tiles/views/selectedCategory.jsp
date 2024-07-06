@@ -14,9 +14,9 @@
     <script src="${pageContext.request.contextPath}/resources/javascript/selectedCategory.js"
           defer="defer"></script> 
           
-      <div class="categoryContent">    
+      <div class="categoryContent" >    
       <p class="selectedCategoryTitle">${categoryController.selectedCategory.name}</p>
-      <div class="categoryMessages">
+      <div class="categoryMessages" style="padding-left: 10px">
       <c:if test="${not empty categoryController.successMessages}">
           <p style="color:#00BB00"><b>Success:</b></p>
           <ul>
@@ -77,7 +77,7 @@
                           <td>
                               <c:out value="${item.description}" />
                           </td>
-                          <td><input type="checkbox" name="select" id="select" 
+                          <td><input type="checkbox" name="select"  
                               value="${item.filmId}"
                               <c:if test="${cart.items[item.filmId] ne null}"> checked </c:if> /></td>
                       </tr>
