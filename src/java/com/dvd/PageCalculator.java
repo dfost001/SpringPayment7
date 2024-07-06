@@ -165,8 +165,8 @@ public class PageCalculator implements Serializable{
      */
     private void calcPageNoEndpoints(int selectedPgNo) {
         
-        BeanUtil.throwFieldsNotInitialized(this.getClass(), this,
-                  "pageSize", "recordCount", "noIntervals", "maxPageNo"); 
+        /* BeanUtil.throwFieldsNotInitialized(this.getClass(), this,
+                  "pageSize", "recordCount", "noIntervals", "maxPageNo"); */
         
         int begin = 1;
         
