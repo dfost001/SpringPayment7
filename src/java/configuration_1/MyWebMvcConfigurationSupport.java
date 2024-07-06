@@ -21,7 +21,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -43,7 +42,6 @@ import org.springframework.web.util.UrlPathHelper;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.validation.Validator;
-
 
 /**
  *
@@ -76,7 +74,7 @@ public class MyWebMvcConfigurationSupport extends WebMvcConfigurationSupport {
         
         List<ViewResolver> resolverList = new ArrayList<>();
         
-        resolverList.add(viewBeans.tilesResolver());
+        resolverList.add(viewBeans.tilesViewResolver());
         
         resolverList.add(viewBeans.jspViewResolver());
         
@@ -105,44 +103,53 @@ public class MyWebMvcConfigurationSupport extends WebMvcConfigurationSupport {
     }*/   
     
      @Override
+     /* Default Media Types are added by super ConfigurationSupport
+      * config.mediaType("json", MediaType.APPLICATION_JSON); 
+      * config.mediaType("xml", MediaType.APPLICATION_XML);     
+      */
     protected void configureContentNegotiation(ContentNegotiationConfigurer config) {
         
         config.ignoreAcceptHeader(false);
         
-        config.favorParameter(true); //Coded by JavaScript Client
+        config.favorParameter(true); //Favor an Url query-parameter
         
-        config.favorPathExtension(false);      
+        config.parameterName("media"); 
         
-        config.parameterName("media");
-        
-        config.mediaType("json", MediaType.APPLICATION_JSON); //also set by super
-        config.mediaType("xml", MediaType.APPLICATION_XML); //set by super        
+        config.favorPathExtension(false);                       
     }
-    
+    /*
+     * TrailingSlash deprecated in 6.0 (Default changed from true to false)
+     * SuffixPatternMatch removed in 6.0 (Extensions are not mapped)
+     */
     @Override
     protected void configurePathMatch(PathMatchConfigurer config) {
         
         config.setPathMatcher(pathMatcher());
         config.setUrlPathHelper(pathHelper());
-        config.setUseRegisteredSuffixPatternMatch(Boolean.TRUE); //only match against registered suffixes
-        config.setUseSuffixPatternMatch(Boolean.TRUE); //normally set to false; if true, suffix discarded, will match any request
-        config.setUseTrailingSlashMatch(Boolean.TRUE);
+        config.setUseRegisteredSuffixPatternMatch(Boolean.TRUE); //Only match against registered suffixes
+        config.setUseSuffixPatternMatch(Boolean.TRUE); //Normally set to false; if true, suffix discarded, will match any request
+        config.setUseTrailingSlashMatch(Boolean.TRUE); //Let a method mapped to "/users" 
+                                                       //also match to "/users/"
         
     }
-    
+    /*
+     * Properties set on RequestMappingHandlerMapping
+     */
     @Bean
     public UrlPathHelper pathHelper() {
         
         UrlPathHelper helper = new UrlPathHelper() ;
         
-        helper.setAlwaysUseFullPath(false);
+        helper.setAlwaysUseFullPath(false); // Whether to include the servlet's URL pattern
         
-        helper.setUrlDecode(true);
+        helper.setUrlDecode(true); // If the QueryString contains encoded spaces etc.
             
         return helper;
         
     }
-    
+    /*
+     * Tests whether a request URL matches a wild-card pattern
+     */
     @Bean
     public AntPathMatcher pathMatcher() {
         return new AntPathMatcher();
