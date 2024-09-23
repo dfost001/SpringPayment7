@@ -111,11 +111,11 @@ public class MyWebMvcConfigurationSupport extends WebMvcConfigurationSupport {
         
         config.ignoreAcceptHeader(false);
         
-        config.favorParameter(true); //Favor an Url query-parameter
+        config.favorParameter(true); //Favor an Url query-parameter for a REST request
         
         config.parameterName("media"); 
         
-        config.favorPathExtension(false);                       
+        config.favorPathExtension(false); //Does not use suffixes set to a default media-type                      
     }
     /*
      * TrailingSlash deprecated in 6.0 (Default changed from true to false)
@@ -124,10 +124,10 @@ public class MyWebMvcConfigurationSupport extends WebMvcConfigurationSupport {
     @Override
     protected void configurePathMatch(PathMatchConfigurer config) {
         
-        config.setPathMatcher(pathMatcher());
+        config.setPathMatcher(pathMatcher()); //Mathches attribute value to URL
         config.setUrlPathHelper(pathHelper());
-        config.setUseRegisteredSuffixPatternMatch(Boolean.TRUE); //Only match against registered suffixes
-        config.setUseSuffixPatternMatch(Boolean.TRUE); //Normally set to false; if true, suffix discarded, will match any request
+        config.setUseRegisteredSuffixPatternMatch(Boolean.TRUE); //Only match against default media-types
+        config.setUseSuffixPatternMatch(Boolean.TRUE); //Normally set to false; if true, discards the suffix
         config.setUseTrailingSlashMatch(Boolean.TRUE); //Let a method mapped to "/users" 
                                                        //also match to "/users/"
         
@@ -216,12 +216,7 @@ public class MyWebMvcConfigurationSupport extends WebMvcConfigurationSupport {
         
         converter.setObjectMapper(appBeans.objectMapper());
         
-        messageConverters.add(converter);
-        
-        
-		
-        
-        
+        messageConverters.add(converter);       
     }    
    
     @Override
