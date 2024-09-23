@@ -1,6 +1,5 @@
 package restAddressService.addressService;
 
-import error_util.EhrLogger;
 import restAddressService.client.Candidates;
 import restAddressService.client.Request;
 import httpUtil.HttpException;
@@ -19,9 +18,6 @@ import javax.ws.rs.core.Response;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-
-
-
 import restAddressService.AjaxRequest;
 import restAddressService.addressService.converter.AddressResponseReader;
 
@@ -116,7 +112,7 @@ public class ServiceConnect {
             
             if(status != 200 && status != 201) {                
                 
-		throw new WebApplicationException("Response status not OK",response);
+		throw new WebApplicationException("Response status not OK", response);
 		
 	    }
             
