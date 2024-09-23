@@ -100,8 +100,8 @@ public class SpringDbController implements Serializable{
     /*
      * Rendered as a link on transactionErr.jsp
      * If there is a recoverable exception at assignList, recordset needs to be re-retrieved.
-     * Note: If there is an error at Constructor retrieving the record-count, 
-     * binding to this method will re-execute the constructor.
+     * Note: If there is an error at Constructor retrieving the record-count, instantiation
+     * failed. Binding to this method will re-execute the constructor.
      */ 
    @RequestMapping(value="/spring/homeOnDbError", method=RequestMethod.GET)
    public String homeOnDbError(ModelMap model) {
