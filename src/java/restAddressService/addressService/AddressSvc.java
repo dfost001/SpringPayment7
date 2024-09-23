@@ -79,9 +79,9 @@ public class AddressSvc {
    
     public AddressSvc(Request request) {
       
-        orderedDpvNotes = new ArrayList<>();
-        this.detailsDpv = new ArrayList<>();
-        constants = new AddrSvcConstants();
+        orderedDpvNotes = new ArrayList<>(); //SvcAnalysis.svcMessages
+        this.detailsDpv = new ArrayList<>(); //SvcAnalysis.svcDetails 
+        constants = new AddrSvcConstants(); //Message code fields as variables
         postal = new SvcAnalysis();
         postal.setValid(false);
         this.request = request;
@@ -291,11 +291,11 @@ public SvcAnalysis verify(Candidates candidates) {
          *
          * Not sure if CompassError ("K") will have a valid format for an ordinal street-name
          *
-         * May also want to exit if zipPlus4 result is empty
+         * May also want to exit if zipPlus4 result is empty DONE
          *
          * Note: If there are city/state revisions, and match is null, 
          * confirmRequired is set, but JavaScript will fill only city/state, 
-         * not the address-line if empty.
+         * not the validated-address-line if empty.
          */
         private void assignAddressRevisedNote(){            
            
@@ -389,10 +389,10 @@ public SvcAnalysis verify(Candidates candidates) {
         String message = "";
         
         if(!StringUtil.isNullOrEmpty(predirection)) {
-            pre = "Predirection: " + predirection;            
+            pre = "Predirection=" + predirection;            
         }        
         if(!StringUtil.isNullOrEmpty(postdirection)) {
-            post = "Postdirection: " + postdirection;            
+            post = "Postdirection=" + postdirection;            
         }        
         if(!pre.isEmpty() && !post.isEmpty())
             message = pre + ", " + post;
@@ -480,7 +480,7 @@ public SvcAnalysis verify(Candidates candidates) {
                     continueOn = true;
                     break;
                 }
-            case MATCH_SECONDARY_INVALID : //"S" (Invalid Interval)
+            case MATCH_SECONDARY_INVALID : //"S" (Invalid Interval or not required)
                 if(dpv.contains("BB") ) { // All valid
                     continueOn = true; //Address is not a multi-unit. Not required
                     break;
@@ -565,7 +565,7 @@ public SvcAnalysis verify(Candidates candidates) {
     	if(fields == null || fields.isEmpty()) {
                 System.out.println("assignDpv: fields is null or empty");
     		return;
-        }
+        } // Should not happen since, error thrown if empty
         String value = "";
         String key = fields.substring(0, 2);        
        
@@ -597,7 +597,7 @@ public SvcAnalysis verify(Candidates candidates) {
         if(fields.length()== 2) 
             return;
         else
-            assignDpv(fields.substring(2));
+            assignDpv(fields.substring(2)); //recurse
         
     }
     /*
@@ -633,7 +633,9 @@ public SvcAnalysis verify(Candidates candidates) {
                 //throw new IllegalArgumentException
                 //("AddressSvc#assignErrorFootnotes: error using java.lang.reflect", ex);
                 
-                orderedDpvNotes.add(this.debugMatch + ": Additional information not available.");
+                orderedDpvNotes.add(this.debugMatch + ": " 
+                        + value 
+                        + ": Error-Code not found.");
                 
                 continue;
                 
