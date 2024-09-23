@@ -49,23 +49,18 @@ public class NonCurrentUpdateInterceptor extends HandlerInterceptorAdapter {
         
         Long currentTime = customerAttrs.getAddressUpdateTime();
         
-        String formTime = request.getParameter(ADDRESS_TIME);
-        
-        System.out.println("NonCurrentUpdateInterceptor#evalExpiredFormTime:" 
-                + currentTime + ": " + formTime);
-        
-        if(formTime == null || formTime.isEmpty())
-           throw new IllegalArgumentException("NonCurrentUpdateInterceptor#prehandle: "
-                 +  "Missing request parameter 'addressTime'");          
+        String formTime = request.getParameter(ADDRESS_TIME);                
         
         boolean isEqual = new CompareAddressUtil2().isCurrentFormTime(formTime, currentTime,
                 this.getClass().getName());
         
-         if(!isEqual)
+         if(!isEqual) {
+            System.out.println("NonCurrentUpdateInterceptor#evalExpiredFormTime:" 
+                + currentTime + ": " + formTime);    
             throw new NonCurrentUpdateRequest();
+         }
         
-        customerAttrs.setAddressUpdateTime();  
-       
+        customerAttrs.setAddressUpdateTime();         
         
         return true;
         
