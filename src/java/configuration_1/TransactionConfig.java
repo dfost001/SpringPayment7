@@ -10,6 +10,11 @@ package configuration_1;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.dbcp2.ConnectionFactory;
+import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
+import org.apache.commons.dbcp2.PoolableConnectionFactory;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.dbcp2.PoolingDataSource;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +35,7 @@ import org.springframework.stereotype.Repository;
 public class TransactionConfig {
     
     @Bean
-    public DataSource dataSource() {
+    public DataSource dataSource2() {
         
         BasicDataSource source = new BasicDataSource();
         source.setDriverClassName("com.mysql.jdbc.Driver");
@@ -42,7 +47,31 @@ public class TransactionConfig {
     }
     
     @Bean
-    public LocalSessionFactoryBean sessionFactory() {
+    public DataSource dataSource() throws ClassNotFoundException {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        ConnectionFactory connectFact = new DriverManagerConnectionFactory(
+                "jdbc:mysql://localhost:3306/sakila_2?useSSL=false",
+                "root", "gw7749" );
+        
+        PoolableConnectionFactory poolableConnectFact = new PoolableConnectionFactory
+           (connectFact, null);
+        
+        GenericObjectPool pool = new GenericObjectPool(poolableConnectFact);
+        
+        poolableConnectFact.setPool(pool);
+        
+        PoolingDataSource dataSource = new PoolingDataSource(pool);
+        
+        return dataSource;
+    }
+    
+    @Bean
+    public LocalSessionFactoryBean sessionFactory() throws ClassNotFoundException {
         
         String [] packagesToScan = {"model", "model.customer"};
         
@@ -76,7 +105,7 @@ public class TransactionConfig {
         return manager;
         
     }
-    
+    /* Adds an Advisor to the proxied @Transactional component if annotated  @Repository */
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionPostProcessor () {
         
