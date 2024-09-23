@@ -52,9 +52,9 @@ public class JerseyClientUtil {
     private void initWebEx(WebApplicationException webex) 
            throws HttpClientException {
               
-        String issue = webex.getResponse().getStatusInfo().getReasonPhrase();
+        String status = webex.getResponse().getStatusInfo().getReasonPhrase();
         
-        String message = issue + ":" + webex.getMessage();
+        String message = status + ":" + webex.getMessage();
         
         HttpClientException httpClient = this.initClientException(webex, 
                 message, webex.getResponse().getStatus());
