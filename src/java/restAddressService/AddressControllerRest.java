@@ -170,7 +170,7 @@ public class AddressControllerRest {
         
         postal.setConfirmRequired(false);    
         
-        postal.getErrors().clear(); //Clear revision messages and replace with reformatted field
+        postal.getErrors().clear(); //Clear revision messages and replace with reformatted field message
             
         doReformattedMessages2(postal, request) ;            
           
@@ -178,7 +178,7 @@ public class AddressControllerRest {
   
     private void doReformattedMessages2(SvcAnalysis postal, AjaxRequest request) {    
         
-        String label = "Revised: ";
+        String label = "Revised from: ";
         
         if(!request.getStreet().equals(postal.getValidatedStreetLineFormat())) {
             String msg = label + request.getStreet();
