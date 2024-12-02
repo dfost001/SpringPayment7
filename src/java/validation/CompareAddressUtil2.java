@@ -260,36 +260,7 @@ public class CompareAddressUtil2 implements Serializable {
          System.out.println("CompareAddressUtil#compareSelectedAddressHashToDbHash: "
                      + ": returning not equal");
          return false;          
-      }      
-     
-     
-     private void evalUnequalHashTimeCurrent(PostalAddress dbAddress, String formHash,
-             Long formTime, AddressTypeEnum type, Short id)
-                     throws UnequalHashTimeCurrentException {
-         
-         boolean valid = true;
-         
-         if(!this.isCurrentFormTime(formTime, customerAttrs.getFormTime(), "throwUnequlHashIfCurrent"))
-             return;
-         
-         String err = "Form time is equal to CustomerAttributes#formTime "
-                 + " and form hash is not equal to underlying storage. ";
-         
-         if(type.equals(AddressTypeEnum.ShipAddress) && 
-                 customerAttrs.isDeletedAddress(id)) {
-                 
-                 err += "Selected ShipAddress ID is in the deleted array";                 
-                 valid = false;
-                 
-         } else if(!customerHashCode(dbAddress).equals(formHash)){
-                 
-                 valid = false;
-         }
-         if(!valid)
-             throw new UnequalHashTimeCurrentException(err);
-         
-     } //end throw 
-     
+      }          
     
      /*
       * Invoked from ShippingAddressController#processEdit
@@ -307,6 +278,8 @@ public class CompareAddressUtil2 implements Serializable {
          
          Customer dbCustomer = this.custManager.customerById(paramCustomerId);
          
+         String info = null;
+         
          if(dbCustomer == null) {             
          
              throwIllegalArgumentException("evalCustomerIdParam", 
@@ -316,20 +289,24 @@ public class CompareAddressUtil2 implements Serializable {
              
              if(!isCurrentTime)
                  initLoginIdChangedException(dbCustomer, 
-                         modelCustomer, AddressTypeEnum.Customer, "Form paramId not equal to model ID");
-                 //return;
+                         modelCustomer, AddressTypeEnum.Customer, ""); // Throws exception  
+             throw new UnequalHashTimeCurrentException(
+                    this.doError("evalCustomerIdParam", 
+                    "Form request parameter 'customerId' not equal to @ModelAttribute customerId. ")) ;
              
-             else throw new UnequalHashTimeCurrentException("Time current: " +
-                     "Request Parameter 'customerId' not equal to @ModelAttribute customerId");
-         }
-         else if(!isCurrentTime) {
+         } else  {
              
-             throw new ExpiredEditViewRequest();
+             info = this.genUnequalHashMessage(dbCustomer, hash, formTime,
+                     AddressTypeEnum.Customer, paramCustomerId);
              
-         } else this.evalUnequalHashTimeCurrent(dbCustomer,hash, formTime, 
-                 AddressTypeEnum.Customer, paramCustomerId); //throws time current exception
-     }
-    
+             if(!isCurrentTime)
+                 throw new ExpiredEditViewRequest(info);
+             else if(info != null)  { //Form hash not equal to underlying and form time is current
+                  info = this.doError("evalCustomerIdParam", info);
+                  throw new UnequalHashTimeCurrentException(info);                  
+             }                
+         } 
+     }   
      
      public void evalShipIdParam(Customer modelCustomer, Short paramShipId, 
              Long paramTime, String formHash) 
@@ -340,6 +317,8 @@ public class CompareAddressUtil2 implements Serializable {
                 customerAttrs.getFormTime(), "evalShipIdParam");
          
         ShipAddress shipAddress = this.custManager.getShipAddressById(paramShipId);
+        
+        String info = null;
          
         if(shipAddress == null) {
             
@@ -349,14 +328,17 @@ public class CompareAddressUtil2 implements Serializable {
                      "'paramShipId' failed to retrieve a ShipAddress entity "
                      + "and id '" + paramShipId + "' is not in deleted map.");
            
-           } else if(!isCurrentTime) {
-           
-               throw new ExpiredEditViewRequest();
+           } else {
+               info = this.genUnequalHashMessage(shipAddress, formHash, paramTime, 
+                       AddressTypeEnum.ShipAddress, paramShipId);
+               if (!isCurrentTime)
+                   throw new ExpiredEditViewRequest(info);
              
-           }  else throw new UnequalHashTimeCurrentException(
-                    this.doError("evalShipIdParam", 
-                    "Selected model.customer.ShipAddress is in deleted array and form time is current.")) ; 
-               
+               else {
+                    info = this.doError("evalShipIdParam", info);
+                    throw new UnequalHashTimeCurrentException(info);
+               }                        
+        }
      }  else if(!isRelated(modelCustomer, shipAddress)) { 
            
             if(isCurrentTime)
@@ -368,35 +350,70 @@ public class CompareAddressUtil2 implements Serializable {
             else this.initLoginIdChangedException(shipAddress.getCustomerId(), 
                     modelCustomer, AddressTypeEnum.ShipAddress, "");
             
-      } else if(!isCurrentTime) {
-          
-          throw new ExpiredEditViewRequest();
-          
-      } else this.evalUnequalHashTimeCurrent(shipAddress, formHash, paramTime, 
+      } else {
+          info = this.genUnequalHashMessage(shipAddress, formHash, paramTime, 
               AddressTypeEnum.ShipAddress, paramShipId); 
+          if(!isCurrentTime)
+              throw new ExpiredEditViewRequest(info);
+          else if(info != null) { //Form hash not equal to underlying and form time equal to underlying
+              info = this.doError("evalShipIdParam", info) ;
+              throw new UnequalHashTimeCurrentException(info);
+          }
+      }  
   }
+    /*
+     * We want to keep the message if time is not current and return null if current
+     * Caller will throw ExpiredEditViewRequest whether or not message is empty.
+     * IllegalArgument will only be thrown if message is null (not equal to underlying)
+     * and time is current
+     */
+       private String genUnequalHashMessage(PostalAddress dbAddress, String formHash,
+             Long formTime, AddressTypeEnum type, Short id)
+                     throws UnequalHashTimeCurrentException  {
+         
+         boolean valid = true;
+         
+         boolean timeCurrent = isCurrentFormTime(formTime, customerAttrs.getFormTime(), 
+                 "throwIfUnequalHashTimeCurrent");            
+         
+         String err = timeCurrent ? "Form time is equal to current time. Indicates development error. " :
+               "Expired request. Indicates request from browser cache. "   ;
+         
+         if(type.equals(AddressTypeEnum.ShipAddress) && 
+                 customerAttrs.isDeletedAddress(id)) {
+                 
+                 err += "Selected ShipAddress ID has been deleted. ";  
+                 return err;                
+                 
+         } else if(!customerHashCode(dbAddress).equals(formHash)){
+                 
+                 valid = false;
+         }         
+         if(!valid) {
+             err += "Information for "  + dbAddress.getFirstName() +
+                       " " + dbAddress.getLastName() + " has changed. "; //User-friendly
+         }            
+         if (!timeCurrent){
+             return err;
+         } else if (!valid){
+             return err;
+         } else { //timeCurrent and valid
+             err = null;
+         }
+         return err;
+         
+     } //end generate message 
      
-  /*   private boolean isRelated(Customer customer, ShipAddress shipAddress) {  
-         
-        ShipAddress cloned =  this.customerAttrs.getDeletedAddress(shipAddress.getShipId());
-        
-        ShipAddress compare = cloned != null ? cloned : shipAddress;
-         
-        if(customer.getCustomerId()
-                   .equals(compare.getCustomerId().getCustomerId())) 
-            return true;
-        
-        return false;      
      
-     } */
-     private boolean isRelated(Customer customer, ShipAddress shipAddress) {  
+ 
+     private boolean isRelated(Customer model, ShipAddress paramAddress) {  
          
-        if(shipAddress == null || customer == null)
+        if(paramAddress == null || model == null)
            EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(), 
-                   "isRelated", "Unexpected null value for a parameter: ShipAddress/Customer");
+                   "isRelated", "Unexpected null value for a parameter: ShipAddress or Customer");
          
-        if(customer.getCustomerId()
-                   .equals(shipAddress.getCustomerId().getCustomerId())) 
+        if(model.getCustomerId()
+                   .equals(paramAddress.getCustomerId().getCustomerId())) 
             return true;
         
         return false;      

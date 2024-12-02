@@ -26,7 +26,7 @@ public class PhoneFormatter implements org.springframework.format.Formatter<Stri
 
     @Override
     public String parse(String string, Locale locale) throws ParseException {     
-
+       System.out.println("PhoneFormatter#parse: entering parse method");
        return MaskUtil.stripEntry(string, formats);
        //return MaskUtil.stripByMask(string, formats[0]);
         

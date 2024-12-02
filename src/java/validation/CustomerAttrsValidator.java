@@ -221,12 +221,13 @@ public class CustomerAttrsValidator {
         } else if(validatorErrors.hasErrors()) {            
             
             throwIllegalArgument("evalCustomerBindingResult", 
-                    COMPARISON_ERR + ": Generated result has errors. " 
+                    COMPARISON_ERR + ": Generated result has errors. MVC Result has none. " 
                     + technical.toString());
             
         } else if(mvcErrors.hasErrors()){
             
-            adjustZipLookup(mvcErrors, COMPARISON_ERR + "MVC BindingResult has errors. ") ;   
+            adjustZipLookup(mvcErrors, 
+                    COMPARISON_ERR + "MVC BindingResult has errors. Validator has none. ") ;   
             
         }         
             

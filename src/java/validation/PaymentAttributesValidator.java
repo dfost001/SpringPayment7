@@ -8,6 +8,7 @@ package validation;
 import com.cart.Cart;
 import error_util.EhrLogger;
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -60,7 +61,7 @@ public class PaymentAttributesValidator implements Serializable {
         
          String message = msgPaymentOnly + msgPayerId;
         
-        //Throw an error if a PayerId has been obtained, and the Payment object is null or invalid
+        /* PayerId has been obtained, and the Payment object is null or invalid */
         if(!msgPaymentOnly.isEmpty() && msgPayerId.isEmpty())   
             
             EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(), 
@@ -92,15 +93,19 @@ public class PaymentAttributesValidator implements Serializable {
         
        String msgPayment = this.evaluatePayment(); //throws IllegalArgument for invalid initialization     
        
-       String errValidation = evalInvalidValues(cart,address, customer, result);          
+       String errValidation = "";          
        
        if(msgPayment.isEmpty()) {
-         if(!errValidation.isEmpty())
+         errValidation = evalInvalidValues(cart,address, customer, result);          
+       }
+       
+       if(!errValidation.isEmpty()) {
            EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(),
                    "validatePaymentStartedPaymentOnly", 
                    "Payment object is initialized and customer or cart is invalid: " + errValidation);
        }
-       else msgPayment += " " + errValidation;  //Concat validation to message for information      
+       
+      // else msgPayment += " " + errValidation;  //Concat validation to message for information      
            
        return msgPayment;
     }
@@ -191,6 +196,8 @@ public class PaymentAttributesValidator implements Serializable {
         String type = Customer.class.isAssignableFrom(address.getClass()) ?
                 "Customer" : "ShipAddress";
         
+        this.debugPrintPostalAddress(address);
+        
         DataBinder binder = new DataBinder(address);
         
         Errors validatorResult = binder.getBindingResult();
@@ -213,7 +220,7 @@ public class PaymentAttributesValidator implements Serializable {
         }  
         
         if(mvcResult == null) {    
-          message += ": MVC BindingResult is not in the session. ";
+          message += ": MVC BindingResult is not in the session (not comparing). ";
           return message;
         }
         //optional
@@ -226,25 +233,66 @@ public class PaymentAttributesValidator implements Serializable {
     }
     
     private void compareMvcBindingToValidator(String validatorErrMsg,
-            BindingResult mvcResult, Errors validatorResult) {          
-        
+            BindingResult mvcResult, Errors validatorResult) {  
+
+        EhrLogger.printToConsole(this.getClass(), 
+                "compareMvcBindingToValidator: attrsResult=", validatorErrMsg);       
+       
         if(!mvcResult.hasErrors() && !validatorResult.hasErrors())
             return;
+        
         StringBuffer validatorMsgBuffer = new StringBuffer(validatorErrMsg);
         
         StringBuffer mvcMsgBuffer = new StringBuffer();
         
         if(mvcResult.hasErrors() && validatorResult.hasErrors()) {
         
-              customerAttrsValidator.genFieldErrors("PaymentAttributesValidator#Customer", 
+              customerAttrsValidator.genFieldErrors("PaymentAttributesValidator#MvcResult", 
                 mvcMsgBuffer, mvcResult.getFieldErrors());
+              
+              debugPrintBuffers(mvcMsgBuffer, validatorMsgBuffer);
         
               customerAttrsValidator.compareBindingResultToValidatorResult(mvcResult, validatorResult, 
                  mvcMsgBuffer, validatorMsgBuffer); //throws IllegalArgument
         }
-        else EhrLogger.throwIllegalArg("PaymentAttibutesValidator",
+        else {
+            
+            customerAttrsValidator.genFieldErrors("PaymentAttributesValidator#MvcResult", 
+                mvcMsgBuffer, mvcResult.getFieldErrors());
+            
+            debugPrintBuffers(mvcMsgBuffer, validatorMsgBuffer);
+            
+            EhrLogger.throwIllegalArg("PaymentAttibutesValidator",
                     "compareMvcBindingToValidator",
-                    "MVC BindingResult and programmatic BindingResult do not compare.");   
+                    "MVC BindingResult and programmatic BindingResult do not compare.");  
+        }
+    }
+    
+    private void debugPrintBuffers(StringBuffer mvcBuffer, StringBuffer validatorBuffer) {
+        
+        String mvc = mvcBuffer.length() == 0 ? "Mvc has no errors. " : 
+                "Mvc BindingResult=" + mvcBuffer.toString();
+        
+        String attrs = validatorBuffer.length() == 0 ? "Validator has no errors. " : 
+                "Validator BindingResult=" + validatorBuffer.toString();
+        
+        EhrLogger.printToConsole(this.getClass(), "compareMvcBindertoValidator", mvc);
+        
+        EhrLogger.printToConsole(this.getClass(), "compareMvcBindertoValidator", attrs);
+    }
+    
+    private void debugPrintPostalAddress(PostalAddress addr){
+        
+        String line = addr.getAddressId().getAddress1();
+        String zip = addr.getAddressId().getPostalCode();
+        String city = addr.getAddressId().getCityId().getCityName();
+        String state = addr.getAddressId().getDistrict();
+        
+        String formatted = MessageFormat.format("line={0} zip={1} city={2} state={3}", 
+                line,zip,city, state);
+        
+        EhrLogger.printToConsole(this.getClass(), "validatePostalAddress", formatted);
+        
     }
     
 }

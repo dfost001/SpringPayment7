@@ -102,14 +102,14 @@ public class StringUtil {
         int i = 0;
         
         for(; i < tokensCmp.length; i++) {
-            if(i == tokensEntry.length)
+            if(i == tokensEntry.length) //If entry shorter than compareTo
                 return false;
             else if(!tokensCmp[i].contentEquals(tokensEntry[i]))
                 return false;
         }
        if(ignoreEntrySize)
            return true;
-       if(i < tokensEntry.length)
+       if(i < tokensEntry.length)//If entry longer than compareTo
            return false;
         return true;
     }

@@ -30,7 +30,7 @@ import view.attributes.ConstantUtil;
  *  
  */
 public class HttpSessionRequiredExceptionResolver 
-        extends AbstractHandlerExceptionResolver implements ExceptionResolverFilterConstants {   
+        extends AbstractHandlerExceptionResolver  {   
     
     /*
      * If a transaction has started, these attributes should never be null.
@@ -51,7 +51,8 @@ public class HttpSessionRequiredExceptionResolver
         EhrLogger.logException(ex, request, this.getClass());
     }
     
-   
+    private String Customer_Id_Attrib = "customerId" ;
+    
     @Override
     protected ModelAndView doResolveException
         (HttpServletRequest request, HttpServletResponse response, Object o, Exception ex) {             
@@ -105,14 +106,10 @@ public class HttpSessionRequiredExceptionResolver
 
                 String errMsg = EhrLogger.doError(this.getClass().getCanonicalName(),
                         "doResolveException", "Payment object is initialized and "
-                        + " required session attributes are null for url " + url);
-                
-                paymentAttrs.onPaymentError(this.getClass());
+                        + " required session attributes are null for url " + url);              
 
                 throw new IllegalArgumentException(errMsg, ex); //processed by error-page in web.xml
-
-            }
-            
+            }            
         }
         
        private void throwCartNull(HttpServletRequest request) {

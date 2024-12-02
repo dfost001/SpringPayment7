@@ -98,7 +98,7 @@ public class CityZipService {
                 + city;        
        
         
-        errors.rejectValue(CITY_FLD_PATH, null, err); //Global message
+        errors.rejectValue(CITY_FLD_PATH, null, err); 
        
     }
     

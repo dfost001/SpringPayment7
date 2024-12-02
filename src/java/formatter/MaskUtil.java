@@ -127,7 +127,7 @@ public class MaskUtil {
      */
     public static String format(String entry, String format) {
         
-        System.out.println("Entering MaskUtil#format");
+       // System.out.println("Entering MaskUtil#format");
         
         if(entry == null)
             entry = "";

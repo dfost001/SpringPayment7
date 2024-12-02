@@ -136,9 +136,11 @@ public class AddressValidatorUtil {
                 err = "Street-name following building number cannot be a suffix. ";
                 errors.rejectValue(fldName, "", err);
                 
-        } else if (StringUtil.allDigits(token[1])) {
+        } 
+        else if (StringUtil.allDigits(token[1])) {
             
-                err = "Street-name following building number cannot be all digits. ";
+                err = "Street-name cannot be all digits. "
+                        + "Is the building number spaced correctly?";
                 errors.rejectValue(fldName, "", err);
         }
         
