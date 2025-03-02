@@ -1,0 +1,98 @@
+  private void evalUnequalHashTimeCurrentBak(PostalAddress dbAddress, String formHash,
+             Long formTime, AddressTypeEnum type, Short id)
+                     throws UnequalHashTimeCurrentException {
+         
+         boolean valid = true;
+         
+         if(!this.isCurrentFormTime(formTime, customerAttrs.getFormTime(), "throwUnequlHashIfCurrent"))
+             return;
+         
+         String err = "Form time is equal to CustomerAttributes#formTime "
+                 + " and form hash is not equal to underlying storage. ";
+         
+         if(type.equals(AddressTypeEnum.ShipAddress) && 
+                 customerAttrs.isDeletedAddress(id)) {
+                 
+                 err += "Selected ShipAddress ID is in the deleted array. ";                 
+                 valid = false;
+                 
+         } else if(!customerHashCode(dbAddress).equals(formHash)){
+                 
+                 valid = false;
+         }
+         if(!valid)
+             throw new UnequalHashTimeCurrentException(err);
+         
+     } //end throw 
+     
+     private String throwIfUnequalHashTimeCurrent(PostalAddress dbAddress, String formHash,
+             Long formTime, AddressTypeEnum type, Short id)
+                     throws UnequalHashTimeCurrentException  {
+         
+         boolean valid = true;
+         
+         boolean timeCurrent = isCurrentFormTime(formTime, customerAttrs.getFormTime(), 
+                 "throwIfUnequalHashTimeCurrent");            
+         
+         String err = timeCurrent ? "Form time is equal to current time. " :
+               "Form time is less than to current time. Indicates request from browser cache. "   ;
+         
+         if(type.equals(AddressTypeEnum.ShipAddress) && 
+                 customerAttrs.isDeletedAddress(id)) {
+                 
+                 err += "Selected ShipAddress ID is in the deleted array. ";  
+                 return err;                
+                 
+         } else if(!customerHashCode(dbAddress).equals(formHash)){
+                 
+                 valid = false;
+         }         
+         if(!valid)
+             if(timeCurrent){
+                 err += "Form hash is not equal to underlying. " ;
+                 throw new UnequalHashTimeCurrentException(err);
+             }
+             else { 
+               err += "Information for "  + dbAddress.getFirstName() +
+                       " " + dbAddress.getLastName() + " has changed. ";
+                
+             }
+            return err;
+         
+     } //end throw 
+      private String throwIfUnequalHashTimeCurrent(PostalAddress dbAddress, String formHash,
+             Long formTime, AddressTypeEnum type, Short id)
+                     throws UnequalHashTimeCurrentException  {
+         
+         boolean valid = true;
+         
+         boolean timeCurrent = isCurrentFormTime(formTime, customerAttrs.getFormTime(), 
+                 "throwIfUnequalHashTimeCurrent");            
+         
+         String err = timeCurrent ? "Form time is equal to current time. " :
+               "Form time is less than to current time. Indicates request from browser cache. "   ;
+         
+         if(type.equals(AddressTypeEnum.ShipAddress) && 
+                 customerAttrs.isDeletedAddress(id)) {
+                 
+                 err += "Selected ShipAddress ID is in the deleted array. ";  
+                 return err;                
+                 
+         } else if(!customerHashCode(dbAddress).equals(formHash)){
+                 
+                 valid = false;
+         }         
+         if(!valid)
+             if(timeCurrent){
+                 err += "Form hash is not equal to underlying. " ;
+                 throw new UnequalHashTimeCurrentException(err);
+             }
+             else { 
+               err += "Information for "  + dbAddress.getFirstName() +
+                       " " + dbAddress.getLastName() + " has changed. ";
+                
+             }
+            return err;
+         
+     } //end throw 
+     

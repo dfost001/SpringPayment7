@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import restAddressService.AddressControllerRest;
 import view.attributes.CustomerAttributes;
@@ -64,18 +66,12 @@ public class CustomerRequestController implements Serializable {
     
     private String idErrorVal;
     
-    private String idErrorMsg; 
-   
-    
-  /*  @ModelAttribute(value="cityList")
-    public void getCityList(ModelMap map) throws DataAccessException{ 
-        
-          List<City> cityList = customerMgr.getCities();
-          
-          map.addAttribute("cityList", cityList);
-        
-    }*/
-    
+    private String idErrorMsg;     
+ 
+    /*
+     * Note: City list is retrieved dynamically via JavaScript depending
+     * on Country selection
+     */
     @ModelAttribute(value="statesList")
     public void getStatesList(ModelMap map) throws DataAccessException {
         
@@ -239,7 +235,14 @@ public class CustomerRequestController implements Serializable {
             System.out.println("CustomerRequestController: model contains 'customer'");
         else
            System.out.println("CustomerRequestController: model DOES NOT contain 'customer'");
-    }
+    } 
+    
+   /* private void sessionContainsCustomer() {
+        
+        HttpServletRequest request = 
+                (HttpServletRequest)RequestContextHolder
+                        .currentRequestAttributes()).getRequest();
+    }*/
     
 }//end class
     

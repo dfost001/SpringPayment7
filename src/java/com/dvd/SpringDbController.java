@@ -23,6 +23,7 @@ import servletContext.ApplicationAttributes;
 import view.attributes.CustomerAttributes;
 import view.attributes.PaymentAttributes;
 //import servletContext.DebugApplicationContext;
+
 /**
  *
  * Can eliminate initialization check at navigateHome
@@ -37,7 +38,7 @@ public class SpringDbController implements Serializable{
     
     private final FilmManager filmManager;         
     
-    private final PageCalculator calculator;
+    private final PageCalculator calculator;  
     
     @Autowired
     private ConstantUtil constants;
@@ -62,13 +63,17 @@ public class SpringDbController implements Serializable{
         
         this.filmManager = filmManager;
         
-        this.calculator = calculator;
+        this.calculator = calculator;        
         
         int recordCount = filmManager.getRecordCount();
         
         calculator.initialize(recordCount);
         
         this.assignFilmList();
+    }
+    
+    private void handleTestDb() {        
+            filmManager.testRecoverableDataAccessException();       
     }
     
     /*

@@ -40,20 +40,20 @@ public class ExceptionExampleController {
     private PageCalculator calculator;  
     
     @Autowired
-    private FilmManager filmManager;
-   
+    private FilmManager filmManager;   
     
     private List<String> nullList;
 
     public List<String> getNullList() {
         return nullList;
-    }
+    } 
+    
+    private String emptyString = new String();
 
-    public void setNullList(List<String> nullList) {
-        this.nullList = nullList;
-    }   
-    
-    
+    public String getEmptyString() {
+        return emptyString;
+    }
+        
     @RequestMapping(value="/exception/example/view", method=RequestMethod.GET)
     public String requestExampleView() {
         
@@ -99,7 +99,8 @@ public class ExceptionExampleController {
     @RequestMapping(value="/exception/example/uninitializedProperty", method=RequestMethod.POST)
     public void doUninitializedProperty() {
         
-         BeanUtil.throwFieldsNotInitialized(this.getClass(), this, "nullList");
+        BeanUtil.throwFieldsNotInitialized(this.getClass(), this, "nullList", "emptyString");
+        // BeanUtil.evalNullOrEmptyFields(this.getClass(), this);//NoSuchMethod for autowired dependencies
     }
     
     @RequestMapping(value="/exception/example/missingParameter", method=RequestMethod.POST)

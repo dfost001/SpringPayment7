@@ -88,7 +88,7 @@
                             </c:if>
 
                         <div class="customerContainer">
-                           <form action="<c:url value='/shippingAddress/customerAction/${status.index}'/>" method="post" >
+                           <form action="<c:url value='/shippingAddress/customerAction/${id}_${status.index}'/>" method="post" >
                             <input type="hidden" name="hashCode" value="${shippingAddressController.hashList[status.index]}" />
                             <input type="hidden" name="selectedAddress" value="${id}_${status.index}" />
                             <input type="hidden" name="addressNameUpdated" 

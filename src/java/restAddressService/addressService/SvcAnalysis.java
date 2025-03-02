@@ -8,6 +8,7 @@ import restAddressService.AjaxRequest;
 
 public class SvcAnalysis implements Serializable{
 	  private List<FieldEhr> errors = null; 
+          private Boolean valid = false;
 	  private String zip = ""; //reformatted postalCode
 	  private String zipPlus4 = "";
 	  private String city = "";
@@ -16,8 +17,7 @@ public class SvcAnalysis implements Serializable{
 	  private String stateAbbrev = "";
           private boolean confirmRequired = false;
           private Short cityId = null;
-          private boolean cityInsertionRequired = false;
-	  private Boolean valid = false;
+          private boolean cityInsertionRequired = false;	  
           private Boolean continueOnInvalid = false;   
           private String validWarningMessage = "";
           private List<String> svcMessages;        

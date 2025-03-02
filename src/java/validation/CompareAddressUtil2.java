@@ -89,7 +89,7 @@ public class CompareAddressUtil2 implements Serializable {
                          selectedShipAddress, invokingTitle); //Throws if Id's not equal
                  return ; 
          }        
-         
+         this.throwInconsistentSessionToDbDeletion(modelCustomer, (ShipAddress)selectedShipAddress);
          this.throwCompareSessionShipAddressToDb(modelCustomer, 
                  (ShipAddress)selectedShipAddress,
                   invokingTitle);       
@@ -187,53 +187,56 @@ public class CompareAddressUtil2 implements Serializable {
          public void throwCompareSessionShipAddressToDb(Customer customer, 
              ShipAddress selected, String invokingTitle)
                    throws SelectedShipAddressCompareException {
-         
-         String friendlyDeleted = "Selected delivery address has been deleted. Please reselect.";  
+             
+         String previousName = selected.getFirstName() + " " + selected.getLastName() + ": ";           
          
          String friendlyUpdated = "Delivery address has changed. Please reselect.";
          
-         String technical = "ShipAddress may have been updated/deleted and "
-                 + "not selected from selectShippingAddress.jsp";             
+         String technicalUpdated = "ShipAddress " + selected.getShipId() +
+                 " may have been updated and "
+                 + "not reselected from selectShippingAddress.jsp. ";        
          
-         ShipAddress shipAddressDb = this.findDbShipAddress(customer.getShipAddressList(), selected) ;
+           ShipAddress shipAddressDb = this.findDbShipAddress(customer.getShipAddressList(), selected) ;
          
-         this.checkInconsistentSelectedFlag(selected);
+           String hashDb = customerHashCode(shipAddressDb);
          
-         if (shipAddressDb == null) {            
+           String hashSelected =customerHashCode(selected);       
+         
+           if(hashDb.compareTo(hashSelected) != 0) {
              
-            if (!customerAttrs.isDeletedAddress(selected.getShipId())) {
-               
-                String err = "Selected ShipAddress is not in customer relationship. " +
-                         "Not added to deleted array or deleted array was removed from session on CancelLogin?";                 
-                 this.throwIllegalArgumentException("throwCompareSessionShipAddressToDb", err);                
-                 
-           } else if(!this.isRelated(customer, customerAttrs.getDeletedAddress(selected.getShipId()))) { //In deleted array and not related
-               
-               String err = "Selected ShipAddress is in the deleted array and not related to current Customer. " +
-                         "Selection probably not removed from session when Login cancelled. ";                 
-               this.throwIllegalArgumentException("throwCompareSessionShipAddressToDb", err);
-               
-           } else {
-
-                 String updatedName = selected.getFirstName() + " "
-                         + selected.getLastName()
-                         + " has been deleted. ";                 
-                 throw initCompareException(friendlyDeleted, technical,
-                         updatedName, invokingTitle);
-             }
-         } //end null evaluation           
+             throw initCompareException(previousName + " " + friendlyUpdated, 
+                     previousName + " " + technicalUpdated, 
+                     previousName, invokingTitle);    
+           }
+        } 
+        
+         public void throwInconsistentSessionToDbDeletion(Customer customer, ShipAddress selected) {
+             
+            String technicalDeleted = "Selected delivery address " 
+                 + selected.getShipId() + " cannot be retrieved. ";  
+            
+            String previousName = selected.getFirstName() + " " + selected.getLastName();   
          
-         String hashDb = customerHashCode(shipAddressDb);
+            ShipAddress shipAddressDb = this.findDbShipAddress(customer.getShipAddressList(), selected) ;
          
-         String hashSelected =customerHashCode(selected);       
+            this.checkInconsistentSelectedFlag(selected);
          
-         if(hashDb.compareTo(hashSelected) != 0) {
-             String updatedName = selected.getFirstName() + " " 
-                     + selected.getLastName() + " has changed. ";
-             throw initCompareException(friendlyUpdated, technical, 
-                     updatedName, invokingTitle);    
+            if (shipAddressDb == null) {    
+             
+              String msg = ""; 
+             
+              if (!customerAttrs.isDeletedAddress(selected.getShipId())) {
+               
+                msg = "Selected ShipAddress is not in customer relationship. " +
+                         "Not added to deleted map, and not removed from the session. ";                  
+              } else {
+                msg = "Selected in deleted map and not removed from the session on delete. " ;
+              }
+              String err = previousName + " " + technicalDeleted + msg ;
+           
+              this.throwIllegalArgumentException("throwInconsistentSessionToDbDeletion", err);
          }
-     }  
+      }    
      
       /*
        * Fix: Assumes non-null ShipAddress
@@ -355,16 +358,16 @@ public class CompareAddressUtil2 implements Serializable {
               AddressTypeEnum.ShipAddress, paramShipId); 
           if(!isCurrentTime)
               throw new ExpiredEditViewRequest(info);
-          else if(info != null) { //Form hash not equal to underlying and form time equal to underlying
+          else if(info != null) { //Form hash not equal to underlying
               info = this.doError("evalShipIdParam", info) ;
               throw new UnequalHashTimeCurrentException(info);
           }
       }  
   }
     /*
-     * We want to keep the message if time is not current and return null if current
-     * Caller will throw ExpiredEditViewRequest whether or not message is empty.
-     * IllegalArgument will only be thrown if message is null (not equal to underlying)
+     * We want to keep the message unless formHash is valid - equal to underlying
+     * Caller will throw ExpiredEditViewRequest depending on whether or not message is empty.
+     * IllegalArgument will only be thrown if message is non-null (not equal to underlying)
      * and time is current
      */
        private String genUnequalHashMessage(PostalAddress dbAddress, String formHash,
@@ -374,7 +377,7 @@ public class CompareAddressUtil2 implements Serializable {
          boolean valid = true;
          
          boolean timeCurrent = isCurrentFormTime(formTime, customerAttrs.getFormTime(), 
-                 "throwIfUnequalHashTimeCurrent");            
+                 "genUnequalHashMessage");            
          
          String err = timeCurrent ? "Form time is equal to current time. Indicates development error. " :
                "Expired request. Indicates request from browser cache. "   ;
@@ -395,7 +398,7 @@ public class CompareAddressUtil2 implements Serializable {
          }            
          if (!timeCurrent){
              return err;
-         } else if (!valid){
+         } else if (!valid){ //time current
              return err;
          } else { //timeCurrent and valid
              err = null;

@@ -23,8 +23,10 @@
     <body>
         <div class="container">
          <h2>Test Ajax Error</h2>
-         <h2>${message}</h2>
-            <h2>Contact: 123-1234</h2><br/>
+         <h2>Application Error: Please contact support to complete your order.</h2>
+         <h2>Contact: 123-1234</h2><br/>
+         <h5>${message}</h5>
+        
             <c:if test="${addressType eq 'Customer' and recoverable}">
                 <form action="<c:url value='/customerRequest' />" method="post"> 
                     <div class="alert alert-danger">
@@ -49,7 +51,7 @@
                     <a href="<c:url value='/customerSupport'/>">Support</a></h4>
                 <br/>   
                 <h4>Return to home page. <a href='<c:url value="/home" />'>Home</a></h4>
-            
+                
             <hr/>
             <h5 class="plus" >Support:</h5>            
             <div style="display:none">

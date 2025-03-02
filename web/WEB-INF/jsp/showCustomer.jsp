@@ -47,8 +47,8 @@
                 <div>
                    <span class="customerCaption">Customer Information</span>  
                 </div>
-                <div>${pageContext.request.requestURL}<br/>
-                    ${customerAttributes.cancelCustEditUrl}
+                <div style="width:400px;" class="alert alert-danger">
+                   Please do not use the browser refresh.
                 </div>
                
                     <div class="myPanel">

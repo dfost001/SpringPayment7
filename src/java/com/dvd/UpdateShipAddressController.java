@@ -12,10 +12,12 @@ import error_util.EhrLogger;
 import exceptions.ConfirmCartException;
 import httpUtil.HttpException;
 import java.util.Date;
+import java.util.Objects;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import model.customer.AddressTypeEnum;
 import model.customer.Customer;
+import model.customer.PostalAddress;
 import model.customer.ShipAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -69,6 +71,8 @@ public class UpdateShipAddressController {
     private BindingResult shipAddressBindingResult;  // used to display global view errors 
     
     private String titleError;
+    
+    private HttpSession session;
     
     @Autowired
     private CustomerManager customerManager;
@@ -196,7 +200,9 @@ public class UpdateShipAddressController {
             ModelMap map, 
             HttpSession session,
             RedirectAttributes redirectAttrs)
-                throws ConfirmCartException, RecordNotFoundException {      
+                throws ConfirmCartException, RecordNotFoundException {     
+        
+        this.session = session;
        
         Customer customer = this.checkNullOrInvalidCustomer(session); 
         
@@ -307,12 +313,13 @@ public class UpdateShipAddressController {
        
         shipAddress.setCustomerId(customer); //bind Customer before cloning
         
-        ShipAddress cloned = (ShipAddress)new CloneUtil().cloneCustomer(shipAddress);        
-       
+        ShipAddress cloned = (ShipAddress)new CloneUtil().cloneCustomer(shipAddress);          
         
         Customer updated = customerManager.deleteShipAddress(shipAddress, customer);        
         
         customerAttrs.addDeletedAddress(cloned);
+        
+        this.removeFromSessionIfSelected(cloned);
         
         customerAttrs.doAddressUpdatedMessage(cloned, CustomerAttributes.MessageType.DELETED,
                 "Successfully deleted.");
@@ -324,6 +331,25 @@ public class UpdateShipAddressController {
         return "redirect:/shippingAddress/showSelect";
         
     }
+    
+    private void removeFromSessionIfSelected(ShipAddress deletedShipTo) {
+        
+        PostalAddress sessPostal = (PostalAddress)this.session
+                .getAttribute(ShippingAddressController.SELECTED_POSTALADDRESS);
+        if(sessPostal == null) return;
+        
+        if(!ShipAddress.class.isAssignableFrom(sessPostal.getClass())) return;
+        
+        ShipAddress sessShipAddress = (ShipAddress)sessPostal;
+        
+        if(sessShipAddress.getShipId()
+                .intValue() != deletedShipTo.getShipId().intValue()) return;  
+        
+        this.session.removeAttribute(ShippingAddressController.SELECTED_POSTALADDRESS);
+        this.customerAttrs.setShipAddressSelected(false);    
+        
+    }
+    
   
      private void assignErrorAttributes(String updateType, BindingResult shipResult){
          

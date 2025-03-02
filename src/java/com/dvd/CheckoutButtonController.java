@@ -68,15 +68,7 @@ public class CheckoutButtonController implements Serializable{
        
        this.evalInconsistentSessionState(session);
        
-       boolean current = compareUtil.isCurrentFormTime(loginTime, 
-               customerAttrs.getLoginTime(), "CheckoutButtonController#checkoutRequest");
-       
-       if(!current) {
-           String msg = MessageFormat.format("Parameter={0} : Session={1}", loginTime, 
-                   customerAttrs.getLoginTime());
-           customerAttrs.updateLoginTime();
-           throw new ExpiredLoginRequest(msg);  
-       }  
+       this.evalExpiredLoginTime(loginTime);
        
        customerAttrs.updateLoginTime();
        
@@ -97,6 +89,44 @@ public class CheckoutButtonController implements Serializable{
                        "checkoutRequest");
        }
        return url; 
+    }
+    private void evalInconsistentSessionState(HttpSession session) {
+        
+        Customer customer  = (Customer)session.getAttribute(ConstantUtil.CUSTOMER_SESSION_KEY) ;
+        
+        PostalAddress postal = (PostalAddress)session.getAttribute(ShippingAddressController.SELECTED_POSTALADDRESS); 
+        
+        BindingResult result = (BindingResult)session.getAttribute(ConstantUtil.CUST_BINDINGRESULT_KEY);
+        
+        String msg = "";
+        
+        if(customer == null) {
+            if(postal != null)
+                 msg = "Customer is null and Selected delivery address has a value. ";
+            if(result != null)
+                 msg += "Customer is null and BindingResult has a value. ";
+        } else if(postal != null && result == null)
+                 msg = "Delivery address selected and BindingResult is null";
+        
+        if(!msg.isEmpty()) {
+           
+                this.throwIllegalArg(msg, "evalInconsistentNullCustomerState");
+            
+        }          
+    } 
+    
+    private void evalExpiredLoginTime(long loginTime) throws ExpiredLoginRequest {
+        
+       boolean current = compareUtil.isCurrentFormTime(loginTime, 
+               customerAttrs.getLoginTime(), "CheckoutButtonController#checkoutRequest");
+       
+       if(!current) {
+           String msg = MessageFormat.format("Parameter={0} : Session={1}", loginTime, 
+                   customerAttrs.getLoginTime());
+           customerAttrs.updateLoginTime();
+           throw new ExpiredLoginRequest(msg);  
+       }  
+        
     }
     
     private String processFormRequest(String cmdValue, HttpSession session) {
@@ -121,15 +151,15 @@ public class CheckoutButtonController implements Serializable{
         
          Customer customer = (Customer)session.getAttribute(ConstantUtil.CUSTOMER_SESSION_KEY);    
          
-         BindingResult bindingResult = (BindingResult)session.getAttribute(ConstantUtil.CUST_BINDINGRESULT_KEY);          
-         
-         if(customer == null) {           
+        if(customer == null) {           
              
              this.throwIllegalArg(
                      "Appears that form not rendered and Customer is null. "
                      + "Problem with render of command button value on form?",
                      "processButtonRequest") ;   
          }        
+         
+         BindingResult bindingResult = (BindingResult)session.getAttribute(ConstantUtil.CUST_BINDINGRESULT_KEY);     
          
          if(bindingResult == null) //Must evaluate before invoking CustomerAttrsValidator
              return this.customerEditUrl;           
@@ -161,33 +191,7 @@ public class CheckoutButtonController implements Serializable{
          }
         
          return false;
-    }
-    
-    private void evalInconsistentSessionState(HttpSession session) {
-        
-        Customer customer  = (Customer)session.getAttribute(ConstantUtil.CUSTOMER_SESSION_KEY) ;
-        
-        PostalAddress postal = (PostalAddress)session.getAttribute(ShippingAddressController.SELECTED_POSTALADDRESS); 
-        
-        BindingResult result = (BindingResult)session.getAttribute(ConstantUtil.CUST_BINDINGRESULT_KEY);
-        
-        String msg = "";
-        
-        if(customer == null) {
-            if(postal != null)
-                 msg = "Customer is null and Selected delivery address has a value. ";
-            if(result != null)
-                 msg += "Customer is null and BindingResult has a value. ";
-        } else if(postal != null && result == null)
-                 msg = "Delivery address selected and BindingResult is null";
-        
-        if(!msg.isEmpty()) {
-           
-                this.throwIllegalArg(msg, "evalInconsistentNullCustomerState");
-            
-        }          
-    } 
-    
+    }    
     private void throwEmptyCart() {
          if(cart.mapAsList().isEmpty())
             this.throwIllegalArg("Checkout button rendered with empty cart", "throwEmptyCart");

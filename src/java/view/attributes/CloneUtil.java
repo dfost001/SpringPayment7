@@ -83,11 +83,7 @@ public class CloneUtil {
                 
                // value = fixTimestampToDate(value, parameterType);
 
-                setter.invoke(cloned, value);
-                
-              
-
-            }
+                setter.invoke(cloned, value);            }
         } catch (Exception ex) {
              throw new IllegalArgumentException(ex.getMessage(), ex);
         }

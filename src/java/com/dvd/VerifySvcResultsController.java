@@ -27,8 +27,6 @@ import org.springframework.web.context.WebApplicationContext;
 import validation.CompareAddressUtil2;
 import validation.CustomerAttrsValidator;
 import view.attributes.AddressSvcResult;
-import view.attributes.CustomerAttributes;
-
 /**
  *
  * @author Dinah

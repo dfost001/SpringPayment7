@@ -109,7 +109,9 @@ var getStatesList = function(){
         
         var deferred = $.Deferred();
         
-        var query = "?media=json";
+       // var query = "?media=xml";
+       
+       var query = "?media=json";
         
         var url = "resources/verifyAddress/" + addressType + query;
         
@@ -137,12 +139,16 @@ var getStatesList = function(){
           scrollLeft: 0});
       
   } ; 
-
+/*
+ * 
+ * To do: If xhr.responseText is HTML, text requires encoding if uploaded as a form parameter
+ */
 var doError = function (xhr) {   
     
-    if(xhr.getResponseHeader("Content-Type").includes("json"))
+    if(xhr.getResponseHeader("Content-Type").includes("json")) {
            var obj = JSON.parse(xhr.responseText);
-       
+           console.log("obj=" + xhr.responseText);
+    }   
 
     /* Set hidden parameters uploaded to AjaxErrorController */
     if (obj && obj.exceptionName) {
@@ -152,12 +158,22 @@ var doError = function (xhr) {
             console.log(key + "=" + value);
         });
     } else {
-        $("#messages").val(xhr.responseText);
+       // $("#messages").val(xhr.responseText); //HTML requires unescaping
+        console.log("responseText=" + xhr.responseText); //To do
     }
 
     $("#xhrStatus").val(xhr.status);
     
-    var addressTypeEnum = $("#addressTypeEnum").val();
+    if(xhr.status === 406) {
+        $("#exceptionName").val("org.springframework.web.HttpMediaTypeNotAcceptableException") ;
+        $("#recoverable").val("false");
+        $("#trace").val("Not Available");
+        $("#url").val(xhr.responseURL); //empty
+        $("#url").val("resources/verifyAddress/" + "addressType?media=");
+        $("#messages").val("Developer error: Please set Accept request-header to application/json");
+    }
+    
+    var addressTypeEnum = $("#addressTypeEnum").val();  
     
     $("#errAddressType").val(addressTypeEnum);
     
@@ -170,7 +186,7 @@ var doError = function (xhr) {
 
     $(selector).fadeTo(500, .4);
     
-    $("#alert").fadeIn(500);
+    $("#alert").fadeIn(500);    
     
     scrollToTop();
 

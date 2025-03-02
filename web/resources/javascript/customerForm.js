@@ -226,17 +226,20 @@ $(document).ready(
             
             scrollToMessageList();
             
-            if($("#countrySelect").val() !== "") {
+            if($("#countrySelect").val() === "") {
+                $("#countrySelect").val(103); //Can set selected to String or Number
+            }
+              
+            retrieveCitiesByCountryId(); //doSelected = true            
+        } // end ready function parameter
+);//end ready
+
+  /*if($("#countrySelect").val() !== "") {
               
               retrieveCitiesByCountryId(); //doSelected = true            
             
             }  
             else {
                 showState(false);
-            }
-                    
-        } // end ready function parameter
-);//end ready
-
-
+            }*/
 

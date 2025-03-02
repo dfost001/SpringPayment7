@@ -41,6 +41,8 @@ public class AddressSvcResult {
     @Autowired
     private CustomerAttributes customerAttrs;   
     
+    /* Properties */
+    
     private SvcAnalysis svcAnalysisCustomer; //response object returned to javascript client
     
     private SvcAnalysis svcAnalysisShipAddress;
@@ -53,21 +55,22 @@ public class AddressSvcResult {
     
     private AddressResult addressResultShipAddress;;
     
-    private AddressSvcResult.ViewStyle viewStyle;  
-    
-    /*
-     * disableContinue
-     * Initialization is important, because evalSvcResult does not set
-     * to false 
-     */    
+    private AddressSvcResult.ViewStyle viewStyle;      
+   
     private boolean disableContinue = false;  //Initialization is important
     
+    /* Displayed messages */
+    
     private final String selectedNotEqualValidated = "<font color='#EA5200'>" +
-            "Selected/Submitted address differs from the service return. You may have edited. Please re-verify." +
+            "Selected/Submitted address differs from the address verified. You may have edited. Please re-verify." +
             "</font>";   
     
-    private final String invalidAllEqualReverify = "<font color='#EA5200'>" +
-            "Your validated and selected delivery address are equal and not valid. Please edit and re-verify." +
+    private final String invalidSelectedEquals = "<font color='#EA5200'>" +
+            "Your verified and selected delivery address are equal and not valid. Please edit and re-verify." +
+            "</font>";
+    
+    private final String invalidMessage = "<font color='#EA5200'>" +
+            "Your address, as uploaded, is not considered deliverable by the service: " +
             "</font>";
     
     private final String selectedNotEqualUploaded = "<font color='#EA5200'>" +
@@ -78,11 +81,7 @@ public class AddressSvcResult {
     private final String uploadedNotEqualValidated = "<font color='#EA5200'>" +
             "Your uploaded address differs from the validated format. You may have edited to valid. "
             + "Please re-verify." +
-            "</font>"; //Invalid. Maybe re-verify will change match-code. No example of change.
-    
-    private final String invalidMessage = "<font color='#EA5200'>" +
-            "Your address, as uploaded, is not considered deliverable by the service: " +
-            "</font>";
+            "</font>"; //Invalid. Maybe re-verify will change match-code. No example of change.  
     
      private final String validMessage = "<font color='#006600'>" +
             "Your address has been confirmed by a service. " +
@@ -229,7 +228,7 @@ public class AddressSvcResult {
            mvcAnalysis.add(this.disabledMessage);               
            this.disableContinue = true;
            if(!this.requestedEqualsSelected(svcAnalysis, address)) {
-               mvcAnalysis.remove(0);
+               mvcAnalysis.remove(0); //May not be relevant to selected
                mvcAnalysis.add(this.selectedNotEqualUploaded);              
            }
           
@@ -247,9 +246,9 @@ public class AddressSvcResult {
             mvcAnalysis.add(this.continueWithInvalidMessage);
             this.debugPrintMvc(mvcAnalysis);
             
-        } else  { //continueOnInvalid is false and selected equals invalid validatedFormat
-           
-            mvcAnalysis.add(this.invalidAllEqualReverify);
+        } else  { //continueOnInvalid is false and selected equals invalid validatedFormat          
+            
+            mvcAnalysis.add(this.invalidSelectedEquals);
             mvcAnalysis.add(this.disabledMessage);              
             this.disableContinue = true;            
         }
@@ -285,10 +284,7 @@ public class AddressSvcResult {
         }     
         return false;       
     }
-    /*
-     * Note: If there is no validated format, we want to disable the continue so
-     * return false
-     */
+   
     private boolean compareSelectedToValidatedStreetFormat(SvcAnalysis svc, PostalAddress address) {
         
         String validCompare = svc.getValidatedStreetLineFormat();

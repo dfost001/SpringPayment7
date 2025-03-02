@@ -48,7 +48,7 @@ public class LoginIdChangedException extends Exception {
     @Override
     public String getMessage() {
         
-        String message = MESSAGE + ". From " + prevLogin + " to "
+        String message = MESSAGE + " from " + prevLogin + " to "
                 + currentLogin
                 + ". " +  addressType.name() + " expired.";
         

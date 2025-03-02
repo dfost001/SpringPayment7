@@ -54,7 +54,7 @@ public class AjaxErrorController {
             
         } else if(xhrStatus == 406) { 
             
-            message = "<p style='font-size:12pt'>(Status=406)</p>" ;   
+            message = messages;
             
         } else if(exceptionName.toLowerCase().contains("data")){ //See exception_handler.DataExceptionResolver
             
@@ -65,11 +65,7 @@ public class AjaxErrorController {
             evalRecoverableHttpException(exceptionName, model,
                   recoverable, status, addressType);      
             
-        }               
-         message = "An application error has occurred. "
-                 + "Please contact support to complete your order."
-                 + message;
-         
+        }              
          if(!model.containsKey("message")) {
              model.addAttribute("message" , message);       
          }   
@@ -177,16 +173,18 @@ public class AjaxErrorController {
     } */    
     
    /*
-    * Serialize as Html since Acceptable type is not supported
+    * Serialize as Html (not MAV) since JSON is not set as Acceptable header
+    * EL not resolved when HTML sent to socket output
     */ 
-   @RequestMapping(value="/ajaxErrorController/handleNotAcceptable", method=RequestMethod.GET)
-    public String handleNotAcceptableType(ModelMap map, HttpServletRequest request, HttpServletResponse response) {
+   @RequestMapping(value="/ajaxErrorController/handleNotAcceptable", method=RequestMethod.POST)
+    public String handleNotAcceptableType(ModelMap map, HttpServletRequest request, 
+            HttpServletResponse response) {
         
-        map.addAttribute("message", "Please set Media parameter or Accept header to application/json.");
+       // String url = request == null ? "Edit Form" : request.getRequestURL().toString(); --None      
         
         response.setStatus(406);
         
-        response.setContentType("text/html");
+        response.setContentType("text/html");       
         
         return "error/mediaNotSupported";
     }

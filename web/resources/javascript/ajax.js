@@ -38,7 +38,10 @@ var doData = function (url, myData, method) {
     ); //ajax
     return request;
 }; //end doData
-                
+/*
+ * dataType: "json" Evaluates the response as JSON and returns a JavaScript object.
+ * Also used as the Accept header value
+ */                
 var doData2 = function (relUrl, data, method) {
     
     console.log("Testing cache control");

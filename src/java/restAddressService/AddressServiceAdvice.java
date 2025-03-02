@@ -18,8 +18,6 @@ import error_util.EhrLogger;
 import httpUtil.HttpClientException;
 import httpUtil.HttpConnectException;
 import httpUtil.HttpException;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
-
 
 /**
  *

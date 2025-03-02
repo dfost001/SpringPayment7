@@ -1,0 +1,54 @@
+/*
+ * Revised to throw Runtime if selected ShipAddress has been deleted, since now
+ * I remove from session on deletion.
+ */ 
+public void throwCompareSessionShipAddressToDb(Customer customer, 
+             ShipAddress selected, String invokingTitle)
+                   throws SelectedShipAddressCompareException {
+         
+         String friendlyDeleted = "Selected delivery address has been deleted. Please reselect.";  
+         
+         String friendlyUpdated = "Delivery address has changed. Please reselect.";
+         
+         String technical = "ShipAddress may have been updated/deleted and "
+                 + "not selected from selectShippingAddress.jsp";             
+         
+         ShipAddress shipAddressDb = this.findDbShipAddress(customer.getShipAddressList(), selected) ;
+         
+         this.checkInconsistentSelectedFlag(selected);
+         
+         if (shipAddressDb == null) {            
+             
+            if (!customerAttrs.isDeletedAddress(selected.getShipId())) {
+               
+                String err = "Selected ShipAddress is not in customer relationship. " +
+                         "Not added to deleted array or deleted array was removed from session on CancelLogin?";                 
+                 this.throwIllegalArgumentException("throwCompareSessionShipAddressToDb", err);                
+                 
+           } else if(!this.isRelated(customer, customerAttrs.getDeletedAddress(selected.getShipId()))) { //In deleted array and not related
+               
+               String err = "Selected ShipAddress is in the deleted array and not related to current Customer. " +
+                         "Selection probably not removed from session when Login cancelled. ";                 
+               this.throwIllegalArgumentException("throwCompareSessionShipAddressToDb", err);
+               
+           } else {
+
+                 String updatedName = selected.getFirstName() + " "
+                         + selected.getLastName()
+                         + " has been deleted. ";                 
+                 throw initCompareException(friendlyDeleted, technical,
+                         updatedName, invokingTitle);
+             }
+         } //end null evaluation           
+         
+         String hashDb = customerHashCode(shipAddressDb);
+         
+         String hashSelected =customerHashCode(selected);       
+         
+         if(hashDb.compareTo(hashSelected) != 0) {
+             String updatedName = selected.getFirstName() + " " 
+                     + selected.getLastName() + " has changed. ";
+             throw initCompareException(friendlyUpdated, technical, 
+                     updatedName, invokingTitle);    
+         }
+     }  

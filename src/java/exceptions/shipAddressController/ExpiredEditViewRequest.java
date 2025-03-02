@@ -9,10 +9,10 @@ package exceptions.shipAddressController;
  *
  * @author dinah
  */
-public class ExpiredEditViewRequest extends Exception {
-    
-    public ExpiredEditViewRequest() {
-        
-        super("ShipAddressController#doCustomerAction: expired");
-    }
+public class ExpiredEditViewRequest extends Exception {          
+   
+    public ExpiredEditViewRequest(String info) {
+         super(info);
+       
+    }   
 }

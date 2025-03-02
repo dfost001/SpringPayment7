@@ -138,7 +138,7 @@ public class CustomerController implements Serializable {
         
         redirectAttrs.addFlashAttribute(ConstantUtil.CUSTOMER_SESSION_KEY, customer);
         
-         redirectAttrs.addFlashAttribute(ConstantUtil.CUST_BINDINGRESULT_KEY, bindingResult);    
+        redirectAttrs.addFlashAttribute(ConstantUtil.CUST_BINDINGRESULT_KEY, bindingResult);    
       
         
         return "redirect:" + returnUrl;

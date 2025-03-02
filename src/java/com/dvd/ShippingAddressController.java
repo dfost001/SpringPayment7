@@ -5,7 +5,6 @@ package com.dvd;
 
 import com.cart.Cart;
 import dao.exception.CustomerNotFoundException;
-import error_util.EhrLogger;
 import exceptions.ConfirmCartException;
 import exceptions.shipAddressController.ExpiredEditViewRequest;
 import exceptions.SelectedShipAddressCompareException;
@@ -34,6 +33,7 @@ import validation.CompareAddressUtil2;
 import validation.CustomerAttrsValidator;
 import view.attributes.ConstantUtil;
 import view.attributes.CustomerAttributes;
+import error_util.EhrLogger;
 
 /**
  * Change view to create a form for each address in list, then the field values 
@@ -159,9 +159,7 @@ public class ShippingAddressController {
             HttpSession session, ModelMap map)
             throws ConfirmCartException,
             SelectedShipAddressCompareException,
-            CustomerNotFoundException,
-            LoginIdChangedException {    
-       
+            CustomerNotFoundException {            
         
         this.processCustomer(customer, bindingResult, SelectShipAction.Show);
         
@@ -172,9 +170,9 @@ public class ShippingAddressController {
         customerAttrs.setFormTime();
         
         EhrLogger.printToConsole(this.getClass(),"doShowSelectAddress", 
-                 "showSelect executing: formTime=" + customerAttrs.getFormTime());
+                 "showSelect executing: Current Time=" + customerAttrs.getFormTime());
         
-        this.setPreviousSelectedIndex(session);  
+        this.setPreviousSelectedIndex(session, customer);  
         
         this.assignAddressNotFoundMessage(map, session, customer);
         
@@ -227,9 +225,6 @@ public class ShippingAddressController {
       
         String url = ""; 
         
-        System.out.println("ShippingAddress#doCustomerAction executing:" 
-                  + request.getRequestURL().toString());
-        
         this.servletRequest = request;
         
         this.redirectAttributes = redirectAttrs;
@@ -275,7 +270,11 @@ public class ShippingAddressController {
                    this.throwIllegalArg("doSelectCustomerAction", 
                            "Converter for enum 'SelectShipAction' failed to throw exception.");
                    
-           } //end switch    
+           } //end switch  
+       
+        EhrLogger.printToConsole(this.getClass(),"doSelectCustomerAction", 
+                 "exiting: Current Time=" + customerAttrs.getFormTime()
+                 + " Paremeter Time=" + formTime + " URL=" + request.getRequestURL().toString());    
           
        return url; 
     } 
@@ -383,7 +382,10 @@ public class ShippingAddressController {
            Customer customer)  {
        
         try {
-           
+            
+           EhrLogger.printToConsole(this.getClass(), "processEdit", 
+                   "paramId=" + paramId + " Customer=" + customer.getCustomerId());
+            
             this.evalId(paramId, addressType, customer, time, hash);           
         
         } catch (LoginIdChangedException e) {
@@ -393,7 +395,7 @@ public class ShippingAddressController {
             
         } catch (ExpiredEditViewRequest e) {
             
-             this.addExpiredMsgRequestAttribute(addressType, null);            
+             this.addExpiredMsgRequestAttribute(addressType, e.getMessage());            
              return this.ALERT_REDIRECT_URL;
              
         } catch (UnequalHashTimeCurrentException e) {
@@ -402,7 +404,17 @@ public class ShippingAddressController {
             
         }        
        return this.configureEditUrl(addressType, paramId);       
-   } 
+   } //end processEdit
+    
+     private void addExpiredMsgRequestAttribute(AddressTypeEnum type, String detail) {      
+        
+        String expiredMessage = type + " " + 
+                this.getSelectShipAction() + ": ";      
+        
+        expiredMessage += detail;
+        
+        this.redirectAttributes.addFlashAttribute(this.EXPIRED_REQUEST_MSG, expiredMessage);        
+    } 
     /*
      * Invoked from processEdit after ensuring ID param finds an entity
     */
@@ -423,7 +435,7 @@ public class ShippingAddressController {
             
             if(index == -1)
                 throwIllegalArg("configureEditUrl", "Error-checking failed to trap"
-                    + " ShipAddress not in related Customer list. searchList returns -1.");
+                    + " ShipAddress cannot be searched in related Customer list. ");
             
             ShipAddress shipAddress = (ShipAddress)this.addressList.get(index);
             
@@ -506,9 +518,10 @@ public class ShippingAddressController {
    } //end search    
     
    /*
-    * To do: If flag not set and ShipAddress selected
-   */
-    private void setPreviousSelectedIndex(HttpSession session) {
+    * Is it possible to check consistency between session and Db if ShipAddress
+    * not selected?
+    */
+    private void setPreviousSelectedIndex(HttpSession session, Customer customer) {
         
        previousSelected = null;
         
@@ -530,19 +543,12 @@ public class ShippingAddressController {
             return;
         }       
         
-        ShipAddress selectedAddress = (ShipAddress)address;        
+        ShipAddress selectedAddress = (ShipAddress)address;  //Session selected attribute   
         
-        previousSelected = this.searchList(selectedAddress.getShipId(), AddressTypeEnum.ShipAddress);
-       
-        //Deleted and not reselected
-        if(previousSelected == -1)
-            if(!customerAttrs.isDeletedAddress(selectedAddress.getShipId())) 
-                
-                EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(), 
-                        "setPreviousSelectedIndex",  
-                        "ID of selected ShipAddress cannot be found and has not been deleted");
-            
-            else previousSelected = 0;         
+        compareUtil.throwInconsistentSessionToDbDeletion(customer, selectedAddress);
+        
+        previousSelected = this.searchList(selectedAddress.getShipId(), AddressTypeEnum.ShipAddress);       
+              
     }
     
     /*
@@ -567,8 +573,8 @@ public class ShippingAddressController {
            SelectedShipAddressCompareException ex = (SelectedShipAddressCompareException)
                    model.get(CompareAddressUtil2.COMPARE_EXCEPTION);
            
-           shipAddressNotFoundMessage = ex.getInvokingTitle() + ": " + 
-                   ex.getUpdatedNameFld() + ex.getMessage();
+           shipAddressNotFoundMessage = ex.getInvokingTitle() + ": "  
+                   + ex.getMessage();
            
        } else {
             if (!customerAttrs.isShipAddressSelected()) {
@@ -579,6 +585,7 @@ public class ShippingAddressController {
 
             if (ShipAddress.class.isAssignableFrom(postalAddress.getClass())) {
                 
+               // compareUtil.throwInconsistentSessionToDbDeletion(customer, (ShipAddress)postalAddress);
                 compareUtil.throwCompareSessionShipAddressToDb(customer,
                         (ShipAddress) postalAddress, "Address Selection Compare"); //throws if compare exception
                 
@@ -603,30 +610,7 @@ public class ShippingAddressController {
         map.addAttribute("customerAttributes", customerAttrs); //success message, expiredTime
         map.addAttribute("shippingAddressController", this); //shipList, previousSelected 
         
-    } 
-    
-   
-    
-    private void addExpiredMsgRequestAttribute(AddressTypeEnum type, String detail) {
-        
-        if(detail != null) {
-            
-            this.redirectAttributes.addFlashAttribute(this.EXPIRED_REQUEST_MSG, detail); 
-            
-            return;
-        }
-        
-        String expiredMessage = "EXPIRED REQUEST for " + 
-                type + " " + 
-                this.getSelectShipAction() + ". ";             
-        
-        expiredMessage += this.expiredName + " may have changed. "; //name in hidden input control
-        
-        expiredMessage +=  "Please edit from this current list.";
-        
-        this.redirectAttributes.addFlashAttribute(this.EXPIRED_REQUEST_MSG, expiredMessage); 
-        
-    } 
+    }    
     
     private void throwIllegalArg(String method, String message) {
         
