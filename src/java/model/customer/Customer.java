@@ -3,8 +3,11 @@ package model.customer;
 
 
 import error_util.EhrLogger;
+import exception_handler.LoggerResource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import static validation.CompareAddressUtil2.customerHashCode;
 
 
 /**
@@ -95,8 +99,7 @@ public class Customer extends PostalAddress implements java.io.Serializable {
        if(found == null)
            throw new IllegalArgumentException(
                    EhrLogger.doError(this.getClass().getCanonicalName(), 
-                           "removeShipAddress", "@OneToMany list does NOT contain shipAddress")
-           );
+                           "removeShipAddress", "@OneToMany list does NOT contain shipAddress"));
        
         found.setCustomerId(null);
        
@@ -104,7 +107,95 @@ public class Customer extends PostalAddress implements java.io.Serializable {
         
         //shipAddress.setCustomerId(null);
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.customerId);
+        hash = 29 * hash + Objects.hashCode(this.store);
+        hash = 29 * hash + (this.active ? 1 : 0);
+        hash = 29 * hash + Objects.hashCode(this.shipAddressList);
+        return hash;
+    }
+
+   /* @Override
+    public boolean equals(Object obj) {
+        
+        String message = null;
+        
+        boolean isEqual = false;
+        
+        final Customer other = (Customer) obj;
+        
+        if (this == obj) {
+            isEqual = true;
+            message = "this == obj" ;
+        }
+        else if (obj == null) {
+           isEqual = false;
+           message = "obj == null" ;
+        }
+        else if (getClass() != obj.getClass()) {
+            isEqual = false;
+            message = "getClass() != obj.getClass()";
+        }
+       
+        else if (this.active != other.active) {
+            isEqual = false;
+            message = "this.active != other.active" ;
+        }
+        else if (!customerId.equals(other.customerId)) {
+            isEqual = false;
+            message="!Objects.equals(this.customerId, other.customerId)" ;
+        }
+     
+        else if (Objects.equals(this.shipAddressList, other.shipAddressList)) {
+            isEqual = true;
+            message = "Objects.equals(this.shipAddressList, other.shipAddressList)" ;
+        }
+        else if(!compareCustomerRelatedShipAddress(this.shipAddressList, other.getShipAddressList())) {
+            isEqual = false;
+            message="!compareCustomerRelatedShipAddress(this.shipAddressList, other.getShipAddressList())" ;
+        }
+        else if(!super.equals((PostalAddress)other)) {
+            isEqual = false;
+            message = "!super.equals((PostalAddress)other)" ;
+        }
+        else {
+            message = "Customer#equals(other) returning true" ;
+            isEqual = true;
+        }
+        
+        Logger logger = LoggerResource.createFileHandler(
+                "C:\\Users\\dinah\\myLogs\\Spring7\\is_equal_logger.txt", this.getClass());
+        
+        logger.info(message);
+        
+        return isEqual;
+    }   */
     
-}
+   private boolean compareCustomerRelatedShipAddress(List<ShipAddress> model, List<ShipAddress> other) {
+        
+        if(model.size() != other.size()) {             
+             return false;             
+         }
+        
+          for(int i=0; i < model.size(); i++) {
+            
+            String modelHash = customerHashCode(model.get(i));
+            String otherHash = customerHashCode(other.get(i));
+            
+            /*String txt = MessageFormat.format("sessionHash={0} dbHash={1}", sessionHash, dbHash);
+            System.out.println(txt);*/
+           
+            if(!modelHash.equals(otherHash))
+                return false;               
+                   
+        } //end for          
+        return true;
+    } //end compare related 
+    
+    
+} //end class
 
 

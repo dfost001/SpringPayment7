@@ -193,8 +193,8 @@ public class CheckoutButtonController implements Serializable{
          return false;
     }    
     private void throwEmptyCart() {
-         if(cart.mapAsList().isEmpty())
-            this.throwIllegalArg("Checkout button rendered with empty cart", "throwEmptyCart");
+         if(cart == null || cart.mapAsList().isEmpty())
+            this.throwIllegalArg("Checkout button rendered with null or empty cart", "throwEmptyCart");
     }
     
     private void throwIllegalArg(String message, String method) {

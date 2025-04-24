@@ -4,7 +4,10 @@ package model.customer;
 
 
 
+import exception_handler.LoggerResource;
 import java.util.Date;
+import java.util.Objects;
+import java.util.logging.Logger;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -66,6 +69,8 @@ public class Country  implements java.io.Serializable {
     public void setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
+    
+    
 
   /*  @OneToMany(fetch=FetchType.EAGER, mappedBy="countryId")
     public Set<City> getCities() {
@@ -74,6 +79,63 @@ public class Country  implements java.io.Serializable {
     
     public void setCities(Set<City> cities) {
         this.cities = cities;
+    } */
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + Objects.hashCode(this.countryId);
+        hash = 67 * hash + Objects.hashCode(this.countryName);
+        hash = 67 * hash + Objects.hashCode(this.lastUpdate);
+        return hash;
+    }
+
+    /* @Override
+    public boolean equals(Object obj) {
+        
+        String msg = null;
+        
+        final Country other = (Country) obj;
+        
+        Logger logger = LoggerResource.createFileHandler(
+                "C:\\Users\\dinah\\myLogs\\Spring7\\is_equal_logger.txt", this.getClass()); 
+        
+        if (this == obj) {
+            msg="this == obj";
+            logger.info(msg);
+            return true;
+        }
+        if (obj == null) {
+            msg="obj == null";
+            logger.info(msg);
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            msg="getClass() != obj.getClass()";
+            logger.info(msg);
+            return false;
+        }
+        
+        if (!Objects.equals(this.countryName, other.countryName)) {
+            msg="!Objects.equals(this.countryName, other.countryName)";
+            logger.info(msg);
+            return false;
+        }
+        if (this.countryId.equals(other.countryId)) {
+             msg="!Objects.equals(this.countryId, other.countryId)";
+            logger.info(msg);
+            return false;
+        }
+        if (!this.lastUpdate.equals(other.lastUpdate)) {
+            msg="!Objects.equals(this.lastUpdate, other.lastUpdate)";
+            logger.info(msg);
+            return false;
+        }
+        
+        msg = "Country#equals returning true";
+        logger.info(msg);
+        
+        return true;
     } */
 } //end entity
 

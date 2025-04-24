@@ -54,6 +54,34 @@ public class LoggerResource {
 		return logger;
 	}
         
+          public static Logger createFileHandler(String pathToFile, Class<?> clz) {
+              
+              Logger logger = Logger.getLogger(clz.getCanonicalName());
+              
+              FileHandler myHandler = null;
+              
+              StreamHandler strmHandler = null;
+              
+              String ehr = null;
+              
+              try {
+                  myHandler = new FileHandler(pathToFile,BYTE_LIMIT,FILE_COUNT,APPEND);
+		  myHandler.setFormatter(new SimpleFormatter());
+              } catch (IOException io) {
+                  ehr = "LoggerResource#createFileHandler: Error creating log file: " + io.getMessage();
+                  strmHandler = new StreamHandler(System.out, new SimpleFormatter());
+              }
+              
+              if (myHandler != null)
+			logger.addHandler(myHandler);
+	      else {
+			logger.addHandler(strmHandler);
+			System.out.println(ehr);
+		}
+	     return logger;
+       
+          }
+        
         public static void flush(Logger logger) {
             
             Handler[] handlers = logger.getHandlers();
@@ -62,8 +90,11 @@ public class LoggerResource {
             
             if(isNull)
                 System.out.println("LoggerResource#flush: handlers obtained=null");
-            else
+            else {
+                for(Handler handler : handlers)
+                    handler.flush();
                 System.out.println("LoggerResource#flush: handlers obtained=" + handlers.length);
+            }
         }
 
 }

@@ -586,8 +586,8 @@ public class ShippingAddressController {
             if (ShipAddress.class.isAssignableFrom(postalAddress.getClass())) {
                 
                // compareUtil.throwInconsistentSessionToDbDeletion(customer, (ShipAddress)postalAddress);
-                compareUtil.throwCompareSessionShipAddressToDb(customer,
-                        (ShipAddress) postalAddress, "Address Selection Compare"); //throws if compare exception
+                compareUtil.throwCompareDbToSelectedShipAddress((ShipAddress) postalAddress, 
+                        customer, "Select Shipping Address"); //throws if compare exception
                 
             } else if (Customer.class.isAssignableFrom(postalAddress.getClass())) {
                 

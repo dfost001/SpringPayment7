@@ -5,8 +5,11 @@
  */
 package model.customer;
 
+import exception_handler.LoggerResource;
 import formatter.annotations.TextFormat;
 import java.util.Date;
+import java.util.Objects;
+import java.util.logging.Logger;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -109,9 +112,83 @@ abstract public class PostalAddress {
     public void setEmail(String email) {
         this.email = email;
     }
-    
-   
-    
-    
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + Objects.hashCode(this.addressId);
+        hash = 59 * hash + Objects.hashCode(this.firstName);
+        hash = 59 * hash + Objects.hashCode(this.lastName);
+        hash = 59 * hash + Objects.hashCode(this.email);
+        hash = 59 * hash + Objects.hashCode(this.createDate);
+        hash = 59 * hash + Objects.hashCode(this.lastUpdate);
+        return hash;
+    }
+
+  /*  @Override
+    public boolean equals(Object obj) {
+        
+        String msg = null;
+        
+        Logger logger = LoggerResource.createFileHandler(
+                "C:\\Users\\dinah\\myLogs\\Spring7\\is_equal_logger.txt", this.getClass());  
+        
+        final PostalAddress other = (PostalAddress) obj;
+        
+       // boolean isEqual = true;
+       if(this == obj){           
+           msg = "this == obj" ;
+           logger.info(msg);
+           return true;
+        } 
+        
+       else if (obj == null) {
+            msg = "obj == null" ;
+            logger.info(msg);
+            return false;
+        }
+        else if (getClass() != obj.getClass()) {
+            msg = "getClass() != obj.getClass()";
+            logger.info(msg);
+            return false;
+        }
+        
+        else if (!this.firstName.equals(other.firstName)) {
+            msg="!this.firstName.equals(other.firstName)";
+            logger.info(msg);
+            return false;
+        }
+        else if (!this.lastName.equals(other.lastName)) {
+            msg ="!Objects.equals(this.lastName, other.lastName)";
+            logger.info(msg);
+            return false;
+        }
+        else if (!this.email.equals(other.email)) {
+            msg ="!Objects.equals(this.email, other.email)" ;
+            logger.info(msg);
+            return false;
+        }
+        else if (!addressId.equals(other.addressId)) {
+            msg="!addressId.equals(other.addressId)" ;
+            logger.info(msg);
+            return false;
+        }
+        else if (!this.createDate.equals(other.createDate)) {
+            msg = "!Objects.equals(this.createDate, other.createDate)" ;
+            logger.info(msg);
+            return false;
+        }
+        else if (!this.lastUpdate.equals(other.lastUpdate)) {
+            msg ="!Objects.equals(this.lastUpdate, other.lastUpdate)" ;
+            logger.info(msg);
+            return false;
+        }
+        
+        msg = "PostalAddress#equals returning true";              
+        logger.info(msg);
+        
+        return true; 
+        
+    } */  
     
 }

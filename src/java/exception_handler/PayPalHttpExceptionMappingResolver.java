@@ -89,7 +89,7 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
      String url = req.getRequestURL().toString();
      
      if(!url.toLowerCase().contains("paypal"))
-         return null; //only PayPal connections - hard-coded path can be fixed
+         return null; //only PayPal connections - hard-coded path can be fixed by deriving HttpException
     
      if(!HttpException.class.isAssignableFrom(ex.getClass()))             
          return null;    

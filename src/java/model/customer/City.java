@@ -2,7 +2,10 @@ package model.customer;
 // Generated Jun 8, 2015 7:04:12 PM by Hibernate Tools 4.3.1
 
 //import model.customer.Country;
+import exception_handler.LoggerResource;
 import java.util.Date;
+import java.util.Objects;
+import java.util.logging.Logger;
 //import java.util.HashSet;
 //import java.util.Set;
 import javax.persistence.Column;
@@ -78,6 +81,9 @@ public class City implements java.io.Serializable {
     public void setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
+    
+    
+    
 
   /*@OneToMany(fetch=FetchType.LAZY, mappedBy="city_id")
     public Set<Address> getAddresses() {
@@ -87,6 +93,69 @@ public class City implements java.io.Serializable {
     public void setAddresses(Set<Address> addresses) {
         this.addresses = addresses;
     }*/
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + Objects.hashCode(this.cityId);
+        hash = 53 * hash + Objects.hashCode(this.countryId);
+        hash = 53 * hash + Objects.hashCode(this.cityName);
+        hash = 53 * hash + Objects.hashCode(this.lastUpdate);
+        return hash;
+    }
+
+   /* @Override
+    public boolean equals(Object obj) {
+        
+        String msg = null;
+        
+        final City other = (City) obj;
+        
+        Logger logger = LoggerResource.createFileHandler(
+                "C:\\Users\\dinah\\myLogs\\Spring7\\is_equal_logger.txt", this.getClass());  
+        
+        if (this == obj) {
+            msg="this == obj";
+            logger.info(msg);
+            return true;
+        }
+        if (obj == null) {
+             msg="obj == null";
+            logger.info(msg);
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            msg="getClass() != obj.getClass()";
+            logger.info(msg);
+            return false;
+        }
+        
+        if (!Objects.equals(this.cityName, other.cityName)) {
+            msg="!Objects.equals(this.cityName, other.cityName)";
+            logger.info(msg);
+            return false;
+        }
+        if (!this.cityId.equals(other.cityId)) {
+            msg="!Objects.equals(this.cityId, other.cityId)";
+            logger.info(msg);
+            return false;
+        }
+        if (!this.countryId.equals(other.countryId)) {
+            msg="!Objects.equals(this.countryId, other.countryId)";
+            logger.info(msg);
+            return false;
+        }
+        if (!this.lastUpdate.equals(other.lastUpdate)) {
+            msg="!Objects.equals(lastUpdate, other.lastUpdate)";
+            logger.info(msg);
+            return false;
+        }
+        
+        msg = "City#equals returning true";
+        logger.info(msg);
+        
+        return true;
+    } */
 }
 
 

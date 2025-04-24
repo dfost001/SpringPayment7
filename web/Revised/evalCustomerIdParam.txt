@@ -1,0 +1,41 @@
+ public void evalCustomerIdParam(Short paramCustomerId, 
+             Customer modelCustomer, Long formTime, String hash) 
+                throws UnequalHashTimeCurrentException,
+                LoginIdChangedException, ExpiredEditViewRequest {
+         
+        boolean isCurrentTime = this.isCurrentFormTime(formTime,
+                 customerAttrs.getFormTime(), "evalCustomerIdParam") ;
+         
+         Customer dbCustomer = this.custManager.customerById(paramCustomerId);
+         
+         String info = null;
+         
+         if(dbCustomer == null) {             
+         
+             throwIllegalArgumentException("evalCustomerIdParam", 
+                     "'paramCustomerId' failed to retrieve a customer entity");
+         }
+         else if(!paramCustomerId.equals(modelCustomer.getCustomerId())){
+             
+             if(!isCurrentTime)
+                 initLoginIdChangedException(dbCustomer, 
+                         modelCustomer, AddressTypeEnum.Customer, ""); // Throws exception  
+             throw new UnequalHashTimeCurrentException(
+                    this.doError("evalCustomerIdParam", 
+                    "Form request parameter 'customerId' not equal to @ModelAttribute customerId. ")) ;
+             
+         } else  {
+             
+             info = this.genUnequalHashMessage(dbCustomer, hash, formTime,
+                     AddressTypeEnum.Customer, paramCustomerId);
+             
+             if(!isCurrentTime)
+                 throw new ExpiredEditViewRequest(info);
+             else if(info != null)  { //Form hash not equal to underlying and form time is current
+                  info = this.doError("evalCustomerIdParam", info);
+                  throw new UnequalHashTimeCurrentException(info);                  
+             }                
+         } 
+         
+        
+     }   

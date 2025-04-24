@@ -3,6 +3,7 @@ package com.dvd;
 
 import com.cart.Cart;
 import dao.CustomerManager;
+import error_util.EhrLogger;
 import exceptions.ConfirmCartException;
 import formatter.CustomPropertyEditorRegistrar;
 import java.io.Serializable;
@@ -226,7 +227,11 @@ public class CustomerController implements Serializable {
             
             changed = false;
             
-        } else {          
+            EhrLogger.printToConsole(this.getClass(), "updateCustomer", "Customer has NOT changed");
+            
+        } else {    
+            
+            EhrLogger.printToConsole(this.getClass(), "updateCustomer", "Customer has changed");
             
             cust.setLastUpdate(new Date());
 

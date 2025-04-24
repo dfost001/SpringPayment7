@@ -80,19 +80,16 @@ public class CompareAddressUtil2 implements Serializable {
                       SelectedShipAddressCompareException,
                       CustomerNotFoundException {
          
-        // this.httpSession = httpSession;        
-        
+              
          compareCustomerToDb(modelCustomer, invokingTitle);
          
          if(modelCustomer.getClass().isAssignableFrom(selectedShipAddress.getClass())) {
                  this.throwCompareModelCustomerToSelectedPostalAddress(modelCustomer,
                          selectedShipAddress, invokingTitle); //Throws if Id's not equal
                  return ; 
-         }        
-         this.throwInconsistentSessionToDbDeletion(modelCustomer, (ShipAddress)selectedShipAddress);
-         this.throwCompareSessionShipAddressToDb(modelCustomer, 
-                 (ShipAddress)selectedShipAddress,
-                  invokingTitle);       
+         }   
+         this.throwCompareDbToSelectedShipAddress((ShipAddress)selectedShipAddress, 
+                 modelCustomer, invokingTitle);        
          
      }   
     
@@ -113,7 +110,11 @@ public class CompareAddressUtil2 implements Serializable {
                      EhrLogger.doError(this.getClass().getCanonicalName(), "compareCustomerToDb", err));
          
          this.compareCustomerRelatedShipAddressToDb(customer.getShipAddressList(),
-                 dbCust.getShipAddressList());             
+                 dbCust.getShipAddressList());  
+        
+       /* if(!customer.equals(dbCust))
+            throw new IllegalArgumentException(
+                     EhrLogger.doError(this.getClass().getCanonicalName(), "compareCustomerToDb", err)); */
      }
       
        private void compareCustomerRelatedShipAddressToDb(List<ShipAddress> sessionList, List<ShipAddress> dbList) {
@@ -182,9 +183,16 @@ public class CompareAddressUtil2 implements Serializable {
               throw this.initCompareException(message, technical, updatedName, invokingTitle);              
               
           }           
-      }  
+      } 
+        public void throwCompareDbToSelectedShipAddress(ShipAddress selected, Customer modelCustomer, 
+                String invokingTitle) throws SelectedShipAddressCompareException {
+            
+             this.throwInconsistentSessionToDbDeletion(modelCustomer, selected);
+             this.throwCompareDbToSelectedHash(modelCustomer, 
+                 selected, invokingTitle);     
+        }
         
-         public void throwCompareSessionShipAddressToDb(Customer customer, 
+         public void throwCompareDbToSelectedHash(Customer customer, 
              ShipAddress selected, String invokingTitle)
                    throws SelectedShipAddressCompareException {
              
@@ -209,17 +217,15 @@ public class CompareAddressUtil2 implements Serializable {
                      previousName, invokingTitle);    
            }
         } 
-        
-         public void throwInconsistentSessionToDbDeletion(Customer customer, ShipAddress selected) {
-             
-            String technicalDeleted = "Selected delivery address " 
-                 + selected.getShipId() + " cannot be retrieved. ";  
+        /* If selected, ShipAddress should be found. A runtime is thrown if it cannot be found in the
+         * customer-relation. 
+         * On deletion, shipAddress is removed from session and added to CustomerAttributes#deletedMap
+         */
+         public void throwInconsistentSessionToDbDeletion(Customer customer, ShipAddress selected) {          
             
-            String previousName = selected.getFirstName() + " " + selected.getLastName();   
+            this.checkInconsistentSelectedFlag(selected);          
          
-            ShipAddress shipAddressDb = this.findDbShipAddress(customer.getShipAddressList(), selected) ;
-         
-            this.checkInconsistentSelectedFlag(selected);
+            ShipAddress shipAddressDb = this.findDbShipAddress(customer.getShipAddressList(), selected) ;           
          
             if (shipAddressDb == null) {    
              
@@ -228,13 +234,19 @@ public class CompareAddressUtil2 implements Serializable {
               if (!customerAttrs.isDeletedAddress(selected.getShipId())) {
                
                 msg = "Selected ShipAddress is not in customer relationship. " +
-                         "Not added to deleted map, and not removed from the session. ";                  
+                         "Not added to deleted map, not removed from the session, flag not reset. ";                  
               } else {
-                msg = "Selected in deleted map and not removed from the session on delete. " ;
+                msg = "Selected is in deleted map, but not removed from the session on delete, flag not reset. " ;
               }
-              String err = previousName + " " + technicalDeleted + msg ;
+              
+            String technicalDeleted = "Selected delivery address " 
+                 + selected.getShipId() + " cannot be retrieved. ";  
+            
+            String previousName = selected.getFirstName() + " " + selected.getLastName();   
+              
+            String err = previousName + " " + technicalDeleted + msg ;
            
-              this.throwIllegalArgumentException("throwInconsistentSessionToDbDeletion", err);
+            this.throwIllegalArgumentException("throwInconsistentSessionToDbDeletion", err);
          }
       }    
      
@@ -276,7 +288,7 @@ public class CompareAddressUtil2 implements Serializable {
                 throws UnequalHashTimeCurrentException,
                 LoginIdChangedException, ExpiredEditViewRequest {
          
-         boolean isCurrentTime = this.isCurrentFormTime(formTime,
+        boolean isCurrentTime = this.isCurrentFormTime(formTime,
                  customerAttrs.getFormTime(), "evalCustomerIdParam") ;
          
          Customer dbCustomer = this.custManager.customerById(paramCustomerId);
@@ -299,16 +311,9 @@ public class CompareAddressUtil2 implements Serializable {
              
          } else  {
              
-             info = this.genUnequalHashMessage(dbCustomer, hash, formTime,
-                     AddressTypeEnum.Customer, paramCustomerId);
-             
-             if(!isCurrentTime)
-                 throw new ExpiredEditViewRequest(info);
-             else if(info != null)  { //Form hash not equal to underlying and form time is current
-                  info = this.doError("evalCustomerIdParam", info);
-                  throw new UnequalHashTimeCurrentException(info);                  
-             }                
-         } 
+             this.genUnequalHashMessage(dbCustomer, hash, formTime,
+                     AddressTypeEnum.Customer, paramCustomerId);           
+         }        
      }   
      
      public void evalShipIdParam(Customer modelCustomer, Short paramShipId, 
@@ -319,9 +324,7 @@ public class CompareAddressUtil2 implements Serializable {
         boolean isCurrentTime = this.isCurrentFormTime(paramTime, 
                 customerAttrs.getFormTime(), "evalShipIdParam");
          
-        ShipAddress shipAddress = this.custManager.getShipAddressById(paramShipId);
-        
-        String info = null;
+        ShipAddress shipAddress = this.custManager.getShipAddressById(paramShipId);       
          
         if(shipAddress == null) {
             
@@ -332,17 +335,10 @@ public class CompareAddressUtil2 implements Serializable {
                      + "and id '" + paramShipId + "' is not in deleted map.");
            
            } else {
-               info = this.genUnequalHashMessage(shipAddress, formHash, paramTime, 
-                       AddressTypeEnum.ShipAddress, paramShipId);
-               if (!isCurrentTime)
-                   throw new ExpiredEditViewRequest(info);
-             
-               else {
-                    info = this.doError("evalShipIdParam", info);
-                    throw new UnequalHashTimeCurrentException(info);
-               }                        
-        }
-     }  else if(!isRelated(modelCustomer, shipAddress)) { 
+               this.genUnequalHashMessage(shipAddress, formHash, paramTime, 
+                       AddressTypeEnum.ShipAddress, paramShipId);                                
+            }
+        } else if(!isRelated(modelCustomer, shipAddress)) { 
            
             if(isCurrentTime)
             
@@ -353,28 +349,15 @@ public class CompareAddressUtil2 implements Serializable {
             else this.initLoginIdChangedException(shipAddress.getCustomerId(), 
                     modelCustomer, AddressTypeEnum.ShipAddress, "");
             
-      } else {
-          info = this.genUnequalHashMessage(shipAddress, formHash, paramTime, 
-              AddressTypeEnum.ShipAddress, paramShipId); 
-          if(!isCurrentTime)
-              throw new ExpiredEditViewRequest(info);
-          else if(info != null) { //Form hash not equal to underlying
-              info = this.doError("evalShipIdParam", info) ;
-              throw new UnequalHashTimeCurrentException(info);
-          }
-      }  
-  }
-    /*
-     * We want to keep the message unless formHash is valid - equal to underlying
-     * Caller will throw ExpiredEditViewRequest depending on whether or not message is empty.
-     * IllegalArgument will only be thrown if message is non-null (not equal to underlying)
-     * and time is current
-     */
-       private String genUnequalHashMessage(PostalAddress dbAddress, String formHash,
+       } else {
+          this.genUnequalHashMessage(shipAddress, formHash, paramTime, 
+              AddressTypeEnum.ShipAddress, paramShipId);          
+        }  
+    }
+   
+      private String genUnequalHashMessage(PostalAddress dbAddress, String formHash,
              Long formTime, AddressTypeEnum type, Short id)
-                     throws UnequalHashTimeCurrentException  {
-         
-         boolean valid = true;
+                     throws UnequalHashTimeCurrentException, ExpiredEditViewRequest  {          
          
          boolean timeCurrent = isCurrentFormTime(formTime, customerAttrs.getFormTime(), 
                  "genUnequalHashMessage");            
@@ -385,26 +368,38 @@ public class CompareAddressUtil2 implements Serializable {
          if(type.equals(AddressTypeEnum.ShipAddress) && 
                  customerAttrs.isDeletedAddress(id)) {
                  
-                 err += "Selected ShipAddress ID has been deleted. ";  
-                 return err;                
+              err += "Selected ShipAddress ID has been deleted. ";  
+              if (!timeCurrent)
+                   throw new ExpiredEditViewRequest(err);
+             
+               else {
+                    err = this.doError(type.name(), err);
+                    throw new UnequalHashTimeCurrentException(err);
+               }                         
                  
-         } else if(!customerHashCode(dbAddress).equals(formHash)){
-                 
-                 valid = false;
-         }         
-         if(!valid) {
+         } 
+         
+         boolean dataChanged = !customerHashCode(dbAddress).equals(formHash);  
+         
+         EhrLogger.printToConsole(this.getClass(), "genUnequalHashMessage",
+                 "dbHash=" + customerHashCode(dbAddress));
+         
+          EhrLogger.printToConsole(this.getClass(), "genUnequalHashMessage",
+                 "formHash=" + formHash);
+                  
+         if(dataChanged) {
              err += "Information for "  + dbAddress.getFirstName() +
                        " " + dbAddress.getLastName() + " has changed. "; //User-friendly
-         }            
-         if (!timeCurrent){
-             return err;
-         } else if (!valid){ //time current
-             return err;
-         } else { //timeCurrent and valid
-             err = null;
-         }
-         return err;
-         
+             if(timeCurrent) {
+                 err = this.doError(type.name(), err);
+                 throw new UnequalHashTimeCurrentException(err);   
+             } else {
+                 throw new ExpiredEditViewRequest(err);
+             }
+         } else if(!dataChanged && !timeCurrent) {   
+                 throw new ExpiredEditViewRequest(err);
+         } 
+         return null;
      } //end generate message 
      
      
@@ -536,7 +531,7 @@ public class CompareAddressUtil2 implements Serializable {
          
         if(addr == null)
             throw new IllegalArgumentException(EhrLogger.doError(
-                    "CompareAddressUtil", "customerHashCode", "PostalAddress.Address field is null")); 
+                    "CompareAddressUtil", "customerHashCode", "PostalAddress is null")); 
         
         String email = addr.getEmail()==null ? "" : addr.getEmail();
         String firstName = addr.getFirstName() == null ? "" : addr.getFirstName();

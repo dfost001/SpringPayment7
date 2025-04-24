@@ -153,7 +153,7 @@ public class EhrLogger {
     
     LoggerResource.flush(myLogger);
       
-  } 
+  }  
    
    public static void logHttpClientException(HttpClientException ex, 
            HttpServletRequest req, Class<?> cls) {

@@ -5,11 +5,14 @@
  */
 package model.customer;
 
+import exception_handler.LoggerResource;
 import formatter.PhoneFormat;
 import formatter.annotations.TextFormat;
 import formatter.constraints.PhoneValid;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
+import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
@@ -159,6 +162,97 @@ public class Address implements Serializable {
     
     // private Set<Store> stores = new HashSet<Store>(0);
     // private Set<Staff> staffs = new HashSet<Staff>(0);
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + Objects.hashCode(this.addressId);
+        hash = 37 * hash + Objects.hashCode(this.addressType);
+        hash = 37 * hash + Objects.hashCode(this.cityId);
+        hash = 37 * hash + Objects.hashCode(this.address1);
+        hash = 37 * hash + Objects.hashCode(this.address2);
+        hash = 37 * hash + Objects.hashCode(this.district);
+        hash = 37 * hash + Objects.hashCode(this.postalCode);
+        hash = 37 * hash + Objects.hashCode(this.lastUpdate);
+        hash = 37 * hash + Objects.hashCode(this.phone);
+        return hash;
+    }
+
+   /* @Override
+    public boolean equals(Object obj) {
+        
+        String msg = null;
+        
+        final Address other = (Address) obj;
+        
+        Logger logger = LoggerResource.createFileHandler(
+                "C:\\Users\\dinah\\myLogs\\Spring7\\is_equal_logger.txt", this.getClass());  
+        
+        if (this == obj) {
+            msg="this == obj";
+            logger.info(msg);
+            return true;
+        }
+        else if (obj == null) {
+            msg = "obj == null";
+            logger.info(msg);
+            return false;
+        }
+        else if (getClass() != obj.getClass()) {
+            msg = "getClass() != obj.getClass()";
+            logger.info(msg);
+            return false;
+        }
+       
+        else if (!address1.equals(other.getAddress1())) {
+            msg = "!address1.equals(other.getAddress1())";
+            logger.info(msg);
+            return false;
+        }
+        else if (!Objects.equals(this.address2, other.address2)) {
+            msg = "!Objects.equals(this.address2, other.address2)";
+            logger.info(msg);
+            return false;
+        }
+        else if (!Objects.equals(this.district, other.district)) {
+            msg = "!Objects.equals(this.district, other.district)";
+            logger.info(msg);
+            return false;
+        }
+        else if (!Objects.equals(this.postalCode, other.postalCode)) {
+            msg = "!Objects.equals(this.postalCode, other.postalCode)";
+            logger.info(msg);
+            return false;
+        }
+        else if (!Objects.equals(this.phone, other.phone)) {
+            msg = "!Objects.equals(this.phone, other.phone)";
+            logger.info(msg);
+            return false;
+        }
+        if (!this.addressId.equals(other.addressId)) {
+            msg = "!Objects.equals(this.addressId, other.addressId)";
+            logger.info(msg);
+            return false;
+        }
+        if (this.addressType != other.addressType) {
+             msg = "!Objects.equals(this.addressType, other.addressType)";
+            logger.info(msg);
+            return false;
+        }
+        if (!this.cityId.equals(other.cityId)) {
+            msg = "!this.cityId.equals(other.cityId)";
+            logger.info(msg);
+            return false;
+        }
+        if (!this.lastUpdate.equals(other.lastUpdate)) {
+            msg = "!Objects.equals(this.lastUpdate, other.lastUpdate)";
+            logger.info(msg);
+            return false;
+        }
+        return true;
+    } */
+    
+    
     
     
 }

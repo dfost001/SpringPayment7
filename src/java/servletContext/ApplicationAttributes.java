@@ -86,7 +86,7 @@ public class ApplicationAttributes {
         
         Film foundFilm = null;      
         
-        Set<FilmCategory> filmCategories = selectedCategory.getFilmCategories();
+        Set<FilmCategory> filmCategories = selectedCategory.getFilmCategories(); //@OneToMany
         
         for(FilmCategory filmCategory : filmCategories)
             

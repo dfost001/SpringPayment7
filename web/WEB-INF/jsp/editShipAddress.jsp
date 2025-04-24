@@ -35,7 +35,9 @@
                 <div>
                    <span class="customerCaption">Delivery Address</span>  
                 </div>
-               
+                <div style="width:400px;" class="alert alert-danger">
+                   Pressing the browser refresh will display an error view.
+                </div>
                
                     <div class="myPanel">
                         <div class="divCommands">

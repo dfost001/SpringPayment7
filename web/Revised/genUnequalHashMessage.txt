@@ -1,0 +1,44 @@
+ /*
+     * We want to keep the message unless formHash is valid - equal to underlying
+     * Caller will throw ExpiredEditViewRequest depending on whether or not message is empty.
+     * IllegalArgument will only be thrown if message is non-null (not equal to underlying)
+     * and time is current
+     */
+     /*  private String genUnequalHashMessage(PostalAddress dbAddress, String formHash,
+             Long formTime, AddressTypeEnum type, Short id)
+                     throws UnequalHashTimeCurrentException  {          
+         
+         boolean timeCurrent = isCurrentFormTime(formTime, customerAttrs.getFormTime(), 
+                 "genUnequalHashMessage");            
+         
+         String err = timeCurrent ? "Form time is equal to current time. Indicates development error. " :
+               "Expired request. Indicates request from browser cache. "   ;
+         
+         if(type.equals(AddressTypeEnum.ShipAddress) && 
+                 customerAttrs.isDeletedAddress(id)) {
+                 
+                 err += "Selected ShipAddress ID has been deleted. ";  
+                 return err;                
+                 
+         } 
+         
+         boolean dataChanged = !customerHashCode(dbAddress).equals(formHash);  
+         
+         EhrLogger.printToConsole(this.getClass(), "genUnequalHashMessage",
+                 "dbHash=" + customerHashCode(dbAddress));
+         
+          EhrLogger.printToConsole(this.getClass(), "genUnequalHashMessage",
+                 "formHash=" + formHash);
+                  
+         if(dataChanged) {
+             err += "Information for "  + dbAddress.getFirstName() +
+                       " " + dbAddress.getLastName() + " has changed. "; //User-friendly
+             return err;
+         }            
+        
+         else if(!timeCurrent) {
+             return err;
+         }
+         return null;        
+        
+     } //end generate message */

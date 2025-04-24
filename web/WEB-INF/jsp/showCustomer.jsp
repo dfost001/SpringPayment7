@@ -48,7 +48,7 @@
                    <span class="customerCaption">Customer Information</span>  
                 </div>
                 <div style="width:400px;" class="alert alert-danger">
-                   Please do not use the browser refresh.
+                   Pressing the browser refresh will display an error view.
                 </div>
                
                     <div class="myPanel">

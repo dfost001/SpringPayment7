@@ -7,9 +7,11 @@ package view.attributes;
 
 
 import error_util.EhrLogger;
+import exception_handler.LoggerResource;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +37,8 @@ public class CustomerAttributes implements Serializable{
    
     public enum MessageType {CREATED, 
     UPDATED, DELETED, RESET, SUBMITTED, CANCELLED};
+    
+    private final String pathToLogFile = "C:\\Users\\dinah\\myLogs\\Spring7\\is_equal_logger.txt";
     
     @Autowired
     private CloneUtil cloneUtil;
@@ -72,7 +76,7 @@ public class CustomerAttributes implements Serializable{
     /*
      * Rendered as hidden input on drop-down login form and on checkout button.
      * See tiles/template/navigation.jsp
-     * Requires an initial value. Updated when checkout processed.
+     * Requires an initial value. See CheckoutbuttonControlleer#evalExpiredLoginTime
      */
     private Long loginTime = System.currentTimeMillis();
 
@@ -220,7 +224,7 @@ public class CustomerAttributes implements Serializable{
         
         this.shipAddressSelected = false;   
         
-        this.formTime = null; //ShippingAddressController
+        this.setFormTime(); //ShippingAddressController
         
         this.cancelCustEditUrl = null;
         
@@ -302,6 +306,18 @@ public class CustomerAttributes implements Serializable{
         if(hashPrev.equals(hashCurrent))
              return false;
         return true;
+       
+     /*  Logger logger = LoggerResource.createFileHandler(pathToLogFile, this.getClass());
+       
+       if(current.equals(prevCustomer)) {
+           
+           logger.info("CustomerAttributes#customerChanged: returning false for customerChanged");
+           LoggerResource.flush(logger);
+           return false;
+       }
+        logger.info("CustomerAttributes#customerChanged: returning false for customerChanged");
+        LoggerResource.flush(logger);
+        return true; */
     } 
     
     
