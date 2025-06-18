@@ -205,11 +205,11 @@ public class MyWebMvcConfigurationSupport extends WebMvcConfigurationSupport {
 		stringConverter.setWriteAcceptCharset(false);
         
         messageConverters.add(new ByteArrayHttpMessageConverter());
-		messageConverters.add(stringConverter);
-		messageConverters.add(new ResourceHttpMessageConverter());
-		messageConverters.add(new SourceHttpMessageConverter<>());
-		messageConverters.add(new AllEncompassingFormHttpMessageConverter());
-                messageConverters.add(new Jaxb2RootElementHttpMessageConverter());
+	messageConverters.add(stringConverter);
+	messageConverters.add(new ResourceHttpMessageConverter()); //Reads or Writes a file-path,url, or class-path resource
+	messageConverters.add(new SourceHttpMessageConverter<>()); //Reads a XML DOM source
+	messageConverters.add(new AllEncompassingFormHttpMessageConverter()); //Can read form parameters into a map
+        messageConverters.add(new Jaxb2RootElementHttpMessageConverter()); //Can read or write classes annotated with XmlRootElement
         
         MappingJackson2HttpMessageConverter converter = 
                 new MappingJackson2HttpMessageConverter();

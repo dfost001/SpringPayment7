@@ -63,11 +63,11 @@ public class CustomerAttributes implements Serializable{
      */
     private Long formTime;    
   
-    public Long getFormTime() {
+    public synchronized Long getFormTime() {
         return formTime;
     }
 
-    public void setFormTime() {
+    public synchronized void setFormTime() {
         //this.formTime = System.currentTimeMillis();
         this.formTime = Instant.now().toEpochMilli(); 
                       //Calculates using highest precision system clock and time-zone offset
@@ -80,11 +80,11 @@ public class CustomerAttributes implements Serializable{
      */
     private Long loginTime = System.currentTimeMillis();
 
-    public Long getLoginTime() {
+    public synchronized Long getLoginTime() {
         return loginTime;
     }
     
-    public void updateLoginTime() {
+    public synchronized void updateLoginTime() {
         
         this.loginTime = System.currentTimeMillis();
     }
@@ -97,12 +97,12 @@ public class CustomerAttributes implements Serializable{
     
     private Long addressUpdateTime = System.currentTimeMillis();
     
-    public Long getAddressUpdateTime() {
+    public synchronized Long getAddressUpdateTime() {
         
         return this.addressUpdateTime;
     }
     
-    public void setAddressUpdateTime() {
+    public synchronized void setAddressUpdateTime() {
         this.addressUpdateTime = System.currentTimeMillis();
     }
     

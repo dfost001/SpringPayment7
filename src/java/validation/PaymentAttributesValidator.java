@@ -119,7 +119,7 @@ public class PaymentAttributesValidator implements Serializable {
         
         String tokenNullMsg = "";
         String paymentNullMsg = "";
-        String stateMsg = "";
+        String stateMsg = ""; //inconsistent state message
         
         if(this.paypalPayment.getTokenResponse() == null)
                 tokenNullMsg = "TokenResponse is null;";
@@ -260,11 +260,14 @@ public class PaymentAttributesValidator implements Serializable {
             customerAttrsValidator.genFieldErrors("PaymentAttributesValidator#MvcResult", 
                 mvcMsgBuffer, mvcResult.getFieldErrors());
             
-            debugPrintBuffers(mvcMsgBuffer, validatorMsgBuffer);
+            String mvcErrors = mvcMsgBuffer.length() == 0 ? "Mvc has no errors. " : 
+                "Mvc BindingResult=" + mvcMsgBuffer.toString();
+        
+            String validatorErrors = validatorMsgBuffer.length() == 0 ? " Validator has no errors. " : 
+                " Validator BindingResult=" + validatorMsgBuffer.toString();
             
             EhrLogger.throwIllegalArg("PaymentAttibutesValidator",
-                    "compareMvcBindingToValidator",
-                    "MVC BindingResult and programmatic BindingResult do not compare.");  
+                    "compareMvcBindingToValidator", mvcErrors + validatorErrors);  
         }
     }
     

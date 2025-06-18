@@ -26,7 +26,7 @@ import validation.PaymentAttributesValidator;
 
 /**
  * PaymentAttributes is defined in applicationBeans.xml with session-scope
- * and as aop:scoped-proxy, so that it can be accessed from interceptor, and
+ * and as aop:scoped-proxy, so that it can be accessed from interceptors, and
  * error handlers.
  * 
  * To do: Add RequestingUrl as a parameter to methods invoked from payment flow controllers
@@ -231,10 +231,13 @@ public class PaymentAttributes implements Serializable{
      
      public RedirectView payPalApprovalUrlWithTime(HttpServletRequest request, String targetUrl, ModelMap model) {
          
-         if(isHistoryPayment(request)) //PayPalUrlInterceptor failed to trap error
+         if(isHistoryPayment(request)) { //PayPalUrlInterceptor failed to trap error
+                 this.removeTransaction();
                  throw new IllegalArgumentException(
+                         
                          EhrLogger.doError(this.getClass().getCanonicalName(), "payPalApprovalUrl", 
                                  "PayPal approval URL requested with an out-dated time parameter"));
+         }
          
         RedirectView view = initializeRedirectViewWithTime (request,targetUrl,model);
         

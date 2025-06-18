@@ -374,12 +374,11 @@ public class ResponseUtil {
         //or deserialization throws no error
         if(this.handlerValidateErrorObject != null)
             return this.processValidateErrorObject(o);
-        
-        if(o == null || decodedEntity.isEmpty())
-            return null;
-        
         try {
-             t.cast(o);
+           if(o == null || decodedEntity.isEmpty())
+              throw new ClassCastException("Http entity cannot be deserialized to " + t.getCanonicalName());    
+        
+           t.cast(o);
         } catch (ClassCastException e){
             
             throw initUnmarshalEx(e, "fromJSONErrorType");

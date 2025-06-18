@@ -88,6 +88,7 @@ public class PayPalPaymentController implements Serializable{
     
     /**
      * Handler for the redirect from the PayPal site
+     * Intercepted by PayPalPaymentUrlInterceptor throws Exception
      *
      * @param request Extracts id parameter from the PayPal redirect
      * @param model PaymentAttributes will use to append current system time value

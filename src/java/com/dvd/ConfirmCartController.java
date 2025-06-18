@@ -128,7 +128,7 @@ public class ConfirmCartController implements Serializable{
         return "forward:/payPal/processDirectPayment";
     }  
     
-     //Currently, not used    
+         
      @RequestMapping(value="/confirmCart/editShipAddress", method=RequestMethod.GET)
     public String editRequest() {
         

@@ -27,9 +27,7 @@ import org.apache.http.impl.client.HttpClients;
  */
 public class CustomHttpClient {
     
-    private static String path = "C:\\Program Files\\Java\\jdk1.8.0_191\\jre\\lib\\security\\cacerts";
-    
-    
+    private static String path = "C:\\Program Files\\Java\\jdk1.8.0_191\\jre\\lib\\security\\cacerts";   
     
     public static CloseableHttpClient buildCustomClient()  {
         
