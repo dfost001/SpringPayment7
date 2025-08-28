@@ -14,7 +14,6 @@ import model.customer.States;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -28,7 +27,7 @@ public class CustomerServiceImpl implements ICustomerServiceRest{
     @Autowired
     private CustomerDAO customer;
     
-    private boolean testCitiesByCountryRecoverable = false;
+    private boolean testCitiesByCountryRecoverable = true;
 
     @Override
     @Transactional

@@ -144,6 +144,11 @@ public class BindModel implements Serializable{
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
+    @Override
+    public String toString() {
+        return "BindModel{" + "name=" + name + ", card=" + card + ", month=" + month + ", year=" + year + ", type=" + type + ", amount=" + amount + ", startDate=" + startDate + ", phone=" + phone + ", birthDate=" + birthDate + ", storeInfo=" + storeInfo + '}';
+    }
     
     
     

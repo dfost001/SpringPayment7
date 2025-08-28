@@ -52,7 +52,7 @@ import org.springframework.validation.Validator;
     "com.cart","dao","restCustomerService",
     "restAddressService","restCityState", "paypal","validation",
     "validation.constraints","exception_handler","view.attributes",
-    "intercetors", "servletContext","httpUtil"})
+    "intercetors", "servletContext","httpUtil", "test.modelattribute" })
 public class MyWebMvcConfigurationSupport extends WebMvcConfigurationSupport {
     
     @Autowired

@@ -174,7 +174,7 @@ public class SpringDbController implements Serializable{
        // Adding to request model is optional
       model.addAttribute("applicationAttributes", applicationAttributes); //sidebar categoryList   
      
-      constants.setCurrentUrl(HOME_URL);
+      constants.setCurrentUrl(HOME_URL); //Extracted by CustomerController on user-entry error
       
       model.addAttribute("customerAttributes", customerAttrs); //loginTime
       

@@ -136,7 +136,7 @@ public class ConstantUtil {
     //private String idErrorVal;
     //private String idErrorMessage;
     
-    /******Currently Not Used - Must be extracted at view handlers on redirect
+    /******Currently Not Used - Must be extracted at view handlers on redirect ******
      
     public void setIdErrorVal(String errVal) {
         this.idErrorVal = errVal;

@@ -155,7 +155,8 @@ $(document).ready(
                        
                     },
                     function (errPayload) {
-                       doError(errPayload); //function in doLists.js
+                       var url = "/resources/cityListByCountry" ;
+                       doError(errPayload, url); //function in doLists.js
                     }); //end then     
             }             
             

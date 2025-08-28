@@ -97,7 +97,9 @@
                        <form action="${pageContext.request.contextPath}/exception/example/view" method="GET">
                            <input type="submit" value="Exception Example" class="btn btn-link"/>                             
                         </form><br/>     
-                      
+                       <form action="${pageContext.request.contextPath}/createBind" method="GET">
+                           <input type="submit" value="Binding Example" class="btn btn-link"/>                             
+                        </form><br/> 
                    </div> <!--end qtyDiv-->  
                  </div><!--end float right-->
                    <br/><br/>

@@ -20,6 +20,9 @@
 <form action="<c:url value="/exception/example/nullpointer" />" method="post">    
     <h4>  <input type="submit" value="Runtime Exception - Null Pointer" class="btn-link" /> </h4>
 </form>
+<form action="<c:url value="/exception/example/nestedException" />" method="post">    
+    <h4>  <input type="submit" value="isErrorPage - Mapped By web.xml" class="btn-link" /> </h4>
+</form>
  <form action="<c:url value="/exception/example/invalidMethodParameter" />" method="post">    
     <h4>  <input type="submit" value="IllegalArgument - Invalid Method Parameter" class="btn-link" /> </h4>
 </form> 

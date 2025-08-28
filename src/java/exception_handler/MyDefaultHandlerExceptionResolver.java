@@ -6,7 +6,6 @@
 package exception_handler;
 
 import error_util.EhrLogger;
-import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
@@ -28,6 +27,8 @@ public class MyDefaultHandlerExceptionResolver extends DefaultHandlerExceptionRe
     
     private PaymentAttributes paymentAttrs;
     
+    private boolean testNestedException = true;
+    
     @Required
     public void setPaymentAttrs(PaymentAttributes attrs){
         this.paymentAttrs = attrs;
@@ -48,12 +49,18 @@ public class MyDefaultHandlerExceptionResolver extends DefaultHandlerExceptionRe
     
      String viewName =  "error/springFrameworkError";  
      
-     EhrLogger.printToConsole(this.getClass(), "doResolveException", "Executing request: "
+     if(ex == null)
+         EhrLogger.printToConsole(this.getClass(), "doResolveException", "Executing request: "
+             + url + " Exception is null" );   
+     
+     else EhrLogger.printToConsole(this.getClass(), "doResolveException", "Executing request: "
              + url + " Exception=" + ex.getClass().getCanonicalName());       
      
      if(ex.getClass().equals(HttpMediaTypeNotAcceptableException.class))
            
            return super.doResolveException(req, resp, handler, ex);//throw to container, handled by <error-code> in web.xml     
+     
+     EhrLogger.throwIfNecessaryNullCart(req, this.getClass());
      
      return EhrLogger.initErrorView(url, ex, viewName, this.getClass().getCanonicalName());        
        

@@ -73,17 +73,14 @@ public class CloneUtil {
                 
                 if(isComplexValue(parameterType)){
                     
-                    value = cloneCustomer(value); //recurse to fill nested object with values
+                    value = cloneCustomer(value); //recurse to create and fill nested object with values
                     
-                }
-                
-               // parameterType = fixTimestamp(parameterType); //probably optional since getting return type revised
-                
-                Method setter = getSetter(name, declaringClass, parameterType);
-                
-               // value = fixTimestampToDate(value, parameterType);
+                }                
+                              
+                Method setter = getSetter(name, declaringClass, parameterType);              
 
-                setter.invoke(cloned, value);            }
+                setter.invoke(cloned, value);
+              } //end for
         } catch (Exception ex) {
              throw new IllegalArgumentException(ex.getMessage(), ex);
         }

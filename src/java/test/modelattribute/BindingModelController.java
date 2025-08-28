@@ -87,24 +87,54 @@ public class BindingModelController {
    
     @RequestMapping(value="/updateBindModel", method=RequestMethod.POST)
     public String testBinding(@Validated @ModelAttribute("bindModel")  BindModel bindModel,
-            BindingResult result, ModelMap map) {
-        
-               
+            BindingResult result, ModelMap map) {               
         
         if(result.hasErrors()) {
             map.addAttribute("msg", "Binding Result has errors.");
-            printErrors(result);
+           // printErrors(result);
         }
-        else {
-            map.addAttribute("msg", "There are no errors");
-            System.out.println("BindingModelController:testBinding:There are no errors");
+        else {            
+            map.addAttribute("msg", "There are no errors");           
         }
-        map.addAttribute("bindModel", bindModel);
-        return "bind_example/bindModel";
+        System.out.println("BindingModelController#testBinding: BindModel=" + bindModel);
+        this.printModelMap(map);
         
+      //  map.addAttribute("bindModel", bindModel); -- not necessary
+        return "bind_example/bindModel";        
     }   
     
-   /* @RequestMapping(value="/testBinding", method=RequestMethod.POST)
+   
+   @RequestMapping(value="/createBind", method=RequestMethod.GET)
+    public String createBindModel(ModelMap map){
+        map.addAttribute("bindModel", new BindModel());
+        return "bind_example/bindModel";
+    } 
+    
+    private void printErrors(BindingResult result) {
+        
+        List<FieldError> list = result.getFieldErrors();
+        
+        String msg = "";
+        
+        for(FieldError f : list) {
+            String field = f.getField();
+            //String value = (String)f.getRejectedValue();
+            String info = f.getDefaultMessage();
+            
+            msg += field + ": "  + info + "\n";
+            
+        }
+        System.out.println(msg);        
+    }   
+    
+    private void printModelMap(ModelMap map) {
+        
+        BindModel bindModel = (BindModel)map.get("bindModel");
+        String debug = bindModel == null ? "Is Null" : "Is Not Null" ;
+        System.out.println("BindingModelController#printModelMap: BindModel " + debug);
+    }
+   
+    /* @RequestMapping(value="/testBinding", method=RequestMethod.POST)
     public String testBinding(@ModelAttribute("bindModel") BindModel bindModel,
              ModelMap map) {
         
@@ -123,30 +153,5 @@ public class BindingModelController {
         return "bind_example/bindModel";
         
     } */
-    
-   /* @RequestMapping(value="/createBind", method=RequestMethod.GET)
-    public String createBindModel(ModelMap map){
-        map.addAttribute("bindModel", new BindModel());
-        return "bind_example/bindModel";
-    } */
-    
-    private void printErrors(BindingResult result) {
-        
-        List<FieldError> list = result.getFieldErrors();
-        
-        String msg = "";
-        
-        for(FieldError f : list) {
-            String field = f.getField();
-            //String value = (String)f.getRejectedValue();
-            String info = f.getDefaultMessage();
-            
-            msg += field + ": "  + info + "\n";
-            
-        }
-        System.out.println(msg);
-        
-    }   
-   
     
 }// end class

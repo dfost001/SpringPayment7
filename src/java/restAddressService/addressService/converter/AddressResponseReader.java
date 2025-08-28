@@ -88,9 +88,7 @@ public class AddressResponseReader implements MessageBodyReader<Candidates>{
                     doErrMsg(ex.getMessage() + ": " + message, "readFromStream"), ex);
         }
 
-        return xml;
-       
-       //return bos.toString();
+        return xml;     
 
     }
 

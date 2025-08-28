@@ -112,21 +112,19 @@ public class CartController implements Serializable{
    
     private void addViewAttributes(ModelMap map){
         
-       // customerAttrs.updateLoginTime();
-       
-         map.addAttribute("customerAttributes", customerAttrs); //login time
+        map.addAttribute("customerAttributes", customerAttrs); //Login time within drop-down
         
-        constantUtil.setCurrentUrl("/product/request?id=" + selectedFilm.getFilmId());
+        constantUtil.setCurrentUrl("/product/request?id=" + selectedFilm.getFilmId()); //Extracted by CustomerController
        
-        map.addAttribute(SELECTED_FILM, this.selectedFilm);
+        map.addAttribute(SELECTED_FILM, this.selectedFilm); //Display fields
         
-        map.addAttribute("cart",cart);           
+        map.addAttribute("cart",cart); //Widget on navigation bar       
        
-        map.addAttribute("constantUtil", this.constantUtil);        
+        map.addAttribute("constantUtil", this.constantUtil);  //Declares keys for      
        
-        map.addAttribute("applicationAttributes", this.applicationAttributes); 
+        map.addAttribute("applicationAttributes", this.applicationAttributes); //Side-bar
         
-        map.addAttribute("cartController", this); //success message, Category
+        map.addAttribute("cartController", this); //Success message, Category object
     }      
     
     

@@ -5,13 +5,16 @@
  */
 package error_util;
 
+import com.cart.Cart;
 import exception_handler.LoggerResource;
 import httpUtil.HttpClientException;
 import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.web.servlet.ModelAndView;
+import view.attributes.ConstantUtil;
 
 /**
  *
@@ -130,6 +133,20 @@ public class EhrLogger {
         
         throw new IllegalArgumentException(err, cause);  
         
+    }
+    
+    public static void throwIfNecessaryNullCart(HttpServletRequest req, Class<?> cls) {
+        
+        HttpSession session = req.getSession();
+        Cart cart = (Cart)session.getAttribute(ConstantUtil.CART);
+        if(cart == null) {
+            EhrLogger.printToConsole(cls,  "throwIfNecessaryNullCart", "Throwing IllegalArg for null cart");
+            EhrLogger.throwIllegalArg(cls.getCanonicalName(), 
+                    "throwIfNecessaryNullCart", "Cart component is null. ");
+        } else {
+              EhrLogger.printToConsole(cls,  "throwIfNecessaryNullCart", "Cart is still in the session. "
+              + "No error will be thrown.");
+        }
     }
     
    public static void logException(Exception ex, HttpServletRequest request, Class<?> cls){       

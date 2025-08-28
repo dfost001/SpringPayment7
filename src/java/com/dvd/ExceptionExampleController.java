@@ -5,10 +5,12 @@
  */
 package com.dvd;
 
+import com.cart.Cart;
 import dao.CustomerManager;
 import dao.FilmManager;
 import error_util.EhrLogger;
 import java.util.List;
+import javax.servlet.http.HttpSession;
 import model.customer.City;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -16,11 +18,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.QueryTimeoutException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import restCustomerService.ICustomerServiceRest;
 import util.BeanUtil;
+import view.attributes.ConstantUtil;
 
 /**
  *
@@ -106,6 +110,16 @@ public class ExceptionExampleController {
     @RequestMapping(value="/exception/example/missingParameter", method=RequestMethod.POST)
     public void doMissingParameter(@RequestParam("missingParameter") String param) {        
        
+    }
+    
+    @RequestMapping(value="/exception/example/nestedException", method=RequestMethod.POST)
+    public void nestedException(HttpSession session) 
+            throws ServletRequestBindingException {
+        
+        session.removeAttribute(ConstantUtil.CART);
+        
+        throw new  ServletRequestBindingException("Testing exception handled by <error-code>")  ;    
+        
     }
     
   /*  @RequestMapping(value="/exception/example/testCities", method=RequestMethod.GET)

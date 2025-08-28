@@ -5,13 +5,16 @@
  */
 package exception_handler;
 
+import com.cart.Cart;
 import error_util.EhrLogger;
 import httpUtil.HttpClientException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler; 
 import org.springframework.web.servlet.ModelAndView;
+import view.attributes.ConstantUtil;
 import view.attributes.PaymentAttributes;
 
 /**
@@ -34,9 +37,26 @@ public class ControllerExceptionAdvice {
         
         this.logException(ex, req);      
         
+       this.throwIfNecessaryNullCart(req); //Throws to DefaultExceptionResolver
+        
         return EhrLogger.initErrorView(url, ex, viewName, this.getClass().getCanonicalName());
        
     }
+    
+    private void throwIfNecessaryNullCart(HttpServletRequest req) {
+        
+        HttpSession session = req.getSession();
+        Cart cart = (Cart)session.getAttribute(ConstantUtil.CART);
+        if(cart == null) {
+            EhrLogger.printToConsole(this.getClass(),  "throwIfNecessaryNullCart", "Throwing IllegalArg for null cart");
+            EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(), 
+                    "throwIfNecessaryNullCart", "Cart component is null. ");
+        } else {
+              EhrLogger.printToConsole(this.getClass(),  "throwIfNecessaryNullCart", "Cart is still in the session. "
+              + "No error will be thrown.");
+        }
+    }
+    
    /*
     * Requires testing: HttpClientException http = (HttpClientException) ex; 
     */ 

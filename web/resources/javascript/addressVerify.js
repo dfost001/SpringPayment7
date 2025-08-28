@@ -259,11 +259,13 @@ var processAddress = function(){
                          processAddressVerifySuccess(payload);
                     },
                     function (ehr) {
+                         var url ="/resources/verifyAddress" ;
+                        
                          $("#loading").css("display", "none");
                          
                          console.log(ehr.responseText);
                          
-                         doError(ehr); //function in doLists.js
+                         doError(ehr, url); //function in doLists.js
                     }
             );       
     };//end attach

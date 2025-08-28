@@ -33,14 +33,14 @@ public class AjaxErrorController {
     public String handleAjaxError(@RequestParam("status") int status, 
             @RequestParam("url") String url,
             @RequestParam("trace") String trace,
-            @RequestParam("recoverable") Boolean recoverable,
+            @RequestParam("recoverable") Boolean connectRecoverable,
             @RequestParam("messages") String messages,
             @RequestParam("exceptionName") String exceptionName,
             @RequestParam("xhrStatus") int xhrStatus,
             @RequestParam("errAddressType") String addressType,
             ModelMap model) {
         
-        debugPrintParameter(recoverable);
+        debugPrintParameter(connectRecoverable);
         
         String view = "error/ajaxError";  
         
@@ -63,7 +63,7 @@ public class AjaxErrorController {
         } else if(exceptionName.toLowerCase().contains("http")) { //See restAddressService.AddressServiceAdvice
             
             evalRecoverableHttpException(exceptionName, model,
-                  recoverable, status, addressType);      
+                  connectRecoverable, status, addressType);      
             
         }              
          if(!model.containsKey("message")) {

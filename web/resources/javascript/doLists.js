@@ -143,7 +143,7 @@ var getStatesList = function(){
  * 
  * To do: If xhr.responseText is HTML, text requires encoding if uploaded as a form parameter
  */
-var doError = function (xhr) {   
+var doError = function (xhr, url) {   
     
     if(xhr.getResponseHeader("Content-Type").includes("json")) {
            var obj = JSON.parse(xhr.responseText);
@@ -169,7 +169,7 @@ var doError = function (xhr) {
         $("#recoverable").val("false");
         $("#trace").val("Not Available");
         $("#url").val(xhr.responseURL); //empty
-        $("#url").val("resources/verifyAddress/" + "addressType?media=");
+        $("#url").val(url);
         $("#messages").val("Developer error: Please set Accept request-header to application/json");
     }
     

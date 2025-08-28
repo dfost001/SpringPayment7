@@ -26,7 +26,7 @@ import httpUtil.HttpException;
  * view resolution depends on content acceptable by client
  * See ContentNegotiatingManagerFactoryBean in viewResolution.xml
  * 
- * To do: logError
+ * Note: RestController handler does not execute for MediaTypeNotAcceptable
  */
 @ControllerAdvice(basePackageClasses={AddressControllerRest.class})
 public class AddressServiceAdvice  {
