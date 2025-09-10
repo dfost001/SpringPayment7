@@ -132,7 +132,7 @@
             <td style="vertical-align: top">
             <form:select id="countrySelect"  
                          path="addressId.cityId.countryId.countryId" style="clear:both"> 
-                <form:option value="" label="Please select a country" />
+               
                 <form:options
                     items="${sessionScope.countryList}" itemValue="countryId" itemLabel="countryName" />                                   
             </form:select>

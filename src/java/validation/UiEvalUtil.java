@@ -73,7 +73,7 @@ public class UiEvalUtil {
         
         String[] exclude = null;       
         
-        if(postal == null) {
+        if(postal == null) { //Probably not necessary
             String err = "PostalAddress is null. Possibly not annotated.";
             this.doError("checkFullyInstantiated", err, null);
         }
@@ -112,13 +112,13 @@ public class UiEvalUtil {
         if(tmpCountryId == null)
             return;
         
-        this.country = validateCountryFill(tmpCountryId);
+        this.country = validateCountryFill(tmpCountryId); //Throws exception
         
         if(cityId != null)
-            validateCityFill(cityId, country.getCountryId());
+            validateCityFill(cityId, country.getCountryId()); // Throws exception
         
         if(country.getCountryId().equals(this.US_COUNTRY) && !StringUtil.isNullOrEmpty(districtValue))
-            this.processState(districtValue);
+            this.processState(districtValue); //Throws exception
                 
     }
      private Country validateCountryFill(Short id) {

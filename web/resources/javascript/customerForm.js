@@ -227,20 +227,15 @@ $(document).ready(
             
             scrollToMessageList();
             
-            if($("#countrySelect").val() === "") {
+            //See hidden control at the top of each form
+            if(!$("#hiddenCountryId").val()) { //Give country-select-box a default option
                 $("#countrySelect").val(103); //Can set selected to String or Number
-            }
+            } 
               
-            retrieveCitiesByCountryId(); //doSelected = true            
+            retrieveCitiesByCountryId();     
+            
         } // end ready function parameter
 );//end ready
 
-  /*if($("#countrySelect").val() !== "") {
-              
-              retrieveCitiesByCountryId(); //doSelected = true            
-            
-            }  
-            else {
-                showState(false);
-            }*/
+ 
 

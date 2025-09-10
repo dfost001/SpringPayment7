@@ -93,10 +93,14 @@
                          </form>       
                         </div><!--end reset command-->                        
                 </div><!--end panel-->
-                <form:form action="${pageContext.request.contextPath}/updateCustomer" commandName="customer"> 
+                <form:form action="${pageContext.request.contextPath}/updateCustomer" 
+                           commandName="customer"> 
                     
                 <input type="hidden"   name="addressTime"  value="${customerAttributes.addressUpdateTime}" />
-                    
+                
+                <input type="hidden" name="hiddenCountryId" id="hiddenCountryId"
+                       value="${customer.addressId.cityId.countryId.countryId}" />
+                
                 <div class="alert alert-success">
                     ${pageScope.alertMessage}    
                      <input type="submit" value="Submit" class="alert-link" />    

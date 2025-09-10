@@ -74,6 +74,8 @@
                     action="${pageContext.request.contextPath}/updateShipAddress/submit" 
                     commandName="shipAddress">  
                 <form:input type="hidden" path="shipId" value="${shipAddress.shipId}"  /> 
+                <input type="hidden" name="hiddenCountryId" id="hiddenCountryId"
+                       value="${shipAddress.addressId.cityId.countryId.countryId}" />
                 <input type="hidden" name="${updateShipAddressController.updateTypeKey}" 
                        value="${updateShipAddressController.updateType}" />
                 <div class="alert alert-success">

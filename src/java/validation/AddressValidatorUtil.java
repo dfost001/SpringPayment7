@@ -174,7 +174,7 @@ public class AddressValidatorUtil {
         if(StringUtil.isNullOrEmpty(value))
            return value;
         
-        String alnum = StringUtil.removePunctuation(value);
+        String alnum = StringUtil.removePunctuation(value); //Retain alphabetic and digits only
         
         if(alnum.length() <= 5)
             return alnum;
