@@ -30,7 +30,7 @@ public class AddressFormatter {
 	
     private static final char SPACE = (char)32;
 	
-	public static String format(String line){
+    public static String format(String line){
             
                 if(line == null || line.isEmpty()) return line;
             

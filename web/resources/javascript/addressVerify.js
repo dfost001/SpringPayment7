@@ -52,12 +52,12 @@ var processAddress = function(){
     };
     
     var fillRequest = function(){
-        
+        request.country = $("#countrySelect").val();
         request.street = $("#address1").val();
         request.city = $("#citySelect").val() === "" ? "" : $("#citySelect option:selected").text();        
-        request.state = $("#state").val();
+        request.state = request.country === 103 ? $("#state").val() : $("#district").val();
         request.zipcode = $("#postalCode").val();
-        request.country = $("#countrySelect").val();
+        
        // console.log("addressVerify#fillRequest:country=" + request.country);
         
     };
@@ -322,7 +322,9 @@ var processAddress = function(){
          
         $("#btnConfirm").hide(500); //Will overwrite edits          
         
-        var html = "Please verify after edits are complete. ";
+        //var html = "Please verify after edits are complete. ";
+        
+        var html = "If the address contains a city not in the list, a zip-code is required." ;
         
         var selectorAlert = ".divAddrInfo";
         

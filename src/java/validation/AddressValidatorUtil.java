@@ -9,6 +9,7 @@ package validation;
 import error_util.EhrLogger;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import model.customer.PostalAddress;
 import model.customer.States;
 import org.springframework.stereotype.Component;
@@ -159,16 +160,22 @@ public class AddressValidatorUtil {
         return false;
     }
     
-    public  void validatePostalCode(PostalAddress postalEntity, States state, Errors errors){
+    public  void validatePostalCodeMvc(PostalAddress postalEntity, Errors errors, Optional<States> stateEntity){
         
-        String zip = this.formatUsZip(postalEntity.getAddressId().getPostalCode()) ;
-        
-        postalEntity.getAddressId().setPostalCode(zip);
-        
-        if(isValidPostalCode(errors, zip, "addressId.postalCode"))
-            validateZipRange(errors, zip, state, "addressId.postalCode");
-    }
-    
+       String formatted = isValidPostalCode(postalEntity.getAddressId().getPostalCode(), 
+               errors, "addressId.postalCode", true);
+       
+      // EhrLogger.printToConsole(this.getClass(), "validatePostalCodeMvc", "edited = " + formatted);
+       
+       postalEntity.getAddressId().setPostalCode(formatted);
+                
+       if(errors.getFieldError("addressId.postalCode") == null && stateEntity.isPresent())  {    
+            validateZipRange(errors, formatted, stateEntity.get(), "addressId.postalCode");
+       }       
+    }  
+    /*
+     * Currently not used - reformatting outside of an event
+    */
      public String formatUsZip(String value) {
         
         if(StringUtil.isNullOrEmpty(value))
@@ -179,40 +186,63 @@ public class AddressValidatorUtil {
         if(alnum.length() <= 5)
             return alnum;
         
-        return alnum.substring(0,5) + "-" + alnum.substring(5);        
-          
+        return alnum.substring(0,5) + "-" + alnum.substring(5);              
+    }  
+    /*
+     * Need to make sure hyphen is not leading/trailing - 
+     * Will not be able to reformat once assigned, if in the Errors collection
+     * Does formatter remove leading/trailing hyphens: YES
+     */
+    public String isValidPostalCode(String value, Errors errors, String name, boolean isMvc) { 
+        
+        if(StringUtil.isNullOrEmpty(value))
+            return value;
+        
+        boolean valid = false;
+        boolean truncate = false;        
+        
+        int pos = value.indexOf("-");        
+        
+        if(pos > -1) {         
+            valid = validateZipSub(value.substring(0,pos), errors, name);
+            if(isMvc && valid){                
+                 truncate = validatePlusFour(value.substring(pos+1));
+            }
+            else if(!isMvc) {
+                truncate = validatePlusFour(value.substring(pos+1));
+            }             
+        } else {
+            validateZipSub(value, errors, name);            
+        }        
+        if(truncate)
+           return value.substring(0, pos);
+        return value;
     }
     
-    public boolean isValidPostalCode(Errors errors, String zip, String fld) {
+    private boolean validateZipSub(String zipSub, Errors errors, String name) {
         
-       // System.out.println("AddressValidator#validatePostalCode:zip length=" + zip.length());
-       
-        if(zip == null)
-           EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(),
-                   "isValidPostalCode", "Zip String Parameter is Null.");
+        boolean valid = false;
         
-        if (zip.length() == 5) {
-            if (!allDigits(zip)) {
-                errors.rejectValue(fld, "", "Only digits, please.");
-                return false;
-            } else {
-                return true;
-            }
-        } else if (zip.length() == 10) {
-            if (!allDigits(zip.substring(0, 5))
-                    || zip.charAt(5) != '-'
-                    || !allDigits(zip.substring(6))) {
-                errors.rejectValue(fld, "", "5 plus 4 digits delimited by a dash required.");
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            errors.rejectValue(fld, "", "5 or 5 plus 4 digits required.");
-            return false;
+        if( zipSub.length() != 5 && !StringUtil.allDigits(zipSub)) {
+                 errors.rejectValue(name, "", "All digits and a length of 5 for the main zip. ");                
         }
-        
+        else if(zipSub.length() != 5) {
+            errors.rejectValue(name, "", "A length of 5 for the main zip, please. ");
+        }
+        else if(!StringUtil.allDigits(zipSub)){
+             errors.rejectValue(name, "", "All digits for the main zip, please. ");
+        }
+        else valid = true;
+        return valid;
     }
+    
+    private boolean validatePlusFour(String plusFour) {
+        boolean truncate = false;
+        if(plusFour.length() != 4 || !StringUtil.allDigits(plusFour))
+            truncate = true;
+        return truncate;
+    }
+   
     public  boolean validateZipRange(Errors errors, String zip, States state, String fld) {        
        
         
@@ -237,9 +267,7 @@ public class AddressValidatorUtil {
        //System.out.println("AddressValidator#returning with error " + msg); 
        
        return false;
-    } 
-   
-    
+    }    
     
     private  boolean allDigits(String entry){
         for(int i=0; i < entry.length(); i++)

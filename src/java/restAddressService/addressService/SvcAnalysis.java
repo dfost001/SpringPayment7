@@ -9,19 +9,19 @@ import restAddressService.AjaxRequest;
 public class SvcAnalysis implements Serializable{
 	  private List<FieldEhr> errors = null; 
           private Boolean valid = false;
+          private boolean confirmRequired = false;
+          private AjaxRequest ajaxRequest = null;  
 	  private String zip = ""; //reformatted postalCode
 	  private String zipPlus4 = "";
 	  private String city = "";
           private String deliveryLine = ""; //user-entered street-line
           private String validatedStreetLineFormat = ""; //composed street-line
-	  private String stateAbbrev = "";
-          private boolean confirmRequired = false;
+	  private String stateAbbrev = "";         
           private Short cityId = null;
           private boolean cityInsertionRequired = false;	  
           private Boolean continueOnInvalid = false;   
           private String validWarningMessage = "";
-          private List<String> svcMessages;        
-          private AjaxRequest ajaxRequest = null;               
+          private List<String> svcMessages;                         
           private String componentsFoundLine = "";
          // private String streetMinusSecondary = "";
 	  private String matchCode = "";

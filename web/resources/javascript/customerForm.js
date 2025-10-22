@@ -2,17 +2,13 @@
  * see doLists.js for getCityList(), getStateList(), showError()
  */
 $(document).ready(
-        function () {
-            
+        function () {            
             var process = processAddress(); //see addressVerify.js
-            process.bindHandlers(); 
-            
+            process.bindHandlers();             
                       
             $("#phone").mask("(999) 999-9999");          
            
-            $(":submit[disabled]").css("cursor","not-allowed");
-
-            //var cityList = [];     
+            $(":submit[disabled]").css("cursor","not-allowed");           
             
              function debug(value, title) {
                 if(value === null) {
@@ -104,6 +100,23 @@ $(document).ready(
                   }
               }             
             }
+            /*
+             * To do: Error Check: If no option is selected when loop completes?
+             * @returns {undefined}
+             */
+            function setSelectedIfStateName() {
+                
+                var countryId = $("#countrySelect").val();
+                if(countryId != 103) return;
+                var districtVal = $("#district").val();
+                if(districtVal.length <= 2) return; //State Abbreviation already updated/selected
+                var stateSelectBox = document.getElementById("state");
+                for(var i = 0; i < stateSelectBox.options.length; i++) {
+                    var option = stateSelectBox.options[i];
+                    if(option.text.toLowerCase() === districtVal.toLowerCase())
+                        option.selected = true;
+                }
+            }
             
             function fillCitiesList(data) {
                
@@ -123,15 +136,12 @@ $(document).ready(
                 }                
             }  //end  fillCities  
             
-             /*To do: District value may be fullName not abbreviation 
-              *So state may not be selected
-              *Note: No need to reset City/State if not city not bound, done in Country change
-              */
+            
               function retrieveCitiesByCountryId() {
                 
                var countryId = $("#countrySelect").val();
                 
-                if(countryId === "" )
+                if(countryId === "" ) //Should not happen
                     return;
                 
                 var promise = getCityListByCountry(countryId); //doLists.js
@@ -163,7 +173,7 @@ $(document).ready(
             $("#countrySelect").change(function(){
                 
                  if($(this).val() === "") 
-                     return;
+                     return; //Should not happen
                 
                 clearMessage($("#countrySelect"));
                 
@@ -171,7 +181,7 @@ $(document).ready(
                 $("#state").val(""); 
                 $("#district").val("");
                 
-                $("#cityId").val("");
+                $("#cityId").val(""); //Hidden input
                     
                              
                 retrieveCitiesByCountryId(); 
@@ -228,9 +238,11 @@ $(document).ready(
             scrollToMessageList();
             
             //See hidden control at the top of each form
-            if(!$("#hiddenCountryId").val()) { //Give country-select-box a default option
+            if(!$("#hiddenCountryId").val()) { //On an insertion only, give country-select-box a default option
                 $("#countrySelect").val(103); //Can set selected to String or Number
             } 
+            
+            setSelectedIfStateName();
               
             retrieveCitiesByCountryId();     
             

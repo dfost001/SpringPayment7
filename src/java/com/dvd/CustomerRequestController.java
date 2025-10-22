@@ -119,7 +119,7 @@ public class CustomerRequestController implements Serializable {
         }
         catch(NumberFormatException fex){      
             
-            idErrorMsg = "Id '" + id + "' cannot be converted to a number";
+            idErrorMsg = "Id '" + id + "' is too large or is not numeric.";
             
             this.idErrorVal = id;
             

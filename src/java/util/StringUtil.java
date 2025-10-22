@@ -184,7 +184,15 @@ public class StringUtil {
         
         return source;
     }
-    
+    public static String removeAllSpaces(String value) {
+        
+        if(value == null) {
+            return value;
+        }
+        value = value.trim().replaceAll("\\s+", "");
+        return value;
+        
+    }
     public static String removePunctuation(String value, String...exclude) {
         
         if(isNullOrEmpty(value)) return value;

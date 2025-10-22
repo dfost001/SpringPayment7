@@ -152,23 +152,21 @@ public class CustomerController implements Serializable {
      * and there are no conversion errors (all input is of type String),
      * BindingResult will have no errors, and is returned in the model to update
      * bindingResult in the session.
-     * Note: If Conversion errors, cannot remove BindingResult from session if declared
-     * with @SessionAttributes at type-level. Will have to revise to template code.
+     * 
      * Note: BindingResult is not returned in the session if the customer is an
      * uncommitted insert, since we want an error result to remain in the session.
      * However, reset button should not be rendered if customerId is empty
      */
     @RequestMapping(value="/reset", method = RequestMethod.POST)
     public String reset(@ModelAttribute(value="customer", binding=false) Customer c, BindingResult result,
-            ModelMap map, HttpSession session){            
-       
+            ModelMap map, HttpSession session){         
        
        System.out.println("CustomerController#reset: bindingResult has errors = "
            + result.hasErrors()); //hasErrors = false
         
         Short id = c.getCustomerId();
         
-        if(id == null){ //Keep previous BindingResult in the session
+        if(id == null){ //Keep previous BindingResult in the session; do not add BindingResult to model
             this.addModelAttributes(map, c);
             return "showCustomer";
         }    
@@ -281,7 +279,7 @@ public class CustomerController implements Serializable {
      */
     private void addModelAttributes(ModelMap map, Customer customer) {     
         
-         map.addAttribute(ConstantUtil.CUSTOMER_SESSION_KEY, customer); //commandName
+         map.addAttribute(ConstantUtil.CUSTOMER_SESSION_KEY, customer); //Optional;commandName transparently added
          
          map.addAttribute("cart", cart); //cart widget on navigation panel
          

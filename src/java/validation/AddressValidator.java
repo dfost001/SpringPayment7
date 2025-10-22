@@ -7,6 +7,7 @@ package validation;
 
 import error_util.EhrLogger;
 import java.io.Serializable;
+import java.util.Optional;
 
 
 import model.customer.PostalAddress;
@@ -68,9 +69,10 @@ public class AddressValidator implements Validator, Serializable{
         validatorUtil.validateAddressLineFormat(postal.getAddressId().getAddress1(), 
                 "addressId.address1", errors);
 
-        validatorUtil.validatePostalCode(postal, ui.getState(), errors);  
+        validatorUtil.validatePostalCodeMvc(postal, errors, Optional.of(ui.getState()));  
         
-        EhrLogger.printToConsole(this.getClass(), "validate", "exiting"); 
+        EhrLogger.printToConsole(this.getClass(), "validate", "exiting: zip=" +
+                postal.getAddressId().getPostalCode()); 
 
     }
     

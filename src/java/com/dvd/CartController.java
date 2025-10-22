@@ -120,7 +120,7 @@ public class CartController implements Serializable{
         
         map.addAttribute("cart",cart); //Widget on navigation bar       
        
-        map.addAttribute("constantUtil", this.constantUtil);  //Declares keys for      
+        map.addAttribute("constantUtil", this.constantUtil);  //Declares keys for  currentUrl, loginTime    
        
         map.addAttribute("applicationAttributes", this.applicationAttributes); //Side-bar
         

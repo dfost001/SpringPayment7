@@ -5,6 +5,8 @@
  */
 package restAddressService;
 
+
+import error_util.EhrLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,7 @@ public class AjaxAddressValidator {
     @Autowired
     private AddressValidatorUtil addrValidator;   
     
+    
        
     public void validate(AjaxRequest request, BindingResult errors)   
      throws IllegalArgumentException {   
@@ -34,50 +37,59 @@ public class AjaxAddressValidator {
                 return; //Throws for not annotated or returns a boolean
         
         if(!isUnitedStates(request.getCountry(),errors))
-            return;
+            return;   
         
-        String street = request.getStreet(); //formatted to empty string by deserializer      
-               
-        addrValidator.validateAddressLineFormat(street, AddrSvcConstants.fldStreet, errors);
-        
+        String street = request.getStreet(); //formatted to empty string by deserializer    
+         
         String zip = StringUtil.getValueOrEmpty(request.getZipcode());
         
-        if(!zip.isEmpty()) {
-            zip = addrValidator.formatUsZip(zip);
-            addrValidator.isValidPostalCode(errors, zip, AddrSvcConstants.fldZip);//Fix:Use less stringent
-            request.setZipcode(zip);
-        }
-        this.validateRequiredFields(StringUtil.getValueOrEmpty(request.getCity()),
-                zip,
-                StringUtil.getValueOrEmpty(request.getState()), errors);              
-              
+        String city = StringUtil.getValueOrEmpty(request.getCity()); 
+        
+        String district = StringUtil.getValueOrEmpty(request.getState());
+        
+        addrValidator.validateAddressLineFormat(street, AddrSvcConstants.fldStreet, errors);       
+        
+        /*if(!zip.isEmpty()) {         
+         
+           String formatted = addrValidator.isValidPostalCode(zip, errors, AddrSvcConstants.fldZip);
+          
+           request.setZipcode(formatted);
+        }*/   
+        
+        String zipFormatted = validateRequiredFields(city, zip, district, errors);   
+        
+       request.setZipcode(zipFormatted);
     }
     
-  
+   
     
     private Boolean checkConstraints(String country, String street, BindingResult errors){
         
         String message = "";
         Boolean hasErrors = false;
         
-        if(street == null || street.trim().isEmpty()){
+        String notAnnotatedEhr = "Empty field not handled by JSR constraint violation: ";
+        String annotatedEhr = "Empty fields are annotated, " +
+                "but should be handled by custom validation: city/state/zip. ";
+        
+        if(StringUtil.isNullOrEmpty(street)){
             if(!errors.hasFieldErrors(AddrSvcConstants.fldStreet))
-              message = "Empty street not caught by JSR bean constraint annotation";
+              message = notAnnotatedEhr + "Empty street";
             else hasErrors = true;
         }
-        if(country == null || country.trim().isEmpty()) {
+        if(StringUtil.isNullOrEmpty(country)) {
             if(!errors.hasFieldErrors(AddrSvcConstants.fldCountry))
-               message += "Empty country not caught by JSR bean constraint annotation. ";  
+               message = message.isEmpty() ? notAnnotatedEhr + "Empty country. " :
+                       message + " and country. ";
             else hasErrors = true;
         }
         if(!message.isEmpty())
-            throw new IllegalArgumentException(this.getClass().getName()
-             + "#checkConstraints: " + message);
+            EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(), "checkConstraints", message);
         
         if(errors.hasFieldErrors(AddrSvcConstants.fldCity) ||
-                errors.hasFieldErrors(AddrSvcConstants.fldState))
-             throw new IllegalArgumentException(this.getClass().getName()
-             + "#checkConstraints: City and/or State are constraint annotated");
+                errors.hasFieldErrors(AddrSvcConstants.fldState) ||
+                errors.hasFieldErrors(AddrSvcConstants.fldZip))
+            EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(), "checkConstraints", annotatedEhr);
         
         return hasErrors;
     }
@@ -92,7 +104,7 @@ public class AjaxAddressValidator {
         return true;
     }
     
-    private boolean validateRequiredFields(String city, String zip,  String state, BindingResult errors) {
+   /* private boolean validateRequiredFields(String city, String zip,  String state, BindingResult errors) {
         
         System.out.println("AjaxAddressValidator#validateRequiredFields: processing");
         
@@ -102,5 +114,21 @@ public class AjaxAddressValidator {
             return true;       
         errors.reject(null,"Either a zipcode or a city and state is required.");
         return false;
-    }
+    }*/   
+    
+     private String validateRequiredFields(String city, String zip,  
+             String state, BindingResult errors) {
+         
+         String formatted = zip;
+         
+         boolean isMvc = false;
+         
+         if(state.isEmpty() || city.isEmpty()) {
+             if(!zip.isEmpty())
+                 formatted = this.addrValidator.isValidPostalCode
+                                          (zip, errors, AddrSvcConstants.fldZip, isMvc);
+             else errors.reject(null,"Either a zipcode or a city and state is required.");
+         }
+         return formatted;
+     }
 }

@@ -71,7 +71,7 @@ public class Address implements Serializable {
     
     @Column(name="postal_code", length=10)
     @NotEmpty 
-    @Size(min=4, max=10)
+    //@Size(min=4, max=10)- Using custom validation
     @TextFormat({TextFormat.Format.POSTAL_CODE, TextFormat.Format.UPPER})
     private String postalCode;
     

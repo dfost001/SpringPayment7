@@ -54,22 +54,22 @@ public class EmailValidValidator implements ConstraintValidator<EmailValid, Stri
        if(value == null || value.trim().isEmpty()) 
            return false;  //should be trapped by composite annotation 
        
-       if(!isValidLocalDelimiter(context,value)){ // '@' missing, trailing, more than one
+       if(!isValidLocalDelimiter(context,value)){ // '@' missing, trailing, missing local, more than one
              
-          return false;   //ensure some length after the '@'
+          return false;   //ensures some length after the '@'
        }
       /* else  if(isMissingLocal(context, value)) {  
-           return false;
+           return false; -- Messaged at isValidLocalDelimiter
        }*/
-       else if(isDelimiterFormatError(context,value)){ //Invalid punctuation following '@'
+       else if(isDelimiterFormatError(context,value)){ //Invalid punctuation preceding/following '@'
            
            return false;
        }
-       else if(isMissingHost(context, value)) {   //Substring following '@' found as TLD      
+       else if(isMissingHost(context, value)) {   //Substring following '@' found as TLD - user@com     
                  
           return false;   
        }
-       else if(isFormatError(context, value)) { //No period or Invalid punctuation preceding/following
+       else if(isFormatError(context, value)) { //No period or Invalid punctuation preceding/following period
            
            return false; 
        }
@@ -88,8 +88,6 @@ public class EmailValidValidator implements ConstraintValidator<EmailValid, Stri
     private boolean isValidLocalDelimiter(ConstraintValidatorContext ctx,
             String value){
         
-       //System.out.println("EmailValidator#isValidLocalDelimiter: " + value) ;
-       
        int position = value.indexOf("@"); 
        
        if(position == -1) {
@@ -108,16 +106,12 @@ public class EmailValidValidator implements ConstraintValidator<EmailValid, Stri
            this.addConstraintViolation(ctx, this.multipleDelimiter);
            return false;
        }
-       if(position == 0) {
+       if(position == 0) { //Evaluate char preceding in next sub
            this.addConstraintViolation(ctx, this.missingLocal);
            return false; 
        }
        
-       if(!Character.isDigit(value.charAt(position - 1))
-          && !Character.isAlphabetic(value.charAt(position - 1))) {       
-           this.addConstraintViolation(ctx, this.symbolBeforeDelimiter);
-           return false;
-        }
+     
        return true;
     }
     private boolean isMissingLocal(ConstraintValidatorContext ctx, String value) {
@@ -145,12 +139,18 @@ public class EmailValidValidator implements ConstraintValidator<EmailValid, Stri
         
         char c = value.charAt(position+1); //length already evaluated
         
-        if(Character.isDigit(c) || Character.isAlphabetic(c)){
-           
-            return false;
+        if(!Character.isDigit(c) && !Character.isAlphabetic(c)){
+            this.addConstraintViolation(ctx, this.formatErrDelimiter);
+            return true;
         }
-        this.addConstraintViolation(ctx, this.formatErrDelimiter);
-        return true;
+        
+        c = value.charAt(position - 1); //length before already evaluated
+       
+        if(!Character.isDigit(c) && !Character.isAlphabetic(c)) {       
+           this.addConstraintViolation(ctx, this.symbolBeforeDelimiter);
+           return true;
+        }
+        return false;
     }
     
     /*
@@ -204,7 +204,9 @@ public class EmailValidValidator implements ConstraintValidator<EmailValid, Stri
         }
         return isInvalidSequence(ctx, value.substring(posPeriod+1)); //recurse with remaining substring
     }
-    
+    /*
+     * Length after '@' already evaluated
+     */
     private boolean isMissingHost(ConstraintValidatorContext ctx, String value) {       
         
         int position = value.indexOf("@");

@@ -124,15 +124,14 @@ public class FormatterUtil {
         boolean included = false;
         
        if(value == null || value.trim().isEmpty()) 
-           return "";
+           return "";      
        
-       
-        if(isEmail){ //Currently only string after the '@' is edited
-            if(value.indexOf('@') != -1) { 
+       if(isEmail){ //Currently only string after the '@' is edited
+           if(value.indexOf('@') != -1) { 
                 
-                 emailLocal = value.substring(0, value.indexOf('@')); 
+                emailLocal = value.substring(0, value.indexOf('@')); 
                  
-                 value = value.substring(value.indexOf('@'));
+                value = value.substring(value.indexOf('@'));
                   
             }
             else return value; //Currently, local-user is not formatted
@@ -174,7 +173,7 @@ public class FormatterUtil {
                         else included = false;
                          break;
                     case '/' :
-                        if(isEmail || isProperName || isPostalName){
+                        if(isEmail || isProperName || isPostalName || isPostalCode){
                             included = false;
                         }
                         else if(Character.isAlphabetic(prev)|| Character.isDigit(prev) ){
@@ -202,9 +201,9 @@ public class FormatterUtil {
                         if(isEmail || isProperName || isPostalName)
                             included = false;
                         else if(edited.isEmpty())
-                            edited += c;
+                            edited += c; //First char
                         else if(Character.valueOf(prev).toString().equals(SPC))
-                            edited += c; //can only be followed by a letter or digit
+                            edited += c; //First char in word
                         else if(Character.isAlphabetic(prev) || Character.isDigit(prev)) 
                             edited += SPC + '#';
                         else included = false;
@@ -217,7 +216,7 @@ public class FormatterUtil {
                                 && i + 2 < value.length() 
                                 && value.charAt(i+1) == (char)32                                    
                                 && Character.isAlphabetic(value.charAt(i+2)))
-                              edited += c;  
+                              edited += c;  //Include if preceded by a space and followed by a space plus char
                         else if(Character.isAlphabetic(prev))
                             edited += c; //punctuation or space following will be removed
                         //replace preceding space with amp if following char is alphabetic

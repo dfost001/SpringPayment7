@@ -79,12 +79,16 @@ public class TextFormatDeserializer extends JsonDeserializer<String>{
        
        if(annotated == null)
             throw new IllegalArgumentException(this.getClass().getName() 
-              + "#processFormat:annotated model field not found");
+              + "#processFormat:annotated address field not found");
        
        TextFormat a = annotated.getAnnotation(TextFormat.class);
        
-       System.out.println(this.getClass().getCanonicalName()
-         + ": got annotated field: " + a.getClass().getCanonicalName());
+        if(a == null)
+            throw new IllegalArgumentException(this.getClass().getName() 
+              + "#processFormat:annotation on address field not found");
+       
+       /*System.out.println(this.getClass().getCanonicalName()
+         + ": got annotated field: " + a.getClass().getCanonicalName());*/
        
        TextFormat.Format [] formats = a.value();
        
