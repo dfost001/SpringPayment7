@@ -135,6 +135,13 @@ public class BeanUtil {
     public static void throwNotFullyInstantiated(Object obj, String info, 
             String ... exclude) {
         
+        System.out.println("Entering BeanUtil#throwNotFullyInstantiated");
+        
+        if(obj == null) {
+            String err = info + ": Container object is null. " ;
+            BeanUtil.throwIllegalArg("throwNotFullyInstantiated", err);
+        }
+            
         
         List<String> exList = new ArrayList<>();
         
@@ -240,5 +247,10 @@ public class BeanUtil {
                 + "} - uninitialized property(s).";
         throw new IllegalStateException(message);
         
+    }
+    
+    private static void throwIllegalArg(String method, String err) {
+        String msg = "BeanUtil#" + method + ": " + err;
+        throw new IllegalArgumentException(msg) ;
     }
 }

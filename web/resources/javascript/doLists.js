@@ -150,7 +150,7 @@ var doError = function (xhr, url) {
            console.log("obj=" + xhr.responseText);
     }   
 
-    /* Set hidden parameters uploaded to AjaxErrorController */
+   
     if (obj && obj.exceptionName) {
         $.each(obj, function (key, value) {
             var selector = "#" + key;

@@ -9,10 +9,9 @@ package httpUtil;
  *
  * @author dinah
  */
-public class DeserializationException extends RuntimeException {
+public class ErrObjectHandlerException extends RuntimeException {
     
-    public DeserializationException(String message) {
-        
+    public ErrObjectHandlerException(String message){
         super(message);
     }
     

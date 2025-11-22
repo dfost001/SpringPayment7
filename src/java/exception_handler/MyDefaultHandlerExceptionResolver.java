@@ -47,14 +47,9 @@ public class MyDefaultHandlerExceptionResolver extends DefaultHandlerExceptionRe
         
      String url = req.getRequestURL().toString();
     
-     String viewName =  "error/springFrameworkError";  
-     
-     if(ex == null)
-         EhrLogger.printToConsole(this.getClass(), "doResolveException", "Executing request: "
-             + url + " Exception is null" );   
-     
-     else EhrLogger.printToConsole(this.getClass(), "doResolveException", "Executing request: "
-             + url + " Exception=" + ex.getClass().getCanonicalName());       
+     String viewName =  "error/springFrameworkError";       
+    
+     this.doConsolePrints(ex, url);
      
      if(ex.getClass().equals(HttpMediaTypeNotAcceptableException.class))
            
@@ -64,6 +59,15 @@ public class MyDefaultHandlerExceptionResolver extends DefaultHandlerExceptionRe
      
      return EhrLogger.initErrorView(url, ex, viewName, this.getClass().getCanonicalName());        
        
+    }
+    
+    private void doConsolePrints(Exception ex, String url) {
+       if(ex == null)
+         EhrLogger.printToConsole(this.getClass(), "doResolveException", "Executing request: "
+             + url + " Exception is null" );   
+     
+       else EhrLogger.printToConsole(this.getClass(), "doResolveException", "Executing request: "
+             + url + " Exception=" + ex.getClass().getCanonicalName());       
     }
     
 }//

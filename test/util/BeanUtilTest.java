@@ -58,11 +58,7 @@ public class BeanUtilTest {
         
         list.add(postal);
         
-        invokeTest(list,exclude);
-        
-       
-        
-        
+        invokeTest(list,exclude);       
     }
     
     private void invokeTest(List<PostalAddress> postalList,  String[] exclude) {

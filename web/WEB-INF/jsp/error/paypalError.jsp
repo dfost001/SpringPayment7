@@ -44,8 +44,8 @@
         <h4 class="plus">Technical Support: </h4>
         <div>
             Exception: ${exception.class.canonicalName} <br/>
-            <c:if test="${exception.class.cause ne null}">
-                Cause: ${exception.class.cause.canonicalName}<br/>
+            <c:if test="${exception.cause ne null}">
+                Cause: ${exception.cause.class.canonicalName}<br/>
             </c:if>    
             Handler: ${handler}<br/>
             Friendly: ${exception.friendly} <br/>

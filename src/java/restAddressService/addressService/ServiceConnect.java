@@ -1,5 +1,6 @@
 package restAddressService.addressService;
 
+import error_util.EhrLogger;
 import restAddressService.client.Candidates;
 import restAddressService.client.Request;
 import httpUtil.HttpException;
@@ -125,12 +126,11 @@ public class ServiceConnect {
                 entity = response.readEntity(String.class);
             }
             
-            System.out.println("ServiceConnect#doConnect:exception caught:" 
-                    + ex.getClass().getCanonicalName() + ": " + ex.getLocalizedMessage());
+            EhrLogger.printToConsole(this.getClass(), "doConnect", 
+                    ex.getClass().getCanonicalName() + ": " + ex.getLocalizedMessage());
             
             new JerseyClientUtil(this.getClass(),"doConnect")
-                    .handleException(ex, response, entity);
-                   
+                    .handleException(ex, response, entity);                   
         } 
         
         return candidates;

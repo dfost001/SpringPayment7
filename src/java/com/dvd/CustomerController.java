@@ -85,7 +85,7 @@ public class CustomerController implements Serializable {
     public void initValidator(WebDataBinder binder) {
         
        binder.addValidators(addressValidator, cityZipValidator);    
-     
+      //binder.addValidators(addressValidator);  
     }  
     
     @RequestMapping(value="/cancelLogin", method=RequestMethod.POST)

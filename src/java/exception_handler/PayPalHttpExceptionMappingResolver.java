@@ -5,16 +5,19 @@
  */
 package exception_handler;
 
+import com.google.gson.JsonSyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import error_util.EhrLogger;
+import httpUtil.ErrObjectHandlerException;
 import httpUtil.HttpClientException;
 import httpUtil.HttpConnectException;
 import httpUtil.HttpException;
 import java.util.List;
 import java.nio.charset.CharacterCodingException;
 import java.util.HashMap;
+import javax.xml.bind.JAXBException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 import pp_payment.ErrDetail;
@@ -48,8 +51,8 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
      * Keys for Address Validation Message and Path
     */
     private static final String VALIDATION_ERROR_MESSAGE = "validationErrorAddress"; //address error message
-    private static final String VALIDATION_ERROR_PATH = "validationErrorPath" ; //redirect path to select view    
-    private final String redirectToSelect = "/shippingAddress/handlePayPalAddressError";
+    private static final String VALIDATION_ERROR_PATH = "validationErrorPath" ; //key to select view    
+    private final String redirectToSelect = "/shippingAddress/handlePayPalAddressError"; //value of select handler
     
     private PaymentAttributes paymentAttrs;   
     
@@ -121,18 +124,22 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
        
        mav.addObject(IS_RECOVERABLE_KEY, isRecoverableKey);
        
-       /* CharacterCodingException */
-       if(ex.getCause() != null && ex.getCause().getClass().equals(CharacterCodingException.class)){
-           paymentAttrs.onPaymentError(this.getClass()); //reset payment objects
-           return;
-       }
-       
-      /* JsonSyntax problem */
-       if(ex.getResponseCode() >= 200 && ex.getResponseCode() < 300) { 
-           paymentAttrs.onPaymentError(this.getClass()); //reset payment objects, update time
-           return;
-       } 
-       
+      if(ex instanceof HttpClientException) {
+          if (this.evalDecodingError((HttpClientException)ex)) {
+             paymentAttrs.onPaymentError(this.getClass()); //reset payment objects, update time
+             return; 
+          }
+      }   
+      
+      if(ex.getResponseCode() >= 200 && ex.getResponseCode() < 300
+              || ex.getCause() instanceof CharacterCodingException) {
+           String msg = EhrLogger.doError(this.getClass().getName(), "evalException", 
+                   "Problem with code that resolves a decoding issue");
+           paymentAttrs.onPaymentError(this.getClass());
+           throw new RuntimeException(msg);
+        }
+      
+     
        if(ex.getResponseCode() >= 400 && ex.getResponseCode() < 500) {             
                     
           paymentAttrs.onPaymentError(this.getClass()); //reset payment objects, update time
@@ -147,7 +154,8 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
            return;
        }          
        
-       String path = "";
+       String path = "";      
+       
        
        if(ex.getResponseCode() >= 500 && ex.getResponseCode() < 600) {
            
@@ -171,7 +179,20 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
        else mav.addObject(IS_PAYMENT_RESET, false); 
        
   } //end eval
-  
+  private boolean evalDecodingError(HttpClientException clientEx) {
+      
+      Throwable ex = clientEx.getCause();
+      
+      Class<?> clz = ex.getClass();
+     
+      if(clz == CharacterCodingException.class ||
+         clz == JAXBException.class ||     
+         clz == JsonSyntaxException.class ||
+         clz == ClassCastException.class ||
+         clz == ErrObjectHandlerException.class )
+             return true;
+      return false;
+  }
   private void evalPayPalError(PayPalError err, HttpClientException ex, ModelAndView mav) {     
       
       if(err.getName().equals("PAYMENT_ALREADY_DONE")){

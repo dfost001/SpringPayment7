@@ -18,7 +18,7 @@
     </head>
     <body>
         <div class="container">
-            <h5> Please set Accept request to application/json </h5>         
+            <h5> Please set Accept request header to application/json </h5>         
         </div>
         
     </body>

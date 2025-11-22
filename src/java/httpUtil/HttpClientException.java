@@ -11,15 +11,13 @@ package httpUtil;
 public class HttpClientException extends HttpException{
     
    
-    private String debug = "";
-    private String textMessage = "";
-    private Object errObj = null;
+    private String debug = ""; //Raw content
+    private String textMessage = ""; //Content-Type
+    private Object errObj = null; //Service-Defined
     
     public HttpClientException(Throwable cause, String message, String friendly, String method){
         
-        super(cause, message, friendly, method);
-       
-        
+        super(cause, message, friendly, method);       
     }
     
     public String getDebug() {

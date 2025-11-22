@@ -4,6 +4,7 @@
  */
 package restAddressService.addressService;
 
+import com.mysql.jdbc.StringUtils;
 import error_util.EhrLogger;
 import restAddressService.client.Candidates;
 import restAddressService.client.Request;
@@ -35,8 +36,7 @@ public class AddressSvc {
     private String footnotes = "";
     /*
      *Additional fields initialized by this component and returned in analysis
-    */
-   
+    */   
     private String validatedStreetLineFormat = "";
     private String componentsFoundLine = "";
     private boolean isValidatedMatch = false;    
@@ -53,7 +53,7 @@ public class AddressSvc {
     private ArrayList<String> orderedDpvNotes = null;
     private ArrayList<String> detailsDpv = null;
     
-    private static final String CONFIRM_PROMPT = "Press \"Confirm\" to assign revisions. " ;           
+    private static final String CONFIRM_PROMPT = "Press \"Confirm\" to assign revisions, then \"Re-verify\". " ;           
    
     private static final String NO_INFO = "Invalid Error: No information returned. ";
               
@@ -143,7 +143,7 @@ public SvcAnalysis verify(Candidates candidates) {
         
         this.assignAddressRevisedNote();  
         
-        this.assignCompassFoundNote(); //isCompassError initialized by footnotes
+       // this.assignCompassFoundNote(); //isCompassError initialized at  footnotes
         
         this.assignAddressFoundNote();
                    
@@ -163,7 +163,7 @@ public SvcAnalysis verify(Candidates candidates) {
         */
        private void assignAddressFoundNote() {          
           
-           String street = matchCode != null ? this.getValidatedStreetFormat():
+           String street = this.getValidatedStreetFormat() != null ? this.getValidatedStreetFormat():
                    this.deliveryLine; //Validated not generated if match==null
             
             String zip = !this.zipcode.isEmpty() && !this.plus4.isEmpty() ?
@@ -205,9 +205,9 @@ public SvcAnalysis verify(Candidates candidates) {
             
              Candidate.Components comp = this.candidate.getComponents();
              
-             String designator = comp.getSecondaryDesignator();
+             String designator = comp.getSecondaryDesignator();            
              
-             if(designator == null || designator.trim().isEmpty())
+             if(StringUtil.isNullOrEmpty(designator))
                  return "";
              
              if(StringUtil.isNullOrEmpty(comp.getSecondaryNumber()))
@@ -230,7 +230,7 @@ public SvcAnalysis verify(Candidates candidates) {
             
             debugPrintValidatedStreetFormat(comp);
             
-            if(this.matchCode == null)
+            if(this.matchCode == null && !this.isCompassError)
                 return new String();
             
             String pmb = comp.getPmbDesignator()  
@@ -328,7 +328,7 @@ public SvcAnalysis verify(Candidates candidates) {
            * Components are mal-formed: Ordinal suffix removed; Plus 4 removed from zip.           
            */
            
-           if(matchCode != null) {
+           if(!this.validatedStreetLineFormat.isEmpty()) {
                gmessage += compareStreetAndZip(addressEntry);
            }      
             
@@ -348,8 +348,7 @@ public SvcAnalysis verify(Candidates candidates) {
         
          String gmessage = "";
         
-         if(!validatedStreetLineFormat.isEmpty() &&
-                 !StringUtil.tokenizeAndCompare(validatedStreetLineFormat,
+         if(!StringUtil.tokenizeAndCompare(validatedStreetLineFormat,
                   addressEntry.getStreet(), false)) { //boolean ignoreSize -> false
                 FieldEhr ehr = new FieldEhr();
                 ehr.setField(AddrSvcConstants.fldStreet);
@@ -359,16 +358,15 @@ public SvcAnalysis verify(Candidates candidates) {
                 
             }          
             
-            String cmpZipResultPlus = this.initZipPlusFour(); //Returns zipPlus4 or empty           
+            String cmpZipPlus4 = this.initZipPlusFour(); //Returns zipPlus4 or empty           
             
-            String cmpZipEntry = addressEntry.getZipcode() == null ? 
-                    "" : addressEntry.getZipcode();  
+            String cmpZipEntry = StringUtil.getValueOrEmpty(addressEntry.getZipcode());  
                         
-            if(!cmpZipResultPlus.isEmpty() &&
-             !StringUtil.compareExact(cmpZipEntry, cmpZipResultPlus)) {
+            if(!cmpZipPlus4.isEmpty() &&
+             !StringUtil.compareExact(cmpZipEntry, cmpZipPlus4)) {
                 FieldEhr ehr = new FieldEhr();
                 ehr.setField(AddrSvcConstants.fldZip);
-                ehr.setMessage("zipcode found: " + cmpZipResultPlus); 
+                ehr.setMessage("zipcode found: " + cmpZipPlus4); 
                 this.postal.addFieldEhr(ehr);
                 gmessage += "zipcode, ";
             }
@@ -456,10 +454,10 @@ public SvcAnalysis verify(Candidates candidates) {
         
         return valid;        
     }
-    private boolean assignContinueOnInvalid() {       
+    private boolean assignContinueOnInvalid() {         
         
-        if(matchCode == null || matchCode.isEmpty())
-            return false ;
+        if(StringUtils.isNullOrEmpty(matchCode))
+            return false;
         
         String dpv = candidate.getAnalysis().getDpvFootnotes();        
         
@@ -477,31 +475,30 @@ public SvcAnalysis verify(Candidates candidates) {
                 
             case MATCH_NOT_FOUND : //"N"
                 if(dpv.contains("AA")) {
-                    continueOn = true;
-                    break;
+                    continueOn = true;                   
                 }
+                break;
             case MATCH_SECONDARY_INVALID : //"S" (Invalid Interval or not required)
-                if(dpv.contains("BB") ) { // All valid
-                    continueOn = true; //Address is not a multi-unit. Not required
-                    break;
-                }
-                else if(dpv.contains("C1")) { //Required or invalid interval
-                    continueOn = false;
-                    break;
-                }
-                else if(dpv.contains("AA")) {
+                 if(dpv.contains("BB")) { //Not likely for this matchCode - allValid
                     continueOn = true;
-                    break;
+                    
+                } else if (dpv.contains("C1")) { //Invalid interval
+                    continueOn = false;
+                }
+                else if(dpv.contains("CC")) { //Not required
+                    continueOn = true;                   
                 }         
-                
+                break;
             case MATCH_SECONDARY_REQUIRED : //"D" (Required)
-                if(dpv.contains("N1")) { //Required-almost always
-                    continueOn = false;
-                    break;
+                if(dpv.contains("BB")) { //Not likely for this matchCode - allValid
+                    continueOn = true;
+                   
+                }
+                else if(dpv.contains("N1")) { //Required-almost always
+                    continueOn = false;                   
                 }
                 else if(dpv.contains("AA")) {
-                    continueOn = true;
-                    break;
+                    continueOn = true;                    
                 } 
         }      
         
@@ -559,13 +556,14 @@ public SvcAnalysis verify(Candidates candidates) {
      * Note: recursion ends when fields.substring(2) has a start index equal to the length
      * of the string
      */
-    private void assignDpv(String fields) {
-              
-
+    private void assignDpv(String fields) {     
+        
     	if(fields == null || fields.isEmpty()) {
                 System.out.println("assignDpv: fields is null or empty");
     		return;
         } // Should not happen since, error thrown if empty
+        if(this.isCompassError)
+            return; //Only 1 error message more user-friendly
         String value = "";
         String key = fields.substring(0, 2);        
        
@@ -578,13 +576,14 @@ public SvcAnalysis verify(Candidates candidates) {
             if(key.equalsIgnoreCase("BB")) {
                 this.isAllValidMessage = true;
                 this.orderedDpvNotes.clear(); //Remove 'AA' and foot-notes
-                this.orderedDpvNotes.add(0, value);   
+                this.orderedDpvNotes.add(0, value); 
+                return;
             }
             else if(value.startsWith("Error")){               
                 this.orderedDpvNotes.add(0, value);                
             }            
             else if(value.startsWith("Info:"))
-            	this.orderedDpvNotes.add(value);
+            	this.detailsDpv.add(value);
             
         } catch (NoSuchFieldException | IllegalAccessException ex) {
             
@@ -618,14 +617,15 @@ public SvcAnalysis verify(Candidates candidates) {
                 if(fld.getName().equals("K")){
                     this.isCompassError = true;
                     replaceErrorInMessages(value); //Replace as first message
+                    break;
                 }
                 else if(value.contains("Error:")){
                    
-                    orderedDpvNotes.add(0, value);
-                    //replaceErrorInMessages(value);
+                 //  orderedDpvNotes.add(0, value);
+                   replaceErrorInMessages(value);
                 }   
                 else if(value.contains("Info:")) 
-                    this.orderedDpvNotes.add(value);
+                    this.detailsDpv.add(value); 
                 else if(value.contains("Revision:")) 
                     this.detailsDpv.add(value);
             } catch (NoSuchFieldException | IllegalAccessException ex) {  
@@ -641,6 +641,7 @@ public SvcAnalysis verify(Candidates candidates) {
                 
             } 
         }//end for
+        
     }
     /*
      * Note: Match may be null if there is a compass error

@@ -41,24 +41,23 @@ public class AddressServiceAdvice  {
         String url = request.getRequestURL().toString();
         String handler = this.getClass().getCanonicalName();        
        
-       String view = "";
-       
-       /*if(e.getClass().equals(HttpMediaTypeNotAcceptableException.class))
-             return null; //throw to container, handled by <error-code> in web.xml  */
+        String view = "";     
         
-        response.setStatus(500);
+        response.setStatus(500);        
         
         response.setContentType("application/json");
         
         ModelAndView mav = EhrLogger.initErrorView(url, e, view, handler);  
-        
-        addRecoverableAndLog(e, request, mav);
         
         if(HttpException.class.isAssignableFrom(e.getClass())){
             HttpException httpEx = (HttpException)e;
             mav.addObject("status", httpEx.getResponseCode().toString());   
             
         }   
+        
+        addRecoverableAndLog(e, request, mav);
+        
+       
        
         return mav;       
     }

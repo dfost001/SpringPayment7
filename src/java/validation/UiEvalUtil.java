@@ -83,8 +83,8 @@ public class UiEvalUtil {
         else if(postal.getClass().isAssignableFrom(ShipAddress.class))
             exclude = new String[] {"customerId"};
         
-        String info = postal.getClass().getCanonicalName() +
-                ": " + "Fields of the Address object are not bound: ";
+        String info = this.getClass().getCanonicalName() +
+                "# " + "checkFullyInstantiated: ";
         
         BeanUtil.throwNotFullyInstantiated(postal, info, exclude);
     }

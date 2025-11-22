@@ -64,11 +64,7 @@ public class ResponseUtil {
 
     public void setHandlerValidateErrorObject(IValidateErrorObject handlerValidateErrorObject) {
         this.handlerValidateErrorObject = handlerValidateErrorObject;
-    }
-    
-    
-
-       
+    }       
     public Object processResponse_XML(Class<?>responseType, Class<?> perrType,
             String pjaxbPackage) throws HttpClientException {
         this.errType = perrType;
@@ -76,8 +72,7 @@ public class ResponseUtil {
         this.jaxbPackage = pjaxbPackage;
         this.isXML = true;
         Object o = this.processResponseCode();
-        return o;
-        
+        return o;        
     }
     
     @SuppressWarnings("rawtypes")
@@ -165,7 +160,9 @@ public class ResponseUtil {
       
    }
    
-   private void decodeHttpEntity() throws HttpClientException {     
+   private void decodeHttpEntity() throws HttpClientException {    
+       
+       boolean test = true;
        
        if(response == null || response.length == 0){
            this.decodedEntity = "";
@@ -173,6 +170,10 @@ public class ResponseUtil {
        }
        try {
            decodedEntity = new DecoderUtil2().decode(response);
+           if(test){
+               test = false;
+               throw new CharacterCodingException();
+           }
        }
        catch(CharacterCodingException ex) {
            throw this.initUnmarshalEx(ex, "decodeHttpEntity");
@@ -396,7 +397,7 @@ public class ResponseUtil {
         
         if (err != null && !err.isEmpty()) {
             
-           DeserializationException ex = new DeserializationException(
+           ErrObjectHandlerException ex = new ErrObjectHandlerException (
                 this.handlerValidateErrorObject.getClass().getCanonicalName() +
                         " returned with message: " + err);
            

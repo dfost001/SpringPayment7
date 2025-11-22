@@ -204,22 +204,22 @@ public class AddressValidatorUtil {
         int pos = value.indexOf("-");        
         
         if(pos > -1) {         
-            valid = validateZipSub(value.substring(0,pos), errors, name);
-            if(isMvc && valid){                
+            valid = validateZip5(value.substring(0,pos), errors, name);
+            if(isMvc && valid && !errors.hasErrors()){                
                  truncate = validatePlusFour(value.substring(pos+1));
             }
             else if(!isMvc) {
                 truncate = validatePlusFour(value.substring(pos+1));
             }             
         } else {
-            validateZipSub(value, errors, name);            
+            validateZip5(value, errors, name);            
         }        
         if(truncate)
            return value.substring(0, pos);
         return value;
     }
     
-    private boolean validateZipSub(String zipSub, Errors errors, String name) {
+    private boolean validateZip5(String zipSub, Errors errors, String name) {
         
         boolean valid = false;
         

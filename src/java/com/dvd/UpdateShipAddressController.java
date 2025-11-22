@@ -257,7 +257,7 @@ public class UpdateShipAddressController {
         customerAttrs.doAddressUpdatedMessage(shipAddress,
                 messageType, "Successful update.");
         
-        customer = this.customerManager.customerById(customer.getCustomerId()); //refresh   
+        customer = this.customerManager.customerById(customer.getCustomerId()); //refresh to obtain update  
         
         redirectAttrs.addFlashAttribute(ConstantUtil.CUSTOMER_SESSION_KEY, customer); //replace customer with updated shipAddress list  
         
