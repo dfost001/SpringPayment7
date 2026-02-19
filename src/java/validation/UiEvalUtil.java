@@ -96,7 +96,8 @@ public class UiEvalUtil {
         BeanUtil.throwEmptyCheckErrors(Address.class, address, errors,
                 "address1", "district", "postalCode", "phone");
         
-        BeanUtil.throwEmptyCheckErrors(City.class, address.getCityId(), errors, "cityId");
+        BeanUtil.throwEmptyCheckErrors(City.class, address.getCityId(), errors, 
+                "cityId");
         
         BeanUtil.throwEmptyCheckErrors(Country.class, 
                 address.getCityId().getCountryId(), 
@@ -131,7 +132,7 @@ public class UiEvalUtil {
             
         } catch (DataRetrievalFailureException e) { //Rethrow as Runtime
             this.doError("validateCountryFill",
-                    "Country selection box value failed to retrieve a record", e);
+                    "Country selection failed to retrieve a record", e);
         }
         return tcountry;
     }
@@ -147,7 +148,7 @@ public class UiEvalUtil {
          } catch (RecordNotFoundException e) {
              this.doError (
                      "validateCityFill",
-                     "City select-box value fails to retrieve a City. ", e);
+                     "City select fails to retrieve a City. ", e);
          } 
          if(!city.getCountryId().getCountryId().equals(selectedCountryId))
              this.doError(

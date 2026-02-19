@@ -78,11 +78,7 @@ public class PayPalExecuteController implements Serializable{
                 throws HttpConnectException, HttpClientException,
                        PayPalExecuteException, IllegalStateException {    
                
-        this.evalPaymentStartedState(request);
-        
-        /*this.paymentResponse = paymentUtil.doFinalExecute(ppPayment.getTokenResponse(),
-                ppPayment.getPayment(),
-                ppPayment.getPayerId());*/
+        this.evalPaymentStartedState(request);       
         
         this.paymentResponse = ppPayment.doFinalExecute();
                 
@@ -93,7 +89,8 @@ public class PayPalExecuteController implements Serializable{
         
         cart.removeAll();
         
-        /* set payment objects to null, and concat updated paymentTime request parameter */
+        /* sets payment objects to null, and concat updated paymentTime request parameter */
+        
         RedirectView view = paymentAttrib.payPalExecuteSuccessWithTime(request, 
                 PayPalRedirectController.redirectToReceiptPath); 
         

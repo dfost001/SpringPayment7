@@ -26,6 +26,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.view.RedirectView;
 import paypal.PayPalExecuteException;
 import paypal.PayPalPayment;
+import util.StringUtil;
 import validation.CustomerAttrsValidator;
 import view.attributes.ConstantUtil;
 import view.attributes.PaymentAttributes;
@@ -103,13 +104,14 @@ public class PayPalPaymentController implements Serializable{
     public RedirectView approveTransaction(HttpServletRequest request, ModelMap model)
                throws PayPalExecuteException {    
        
-        System.out.println("PayPalPaymentController#approveTransaction executing");
+        EhrLogger.printToConsole(this.getClass(), "/approvePayPal",
+                "PayPalPaymentController#approveTransaction executing");
         
        String payerId = request.getParameter("PayerID");  
       
       // String payerId = null; //test exception
         
-        if(payerId == null || payerId.isEmpty()) { 
+       if (StringUtil.isNullOrEmpty(payerId)) { 
             
             throw new PayPalExecuteException("PayerID request parameter is null or empty", 
                 this.getClass().getCanonicalName() + "#" + "approveTransaction");

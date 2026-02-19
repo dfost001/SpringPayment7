@@ -9,7 +9,7 @@ import com.cart.Cart;
 import error_util.EhrLogger;
 import exceptions.ConfirmCartException;
 import restCityState.CityZipService;
-import java.text.MessageFormat;
+//import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

@@ -62,6 +62,9 @@ public class PaymentAccessExceptionResolver
         
         HttpSession session = request.getSession();
         
+        if(ex.getClass().equals(SelectedShipAddressCompareException.class))
+            session.setAttribute(CompareAddressUtil2.COMPARE_EXCEPTION, ex);   
+        
         Cart cart = (Cart)session.getAttribute("cart");          
        
        // Cart should never be null
@@ -72,10 +75,7 @@ public class PaymentAccessExceptionResolver
                  ":"   + url +
                  ": cart in session is null" );
      
-        mav.addObject("cart",cart);   
-        
-        if(ex.getClass().equals(SelectedShipAddressCompareException.class))
-            session.setAttribute(CompareAddressUtil2.COMPARE_EXCEPTION, ex);           
+        mav.addObject("cart",cart);                
        
         mav.addObject("paymentAttributes", paymentAttrs);  // paymentAttrs#paymentTime on link to authorize view    
         

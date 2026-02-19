@@ -162,7 +162,7 @@ public class ResponseUtil {
    
    private void decodeHttpEntity() throws HttpClientException {    
        
-       boolean test = true;
+       boolean test = false;
        
        if(response == null || response.length == 0){
            this.decodedEntity = "";
