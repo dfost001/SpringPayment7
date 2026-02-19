@@ -71,7 +71,7 @@ public class VerifySvcResultsController {
         
        this.addrResult.showAddressSvcResult(customer, postalAddress, session);       
        
-       this.addSubmitDisabledAttribute(model);
+      // this.addSubmitDisabledAttribute(model);
         
        this.addModelAttributes(model,customer,postalAddress);
         
@@ -100,7 +100,7 @@ public class VerifySvcResultsController {
     
     private void addSubmitDisabledAttribute(ModelMap model) {
         
-       if(this.addrResult.isDisableContinue())
+       if(this.addrResult.getDisableContinue())
             model.addAttribute(SUBMIT_DISABLED_KEY, true);
         else model.addAttribute(SUBMIT_DISABLED_KEY, false);
      

@@ -235,8 +235,10 @@ public class PayPalPaymentUtil implements Serializable{
          else {
              String token = tmpTokenResponse.getAccessToken();
              if(token == null || token.isEmpty())
-                 technical = "accessToken in TokenResult object is null or empty. " +
-                         "May be deserialization error. Is object defined correctly?";
+                 technical = "TokenResult.accessToken is null or empty. " +
+                         "May be deserialization error. Is object defined correctly? ";
+             if(tmpTokenResponse.getExpiresIn() == 0)
+                 technical += "TokenResponse.expiresIn is not initialized. ";
          }       
          
          if(!technical.isEmpty())

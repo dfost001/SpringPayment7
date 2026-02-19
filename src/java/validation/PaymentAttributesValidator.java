@@ -123,11 +123,11 @@ public class PaymentAttributesValidator implements Serializable {
         
         if(this.paypalPayment.getTokenResponse() == null)
                 tokenNullMsg = "TokenResponse is null;";
-        else if(this.paypalPayment.getTokenResponse().getAccessToken().isEmpty())
+        else if(StringUtil.isNullOrEmpty(this.paypalPayment.getTokenResponse().getAccessToken()))
                 stateMsg += "AccessToken field of TokenResponse is empty;";               
         
         if(this.paypalPayment.getPayment() == null)
-                paymentNullMsg += "PayPal Payment is null;";
+                paymentNullMsg += "PayPal Payment Object is null;";
         else if(StringUtil.isNullOrEmpty(paypalPayment.getPayment().getId()))          
                 stateMsg += "PayPal resource id is empty;";   
         

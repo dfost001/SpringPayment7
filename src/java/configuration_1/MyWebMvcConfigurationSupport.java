@@ -286,11 +286,11 @@ public class MyWebMvcConfigurationSupport extends WebMvcConfigurationSupport {
         registration.addPathPatterns(includePaths);  
     }
     
-    @Bean
+    /**@Bean
     @Override
     public Validator mvcValidator() {
         return super.mvcValidator();
-    }
+    }*/
     
     /* private void addPayPalCancelUrlInterceptor(InterceptorRegistry reg) {
         

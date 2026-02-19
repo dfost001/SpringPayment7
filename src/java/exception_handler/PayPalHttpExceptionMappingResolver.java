@@ -124,21 +124,19 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
        
        mav.addObject(IS_RECOVERABLE_KEY, isRecoverableKey);
        
-      if(ex instanceof HttpClientException) {
+      if(ex instanceof HttpClientException) { //Not ConnectException
           if (this.evalDecodingError((HttpClientException)ex)) {
              paymentAttrs.onPaymentError(this.getClass()); //reset payment objects, update time
              return; 
           }
       }   
-      
-      if(ex.getResponseCode() >= 200 && ex.getResponseCode() < 300
-              || ex.getCause() instanceof CharacterCodingException) {
+      //May not want to throw a Runtime
+      if(ex.getResponseCode() >= 200 && ex.getResponseCode() < 300) {
            String msg = EhrLogger.doError(this.getClass().getName(), "evalException", 
-                   "Problem with code that resolves a decoding issue");
+                   "Unknown problem deserializing Http content. Response status is OK. ");
            paymentAttrs.onPaymentError(this.getClass());
            throw new RuntimeException(msg);
-        }
-      
+        }      
      
        if(ex.getResponseCode() >= 400 && ex.getResponseCode() < 500) {             
                     
@@ -183,13 +181,14 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
       
       Throwable ex = clientEx.getCause();
       
-      Class<?> clz = ex.getClass();
-     
-      if(clz == CharacterCodingException.class ||
-         clz == JAXBException.class ||     
-         clz == JsonSyntaxException.class ||
-         clz == ClassCastException.class ||
-         clz == ErrObjectHandlerException.class )
+      if(ex == null)
+          return false;
+      
+      if(ex instanceof CharacterCodingException ||
+         ex instanceof JAXBException ||     
+         ex instanceof JsonSyntaxException ||
+         ex instanceof ClassCastException ||
+         ex instanceof ErrObjectHandlerException )
              return true;
       return false;
   }

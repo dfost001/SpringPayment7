@@ -63,7 +63,7 @@ public class ConfirmCartController implements Serializable{
      *  throw ConfirmCartException, not IllegalStateException
      * 
      */
-    @RequestMapping(value="/confirmCart", method=RequestMethod.POST)
+    @RequestMapping(value="/confirmCart", method=RequestMethod.GET)
     public String confirmCart(HttpSession session,
            @ModelAttribute("customer") Customer customer,
            @ModelAttribute(ConstantUtil.CUST_BINDINGRESULT_KEY) BindingResult bindingResult,

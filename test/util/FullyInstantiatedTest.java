@@ -33,6 +33,8 @@ public class FullyInstantiatedTest {
     
     Object oinstance;
     
+    Exception ex;
+    
    // Class<?> cls;
     
     public FullyInstantiatedTest( Object oinstance,  String expected,
@@ -79,10 +81,17 @@ public class FullyInstantiatedTest {
     @Test
     public void fullyInstantiatedValidTest() {
         
-       Customer customer = initFullyInstantiated();
-       BeanUtil.throwNotFullyInstantiated(customer, "FullyIntantiatedTest",               
+       Customer customer = initFullyInstantiated();       
+              
+       try {
+         BeanUtil.throwNotFullyInstantiated(customer, "FullyIntantiatedTest",               
                new String [] {"store"});
-        
+       } catch(Exception local) {
+           this.ex = local;
+       }
+       assertTrue(this.ex == null) ;
+       boolean blnOK = this.ex == null;
+       System.out.println("fullyInstantiatedValidTest:" + blnOK);
     }
     
     private static Customer initNullCity() {

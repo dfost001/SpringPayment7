@@ -32,7 +32,7 @@
             
            
             <div class="alert alert-info" id="alertVerify"> 
-               <form action="<c:url value='/confirmCart' />" method="post">
+               <form action="<c:url value='/confirmCart' />" method="get">
                    
                 <input type="hidden" name="submitDisabled" value="${submitDisabled}" />
                 
@@ -264,10 +264,10 @@
                 $(this).parent().next().slideToggle(500);
             });
             
-            var el = $("input[name='submitDisabled']");
-            if(el && el.val() === "true")                
-                $("#continueToCheckout").prop("disabled", true)
-                     .css("cursor", "not-allowed");                
+            <c:if test="${addressSvcResult.disableContinue}">
+                    $("#continueToCheckout").prop("disabled", true)
+                     .css("cursor", "not-allowed");     
+            </c:if>           
             
         </script>
     </body>

@@ -37,6 +37,8 @@ public class PayPalPaymentUrlInterceptor extends HandlerInterceptorAdapter{
         
         PaymentAttributes.TransactionState transState = null;
         
+        EhrLogger.printToConsole(this.getClass(), "prehandle","Interceptor is executing. ");
+        
         if(paymentAttrs.isHistoryPayment(request)) {
             
             EhrLogger.printToConsole(this.getClass(), "prehandle","requestURI=" + request.getRequestURI() );

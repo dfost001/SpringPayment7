@@ -65,23 +65,16 @@ public class AddressSvcResult {
             "Selected/Submitted address differs from the address verified. You may have edited. Please re-verify." +
             "</font>";   
     
-    private final String invalidSelectedEquals = "<font color='#EA5200'>" +
-            "Your verified and selected delivery address are equal and not valid. Please edit and re-verify." +
-            "</font>";
-    
-    private final String invalidMessage = "<font color='#EA5200'>" +
-            "Your address, as uploaded, is not considered deliverable by the service: " +
-            "</font>";
+    private final String invalidSelectedEqualsVerified = "<font color='#EA5200'>" +
+            "Your verified and selected delivery address are equal and not valid. "
+            + "You may have accepted revisions. Please re-verify." +
+            "</font>";   
     
     private final String selectedNotEqualUploaded = "<font color='#EA5200'>" +
-            "Your selected/submitted delivery address differs from the uploaded address. You may have revised. "
-            + "Please re-verify." +
+            "Your selected/submitted delivery address differs from the uploaded address. " +
+            "You may have revised. " +
+            "Please re-verify." +
             "</font>"; //No validated format. Match is null.
-    
-    private final String uploadedNotEqualValidated = "<font color='#EA5200'>" +
-            "Your uploaded address differs from the validated format. You may have edited to valid. "
-            + "Please re-verify." +
-            "</font>"; //Invalid. Maybe re-verify will change match-code. No example of change.  
     
      private final String validMessage = "<font color='#006600'>" +
             "Your address has been confirmed by a service. " +
@@ -108,7 +101,7 @@ public class AddressSvcResult {
             "Please use the drop-down panel to show uploaded, verified, selected address. " +
             "</font>"; 
     
-    public boolean isDisableContinue() {
+    public boolean getDisableContinue() {
        return disableContinue;
     }
     
@@ -231,7 +224,9 @@ public class AddressSvcResult {
                mvcAnalysis.remove(0); //May not be relevant to selected
                mvcAnalysis.add(this.selectedNotEqualUploaded);              
            }
-          
+           else {
+               mvcAnalysis.add(this.invalidSelectedEqualsVerified) ;
+           }          
        }        
        else if(!this.selectedEqualsValidated(svcAnalysis, address)) {  
             mvcAnalysis.remove(0);         
@@ -246,9 +241,9 @@ public class AddressSvcResult {
             mvcAnalysis.add(this.continueWithInvalidMessage);
             this.debugPrintMvc(mvcAnalysis);
             
-        } else  { //continueOnInvalid is false and selected equals invalid validatedFormat          
+        } else  { //continueOnInvalid is false and selected equals validatedFormat          
             
-            mvcAnalysis.add(this.invalidSelectedEquals);
+            mvcAnalysis.add(this.invalidSelectedEqualsVerified);
             mvcAnalysis.add(this.disabledMessage);              
             this.disableContinue = true;            
         }

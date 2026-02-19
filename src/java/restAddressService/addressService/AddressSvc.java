@@ -157,14 +157,11 @@ public SvcAnalysis verify(Candidates candidates) {
     	      return this.zipcode + "-" + this.plus4; 
             return "";
         }
-        /*
-         * Note: An empty street-line is thrown. So code that
-         * evaluates the street-line is unnecessary.
-        */
+        
        private void assignAddressFoundNote() {          
           
-           String street = this.getValidatedStreetFormat() != null ? this.getValidatedStreetFormat():
-                   this.deliveryLine; //Validated not generated if match==null
+           String street = this.getValidatedStreetFormat().isEmpty() ? this.deliveryLine:
+                   this.getValidatedStreetFormat(); //Validated not generated if match==null
             
             String zip = !this.zipcode.isEmpty() && !this.plus4.isEmpty() ?
                      this.zipcode + "-" + this.plus4 : this.zipcode;
@@ -479,10 +476,8 @@ public SvcAnalysis verify(Candidates candidates) {
                 }
                 break;
             case MATCH_SECONDARY_INVALID : //"S" (Invalid Interval or not required)
-                 if(dpv.contains("BB")) { //Not likely for this matchCode - allValid
-                    continueOn = true;
-                    
-                } else if (dpv.contains("C1")) { //Invalid interval
+                
+                if (dpv.contains("C1")) { //Invalid interval
                     continueOn = false;
                 }
                 else if(dpv.contains("CC")) { //Not required
@@ -504,26 +499,7 @@ public SvcAnalysis verify(Candidates candidates) {
         
         return continueOn;
     }
-      private boolean assignContinueOnInvalidLenient() {       
-        
-        if(matchCode == null || matchCode.isEmpty())
-            return false ;
-        
-        String zipPlus4 = this.initZipPlusFour();
-        
-        if(matchCode.equals("S") || matchCode.equals("D")) {
-            if(zipPlus4.isEmpty())
-               return false;
-            else return true;        
-        }  
-        
-        if(matchCode.equals("Y")){
-            if(candidate.getAnalysis().getEwsMatch() != null)
-               this.validWarning = true;
-        }
-        
-        return true;
-    }
+     
     private void assignDebugMatch() {
         
             //Only valid condition is matchcode equal to "Y"
