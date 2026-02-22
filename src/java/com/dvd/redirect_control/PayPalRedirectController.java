@@ -7,6 +7,7 @@ package com.dvd.redirect_control;
 
 import com.cart.Cart;
 import com.dvd.ShippingAddressController;
+import error_util.EhrLogger;
 import exceptions.ReceiptCartNotEmptyException;
 import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
@@ -100,7 +101,9 @@ public class PayPalRedirectController implements Serializable{
      @RequestMapping(value="/paypalReceiptRedirect", method=RequestMethod.GET)
      public String redirectToReceipt( 
              HttpSession session, ModelMap map)
-             throws IllegalStateException, ReceiptCartNotEmptyException {       
+             throws IllegalStateException, ReceiptCartNotEmptyException {   
+         
+         EhrLogger.printToConsole(this.getClass(), "redirectToReceipt", "executing");
          
          CustomerOrder order = (CustomerOrder)session.getAttribute("order");
             

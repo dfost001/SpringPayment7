@@ -70,7 +70,7 @@
                 width:620px;    
             }
             .container {
-               padding-bottom:2%
+               padding-bottom:10%
             }
            
         </style></head>
