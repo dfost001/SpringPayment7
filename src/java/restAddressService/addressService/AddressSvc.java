@@ -4,7 +4,7 @@
  */
 package restAddressService.addressService;
 
-import com.mysql.jdbc.StringUtils;
+
 import error_util.EhrLogger;
 import restAddressService.client.Candidates;
 import restAddressService.client.Request;
@@ -453,7 +453,7 @@ public SvcAnalysis verify(Candidates candidates) {
     }
     private boolean assignContinueOnInvalid() {         
         
-        if(StringUtils.isNullOrEmpty(matchCode))
+        if(StringUtil.isNullOrEmpty(matchCode))
             return false;
         
         String dpv = candidate.getAnalysis().getDpvFootnotes();        

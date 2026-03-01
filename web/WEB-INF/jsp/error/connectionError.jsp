@@ -24,14 +24,10 @@
         
         <h2>Contact: 123-1234</h2>
         
-        <c:if test="${recoverableKey}">
+        <c:if test="${recoverablePath}">
             <h3>This problem may be temporary. To retry click the link below:</h3>
-            <h3><a href="<c:url value='${recoverablePathKey}'/>">Continue</a></h3>
-        </c:if>
-            
-        <c:if test="${not recoverableKey}"> 
-            <h3>Please contact support to complete your order.</h3>
-        </c:if>
+            <h3><a href="<c:url value='${recoverablePath}'/>">Continue</a></h3>
+        </c:if>        
        
         <h3>You may contact support to complete your order.
             <a href="<c:url value='/customerSupport'/>">Support</a>
@@ -39,9 +35,9 @@
         
         <h3>You may select another payment option. <a href="<c:url value='/cancelPayPal'/>">Cancel</a></h3>
         
-        <c:if test="${isPaymentReset eq true}">
+       
          <h3>Cancel and Return to home page. <a href='<c:url value="/home" />'>Home</a></h3> 
-        </c:if>
+       
         
         <h4 class="plus">Technical Support: </h4>
         <div>

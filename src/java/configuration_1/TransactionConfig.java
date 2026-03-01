@@ -5,8 +5,6 @@
  */
 package configuration_1;
 
-
-
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -34,7 +32,7 @@ import org.springframework.stereotype.Repository;
 @EnableTransactionManagement
 public class TransactionConfig {
     
-    @Bean
+  /*  @Bean
     public DataSource dataSource2() {
         
         BasicDataSource source = new BasicDataSource();
@@ -44,18 +42,18 @@ public class TransactionConfig {
         source.setPassword("gw7749");
    
         return source;
-    }
+    }*/
     
     @Bean
     public DataSource dataSource() throws ClassNotFoundException {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             throw e;
         }
         ConnectionFactory connectFact = new DriverManagerConnectionFactory(
-                "jdbc:mysql://localhost:3306/sakila_2?useSSL=false",
+                "jdbc:mysql://localhost:3306/sakila_2?useSSL=false&allowPublicKeyRetrieval=true",
                 "root", "gw7749" );
         
         PoolableConnectionFactory poolableConnectFact = new PoolableConnectionFactory

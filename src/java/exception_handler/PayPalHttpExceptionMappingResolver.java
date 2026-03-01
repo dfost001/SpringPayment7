@@ -38,9 +38,12 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
     /*
      * Model Attributes used by EL on paypalError.jsp, connectionError.jsp
      */
-    private static final String IS_RECOVERABLE_KEY = "recoverableKey"; // boolean attribute
-    private static final String RECOVERABLE_PATH_KEY= "recoverablePathKey"; //path if recoverable
-    private static final String IS_PAYMENT_RESET = "isPaymentReset" ; //Show home prompt
+    
+    private static final String RECOVERABLE_PATH= "recoverablePathKey"; //path if recoverable
+
+    /*
+     * Used internally on this component. See
+    */
     private final String cancelRecoverablePath = "/cancelPayPal";   // Restart transaction 
     private final String transactionRecoverablePath = "/paypalAuthorizeRedirect"; //Resume
     /*
@@ -117,12 +120,12 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
   private void evalException(ModelAndView mav, 
           HttpException ex) {
       
-      boolean isRecoverableKey = false;
+    //  boolean isRecoverableKey = false;
       
        HttpClientException clientEx = null;   
        HttpConnectException connectEx = null;
        
-       mav.addObject(IS_RECOVERABLE_KEY, isRecoverableKey);
+    //   mav.addObject(IS_RECOVERABLE_KEY, isRecoverableKey);
        
       if(ex instanceof HttpClientException) { //Not ConnectException
           if (this.evalDecodingError((HttpClientException)ex)) {
@@ -157,24 +160,24 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
        
        if(ex.getResponseCode() >= 500 && ex.getResponseCode() < 600) {
            
-           mav.addObject(IS_RECOVERABLE_KEY, true);
+          // mav.addObject(IS_RECOVERABLE_KEY, true);
            path = this.makeRecoverableUrl();  
-           mav.addObject(RECOVERABLE_PATH_KEY, path); 
+           mav.addObject(RECOVERABLE_PATH, path); 
        }       
        if(HttpConnectException.class.isAssignableFrom(ex.getClass()))  {
            
            connectEx = (HttpConnectException)ex;
            if(connectEx.getRecoverable().equals(Boolean.TRUE)){
-               mav.addObject(IS_RECOVERABLE_KEY, true);
+               //mav.addObject(IS_RECOVERABLE_KEY, true);
                path = this.makeRecoverableUrl();
-               mav.addObject(RECOVERABLE_PATH_KEY, path);               
+               mav.addObject(RECOVERABLE_PATH, path);               
            }          
        }        
        if(path.contains(this.cancelRecoverablePath)) {
             paymentAttrs.onPaymentError(this.getClass());  //reset objects, update time    
-            mav.addObject(IS_PAYMENT_RESET, true);            
+                     
        }
-       else mav.addObject(IS_PAYMENT_RESET, false); 
+     
        
   } //end eval
   private boolean evalDecodingError(HttpClientException clientEx) {

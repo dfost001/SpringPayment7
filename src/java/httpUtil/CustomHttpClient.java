@@ -35,11 +35,15 @@ public class CustomHttpClient {
         
         try {
             
-            KeyStore keyStore = loadKeyStore();
+            //KeyStore keyStore = loadKeyStore();
             
+            
+            /*SSLContext sslContext = SSLContexts.custom()
+                    .loadTrustMaterial(keyStore, new MyTrustStrategy())
+                    .build();*/
             
             SSLContext sslContext = SSLContexts.custom()
-                    .loadTrustMaterial(keyStore, new MyTrustStrategy())
+                    .loadTrustMaterial((KeyStore)null, new MyTrustStrategy())
                     .build();
             
             client = HttpClients.custom()
