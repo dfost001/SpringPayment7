@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout
+               pattern="%d %p %C{1.} [%t] %m%n" />
+        </Console>
+      
+    </Appenders>
+
+    <Loggers>
+        <!-- LOG everything at INFO level -->
+        <Root level="info">
+            <AppenderRef ref="Console" />
+            
+        </Root>
+
+        
+        <Logger name="com.dvd" level="INFO" additivity="false">
+              <AppenderRef ref="Console" />
+             <!-- <AppenderRef ref="RollingFile" />-->
+        </Logger>
+        
+        <Logger name="org.springframework" level="INFO" additivity="false">
+           
+           <AppenderRef ref="Console" />
+        </Logger>
+        
+         <Logger name="org.springframework.context" level="INFO" additivity="false">
+           <AppenderRef ref="Console" />
+          </Logger> 
+           
+         <Logger name="org.springframework.web" level="INFO" additivity="false">
+           <AppenderRef ref="Console" />            
+        </Logger>
+          
+    </Loggers>
+    
+
+</Configuration>
