@@ -61,7 +61,7 @@ public class ZipLookupConnect {
         
         Properties properties = new Properties();
         
-        String path = "/restCityState/client/credentials.properties" ;
+        String path = "/restCityState/client/city-state-credentials.properties" ;
         
         InputStream is = this.getClass().getResourceAsStream(path);
         
