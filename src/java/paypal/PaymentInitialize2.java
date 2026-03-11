@@ -15,8 +15,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import model.customer.Customer;
 import model.customer.PostalAddress;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import pp_payment.Address;
 import pp_payment.Amount;
 import pp_payment.CreditCard;
@@ -123,9 +121,9 @@ public class PaymentInitialize2 {
          
          Transaction t = new Transaction();
          
-         t.setAmount(initTransAmount());
+       //  t.setAmount(initTransAmount());
          
-        // t.setAmount(this.initDebugAmount());
+         t.setAmount(this.initDebugAmount());
         
          t.setDescription("Sakila DVD Store Order");
          

@@ -38,7 +38,7 @@ public class ServiceConnect {
     private final WebTarget target;    
     
      private void initCredentials() throws IOException{
-    	String path = "/restAddressService/addressService/credentials.properties";
+    	String path = "/restAddressService/addressService/address-svc-credentials.properties";
         //String badPath = "/messages/credentials.properties" ;
     	InputStream is = this.getClass().getResourceAsStream(path);
     	Properties prop = new Properties();
