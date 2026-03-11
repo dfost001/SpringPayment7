@@ -39,10 +39,10 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
      * Model Attributes used by EL on paypalError.jsp, connectionError.jsp
      */
     
-    private static final String RECOVERABLE_PATH= "recoverablePathKey"; //path if recoverable
+    private static final String RECOVERABLE_PATH = "recoverablePath";
 
     /*
-     * Used internally on this component. See
+     * Used internally on this component. 
     */
     private final String cancelRecoverablePath = "/cancelPayPal";   // Restart transaction 
     private final String transactionRecoverablePath = "/paypalAuthorizeRedirect"; //Resume
@@ -53,7 +53,7 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
     /*
      * Keys for Address Validation Message and Path
     */
-    private static final String VALIDATION_ERROR_MESSAGE = "validationErrorAddress"; //address error message
+    private static final String VALIDATION_ERROR_MESSAGE = "validationErrorMessage"; //error message
     private static final String VALIDATION_ERROR_PATH = "validationErrorPath" ; //key to select view    
     private final String redirectToSelect = "/shippingAddress/handlePayPalAddressError"; //value of select handler
     
@@ -120,27 +120,23 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
   private void evalException(ModelAndView mav, 
           HttpException ex) {
       
-    //  boolean isRecoverableKey = false;
-      
        HttpClientException clientEx = null;   
        HttpConnectException connectEx = null;
        
-    //   mav.addObject(IS_RECOVERABLE_KEY, isRecoverableKey);
-       
-      if(ex instanceof HttpClientException) { //Not ConnectException
+       if(ex instanceof HttpClientException) { //Not ConnectException
           if (this.evalDecodingError((HttpClientException)ex)) {
              paymentAttrs.onPaymentError(this.getClass()); //reset payment objects, update time
              return; 
           }
       }   
-      //May not want to throw a Runtime
+      // Probably dead code; unless status not really 200 or  unhandled error at deserialization method
       if(ex.getResponseCode() >= 200 && ex.getResponseCode() < 300) {
            String msg = EhrLogger.doError(this.getClass().getName(), "evalException", 
                    "Unknown problem deserializing Http content. Response status is OK. ");
            paymentAttrs.onPaymentError(this.getClass());
            throw new RuntimeException(msg);
         }      
-     
+    try {
        if(ex.getResponseCode() >= 400 && ex.getResponseCode() < 500) {             
                     
           paymentAttrs.onPaymentError(this.getClass()); //reset payment objects, update time
@@ -154,13 +150,14 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
            }
            return;
        }          
+    } catch (ClassCastException castEx) {
+        EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(), "evalException", 
+                "Code at httpUtil.ResponseUtil.java has not assigned objects as expected. ", castEx);
+    }
+       String path = "";            
        
-       String path = "";      
-       
-       
-       if(ex.getResponseCode() >= 500 && ex.getResponseCode() < 600) {
-           
-          // mav.addObject(IS_RECOVERABLE_KEY, true);
+       if(ex.getResponseCode() >= 500 && ex.getResponseCode() < 600) {           
+        
            path = this.makeRecoverableUrl();  
            mav.addObject(RECOVERABLE_PATH, path); 
        }       
@@ -168,7 +165,7 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
            
            connectEx = (HttpConnectException)ex;
            if(connectEx.getRecoverable().equals(Boolean.TRUE)){
-               //mav.addObject(IS_RECOVERABLE_KEY, true);
+               
                path = this.makeRecoverableUrl();
                mav.addObject(RECOVERABLE_PATH, path);               
            }          
@@ -176,10 +173,9 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
        if(path.contains(this.cancelRecoverablePath)) {
             paymentAttrs.onPaymentError(this.getClass());  //reset objects, update time    
                      
-       }
-     
-       
+       }       
   } //end eval
+  
   private boolean evalDecodingError(HttpClientException clientEx) {
       
       Throwable ex = clientEx.getCause();
