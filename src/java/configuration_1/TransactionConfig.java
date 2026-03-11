@@ -17,6 +17,8 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
@@ -30,19 +32,15 @@ import org.springframework.stereotype.Repository;
  */
 @Configuration
 @EnableTransactionManagement
+@PropertySource("file:${app.db.props}")
 public class TransactionConfig {
     
-  /*  @Bean
-    public DataSource dataSource2() {
-        
-        BasicDataSource source = new BasicDataSource();
-        source.setDriverClassName("com.mysql.jdbc.Driver");
-        source.setUrl("jdbc:mysql://localhost:3306/sakila_2?useSSL=false");
-        source.setUsername("root");
-        source.setPassword("gw7749");
-   
-        return source;
-    }*/
+    @Autowired
+    private Environment env;
+    
+    private String getRootPwd() {
+        return env.getProperty("root.password");
+    }
     
     @Bean
     public DataSource dataSource() throws ClassNotFoundException {
@@ -54,7 +52,7 @@ public class TransactionConfig {
         }
         ConnectionFactory connectFact = new DriverManagerConnectionFactory(
                 "jdbc:mysql://localhost:3306/sakila_2?useSSL=false&allowPublicKeyRetrieval=true",
-                "root", "gw7749" );
+                "root", getRootPwd() );
         
         PoolableConnectionFactory poolableConnectFact = new PoolableConnectionFactory
            (connectFact, null);
@@ -67,6 +65,18 @@ public class TransactionConfig {
         
         return dataSource;
     }
+    
+    /*  @Bean
+    public DataSource dataSource2() {
+        
+        BasicDataSource source = new BasicDataSource();
+        source.setDriverClassName("com.mysql.jdbc.Driver");
+        source.setUrl("jdbc:mysql://localhost:3306/sakila_2?useSSL=false");
+        source.setUsername("root");
+        source.setPassword("gw7749");
+   
+        return source;
+    }*/
     
     @Bean
     public LocalSessionFactoryBean sessionFactory() throws ClassNotFoundException {
