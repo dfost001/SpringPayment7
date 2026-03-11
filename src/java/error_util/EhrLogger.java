@@ -91,6 +91,8 @@ public class EhrLogger {
         
         ModelAndView mav = new ModelAndView();
         
+        String exceptionCause = "";
+        
         mav.setViewName(view);
         
         mav.addObject("url", url);
@@ -99,6 +101,10 @@ public class EhrLogger {
         mav.addObject("messages", getMessages(e,"<br/>"));
         mav.addObject("handler", handler);
         mav.addObject("exceptionName", e.getClass().getCanonicalName());
+        if(e.getCause() != null)
+            exceptionCause = e.getCause().getClass().getName();
+        else exceptionCause = "None";
+         mav.addObject("exceptionCause", exceptionCause);               
         
         return mav;
     }
