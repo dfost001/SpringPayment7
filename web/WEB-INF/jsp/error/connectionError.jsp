@@ -41,8 +41,9 @@
         
         <h4 class="plus">Technical Support: </h4>
         <div>
-            Handler: ${handler}<br/>
-            Cause: ${exception.cause.class.name} <br/><br/>
+            Handler: ${handler}<br/><br/>
+            Exception: ${exceptionName}<br/><br/>
+            Cause: ${exceptionCause} <br/><br/>
             Message: ${exception.message}  <br/><br/>
             Friendly: ${exception.friendly}<br/><br/>
             Method: ${exception.method}<br/><br/>

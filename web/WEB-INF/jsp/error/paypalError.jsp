@@ -21,13 +21,13 @@
         <h1>PayPal Error</h1>
         <h1>Contact: 123-1234</h1>
         <h3 style="color:#006600">${exception.friendly}</h3>
-         <c:if test="${recoverableKey eq true}">
+         <c:if test="${recoverablePath}">
                     <h3>This PayPal problem may be temporary. To retry click the link below:</h3>
 
-                    <h3><a href="<c:url value='${recoverablePathKey}'/>">Continue</a></h3>
+                    <h3><a href="<c:url value='${recoverablePath}'/>">Continue</a></h3>
         </c:if>
-        <c:if test="${validationErrorAddress ne null}">
-            <h3 style="color:#AA0000">${validationErrorAddress}
+        <c:if test="${validationErrorMessage ne null}">
+            <h3 style="color:#AA0000">${validationErrorMessage}
                 <a href="<c:url value='${validationErrorPath}' />">Select Ship Address</a></h3>
         </c:if>    
               
@@ -35,18 +35,15 @@
             <a href="<c:url value='/customerSupport'/>">Support</a>
         </h3>
         <h3>Cancel or Select another payment option. <a href="<c:url value='/cancelPayPal'/>">Cancel Payment</a></h3>
-        <c:if test="${isPaymentReset eq true}">
-         <h3>Cancel and Return to home page. <a href='<c:url value="/home" />'>Home</a></h3> 
-        </c:if>
+       
+        <h3>Cancel and Return to home page. <a href='<c:url value="/home" />'>Home</a></h3> 
         
         <hr/>
        
         <h4 class="plus">Technical Support: </h4>
         <div>
-            Exception: ${exception.class.canonicalName} <br/>
-            <c:if test="${exception.cause ne null}">
-                Cause: ${exception.cause.class.canonicalName}<br/>
-            </c:if>    
+            Exception: ${exceptionName} <br/>
+            Cause: ${exceptionCause}<br/>             
             Handler: ${handler}<br/>
             Friendly: ${exception.friendly} <br/>
             Method: ${exception.method} <br/>
