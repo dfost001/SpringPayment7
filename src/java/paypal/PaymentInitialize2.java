@@ -53,6 +53,8 @@ public class PaymentInitialize2 {
     
     private int testExpireYear;  
     
+    private boolean testingBadAmount = false;
+    
     public RedirectUrls getRedirectUrls() {
         return redirectUrls;
     }
@@ -121,9 +123,11 @@ public class PaymentInitialize2 {
          
          Transaction t = new Transaction();
          
-       //  t.setAmount(initTransAmount());
-         
-         t.setAmount(this.initDebugAmount());
+         if(testingBadAmount) {
+             t.setAmount(this.initDebugAmount());
+             testingBadAmount = false;
+         }
+         else  t.setAmount(initTransAmount());         
         
          t.setDescription("Sakila DVD Store Order");
          
