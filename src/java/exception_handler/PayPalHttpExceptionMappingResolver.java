@@ -174,7 +174,9 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
            if(connectEx.getRecoverable().equals(Boolean.TRUE)){
                
                path = this.makeRecoverableUrl();
-               mav.addObject(RECOVERABLE_PATH, path);               
+               mav.addObject(RECOVERABLE_PATH, path);  
+               EhrLogger.printToConsole(this.getClass(), "evalException", 
+                       "recoverablePath added to model: " + path);
            }          
        }  else EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(), 
                "evalException", "Unknown derived HttpException. ");
