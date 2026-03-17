@@ -235,7 +235,7 @@ public class ApacheConnectBean2 implements Serializable {
             client = null;
             throw new HttpConnectException(socketEx,
                     "(See Bind, Connect, NoRoute, PortUnreachable) : " + socketEx.getMessage(),
-                    Boolean.FALSE,
+                    Boolean.TRUE,
                     display,
                     this.module + "#" + method);
         }
@@ -244,7 +244,7 @@ public class ApacheConnectBean2 implements Serializable {
             client = null;
             throw new HttpConnectException(timeEx,
                     timeEx.getMessage(),
-                    Boolean.FALSE,
+                    Boolean.TRUE,
                     display,
                     this.module + "#" + method);
         }

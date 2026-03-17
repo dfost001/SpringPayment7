@@ -104,8 +104,14 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
     
     ModelAndView mav = EhrLogger.initErrorView(url, ex, viewName, this.getClass().getCanonicalName()); 
     
-    this.evalException(mav, (HttpException)ex);    
+    this.evalException(mav, (HttpException)ex);   
     
+    String path = (String)req.getSession().getAttribute(RECOVERABLE_PATH);
+    
+    if(path != null && path.contains(this.cancelRecoverablePath)) {
+            paymentAttrs.onPaymentError(this.getClass());  //reset objects, update time    
+                     
+    }       
     return mav;
   }
   
@@ -160,6 +166,7 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
         
            path = this.makeRecoverableUrl();  
            mav.addObject(RECOVERABLE_PATH, path); 
+           return;
        }       
        if(HttpConnectException.class.isAssignableFrom(ex.getClass()))  {
            
@@ -167,13 +174,13 @@ public class PayPalHttpExceptionMappingResolver extends AbstractHandlerException
            if(connectEx.getRecoverable().equals(Boolean.TRUE)){
                
                path = this.makeRecoverableUrl();
-               mav.addObject(RECOVERABLE_PATH, path);               
+               mav.addObject(RECOVERABLE_PATH, path);  
+               EhrLogger.printToConsole(this.getClass(), "evalException", 
+                       "recoverablePath added to model: " + path);
            }          
-       }        
-       if(path.contains(this.cancelRecoverablePath)) {
-            paymentAttrs.onPaymentError(this.getClass());  //reset objects, update time    
-                     
-       }       
+       }  else EhrLogger.throwIllegalArg(this.getClass().getCanonicalName(), 
+               "evalException", "Unknown derived HttpException. ");
+         
   } //end eval
   
   private boolean evalDecodingError(HttpClientException clientEx) {
