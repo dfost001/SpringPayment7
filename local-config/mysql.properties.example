@@ -1,0 +1,5 @@
+#Machine specific MYSQL users and passwords
+#Password keys for built-in users, such as "admin", provided by MYSQL have not yet been added
+#Currently, the only shared code in this application references "root.password"
+
+root.password=your-root-password
