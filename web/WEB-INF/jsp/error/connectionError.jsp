@@ -24,7 +24,7 @@
         
         <h2>Contact: 123-1234</h2>
         
-        <c:if test="${recoverablePath}">
+        <c:if test="${recoverablePath != null}">
             <h3>This problem may be temporary. To retry click the link below:</h3>
             <h3><a href="<c:url value='${recoverablePath}'/>">Continue</a></h3>
         </c:if>        
