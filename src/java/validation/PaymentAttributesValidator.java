@@ -51,7 +51,7 @@ public class PaymentAttributesValidator implements Serializable {
     public String validatePaymentStartedWithPayerId(Cart cart, 
             PostalAddress postal, Customer customer, BindingResult bindingResult) {
         
-        EhrLogger.printToConsole(this.getClass(), "validatePaymentStartedWithPayerId", "executing");
+       // EhrLogger.printToConsole(this.getClass(), "validatePaymentStartedWithPayerId", "executing");
         
         String msgPaymentOnly = validatePaymentStartedPaymentOnly(cart, postal, customer, bindingResult);
         
@@ -89,7 +89,7 @@ public class PaymentAttributesValidator implements Serializable {
     public String validatePaymentStartedPaymentOnly(Cart cart, 
             PostalAddress address, Customer customer, BindingResult result) {  
         
-       EhrLogger.printToConsole(this.getClass(), "validatePaymentStartedPaymentOnly", "executing");
+      // EhrLogger.printToConsole(this.getClass(), "validatePaymentStartedPaymentOnly", "executing");
         
        String msgPayment = this.evaluatePayment(); //throws IllegalArgument for invalid initialization     
        
@@ -183,7 +183,7 @@ public class PaymentAttributesValidator implements Serializable {
        String debug = msg.isEmpty() ? "No null or validation errors. "
                : "Null or Validation errors detected. " ;
        
-       EhrLogger.printToConsole(this.getClass(), "evalInvalidValues", debug + msg); 
+       //EhrLogger.printToConsole(this.getClass(), "evalInvalidValues", debug + msg); 
        
        return msg;        
     } 
@@ -196,7 +196,7 @@ public class PaymentAttributesValidator implements Serializable {
         String type = Customer.class.isAssignableFrom(address.getClass()) ?
                 "Customer" : "ShipAddress";
         
-        this.debugPrintPostalAddress(address);
+      //  this.debugPrintPostalAddress(address);
         
         DataBinder binder = new DataBinder(address);
         

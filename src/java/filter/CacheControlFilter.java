@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package filter;
+import error_util.EhrLogger;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -40,19 +41,20 @@ public class CacheControlFilter implements Filter{
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, 
-            FilterChain chain) throws IOException, ServletException {
-        
+            FilterChain chain) throws IOException, ServletException {        
+              
         HttpServletResponse resp = (HttpServletResponse) response;
           
         HttpServletRequest requ = (HttpServletRequest) request;        
          
         if(this.setCacheControl(requ)) { 
          
-           resp.setHeader("Cache-Control", "no-cache,no-store");
+           resp.setHeader("Cache-Control", "no-cache,no-store,must-revalidate");
            resp.setHeader("Pragma", "no-cache");
            resp.setHeader("Expires", "Thu, 01 Jan 1970 00:00:00 GMT");
            
-          // System.out.println("Leaving CacheControl#doFilter with cache-control set:" + requ.getRequestURI());
+           EhrLogger.printToConsole(this.getClass(), "doFilter",
+                   "Cache-Control headers set: " + requ.getRequestURI());
          }      
           
           chain.doFilter(request,response);            
@@ -76,14 +78,14 @@ public class CacheControlFilter implements Filter{
          }
     }
     
-    private boolean setCacheControl(HttpServletRequest request) {
+ /*   private boolean setCacheControl(HttpServletRequest request) {
         
       if(request.getRequestURL().toString().contains("resources/javascript/ajax.js"))
            return true;
       else if(request.getRequestURL().toString().contains("resources/javascript/doLists.js"))
            return true;
       else if(request.getRequestURL().toString().contains("resources/css"))
-           return true;
+           return false;
       else if(request.getRequestURL().toString().contains("resources"))
            return false;   //A Rest endpoint     
       
@@ -91,9 +93,22 @@ public class CacheControlFilter implements Filter{
     
     //return false;
       
-    } //end setCache
+    } //end setCache */
     
-  
+  private boolean setCacheControl(HttpServletRequest request) {
+        
+      if(request.getRequestURI().contains("resources/javascript"))
+           return false;
+      else if(request.getRequestURI().contains("resources/images"))
+           return false;
+      else if(request.getRequestURI().contains("resources/css"))
+           return false;
+      else if(request.getRequestURI().contains("resources"))
+           return false;   //A Rest endpoint     
+      
+      return true;   
+      
+    } //end setCache 
     
      private void initLogger() {
         

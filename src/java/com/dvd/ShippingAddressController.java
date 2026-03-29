@@ -159,7 +159,10 @@ public class ShippingAddressController {
             HttpSession session, ModelMap map)
             throws ConfirmCartException,
             SelectedShipAddressCompareException,
-            CustomerNotFoundException {            
+            CustomerNotFoundException {          
+        
+         EhrLogger.printToConsole(this.getClass(),"doShowSelectAddress", 
+                 "Entering handler" );
         
         this.processCustomer(customer, bindingResult, SelectShipAction.Show);
         
@@ -169,8 +172,8 @@ public class ShippingAddressController {
         
         customerAttrs.setFormTime();
         
-        EhrLogger.printToConsole(this.getClass(),"doShowSelectAddress", 
-                 "showSelect executing: Current Time=" + customerAttrs.getFormTime());
+       /* EhrLogger.printToConsole(this.getClass(),"doShowSelectAddress", 
+                 "showSelect executing: Current Time=" + customerAttrs.getFormTime());*/
         
         this.setPreviousSelectedIndex(session, customer);  
         

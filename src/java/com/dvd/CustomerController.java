@@ -139,8 +139,7 @@ public class CustomerController implements Serializable {
         
         redirectAttrs.addFlashAttribute(ConstantUtil.CUSTOMER_SESSION_KEY, customer);
         
-        redirectAttrs.addFlashAttribute(ConstantUtil.CUST_BINDINGRESULT_KEY, bindingResult);    
-      
+        redirectAttrs.addFlashAttribute(ConstantUtil.CUST_BINDINGRESULT_KEY, bindingResult);          
         
         return "redirect:" + returnUrl;
         
@@ -255,7 +254,9 @@ public class CustomerController implements Serializable {
         
         redirectAttr.addFlashAttribute(ConstantUtil.CUSTOMER_SESSION_KEY, cust);
 
-        redirectAttr.addFlashAttribute(ConstantUtil.CUST_BINDINGRESULT_KEY, result) ;       
+        redirectAttr.addFlashAttribute(ConstantUtil.CUST_BINDINGRESULT_KEY, result) ;     
+        
+         EhrLogger.printToConsole(this.getClass(), "updateCustomer", "redirecting to /shippingAddress");
 
         return "redirect:/shippingAddress/showSelect"; 
     }
