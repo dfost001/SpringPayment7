@@ -1,0 +1,9 @@
+<%-- any content can be specified here e.g.: --%>
+<%@ page pageEncoding="UTF-8" %>
+<script type="text/javascript">
+    window.addEventListener("pageshow", function (event) {
+            if (event.persisted) {
+                window.location.replace(window.location.href);
+            }
+        });
+</script>

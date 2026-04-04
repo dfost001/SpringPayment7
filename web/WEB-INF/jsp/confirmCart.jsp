@@ -13,6 +13,7 @@
         <meta  charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Confirm Cart</title>
+         <%@ include file="../jspIncludes/cache-protect.jspf" %>
         <link href='<c:url value="/resources/css/bootstrap.min.css" />' rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/resources/css/default.css"  rel="stylesheet"/>
         <link href="${pageContext.request.contextPath}/resources/css/payPalAuthorize.css"  rel="stylesheet"/>

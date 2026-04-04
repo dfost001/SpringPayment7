@@ -14,9 +14,10 @@
     <head>
         <meta  charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <%@ include file="../jspIncludes/cache-protect.jspf" %>
         <link href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css"  rel="stylesheet"/>
-        <link href="${pageContext.request.contextPath}/resources/css/default.css"  rel="stylesheet"/>
-        <link href="${pageContext.request.contextPath}/resources/css/form.css" rel="stylesheet" />   
+        <link href="${pageContext.request.contextPath}/resources/css/default.css"  rel="stylesheet"/>       
+        <link href="${pageContext.request.contextPath}/resources/css/form.css" rel="stylesheet" />         
         <script src="${pageContext.request.contextPath}/resources/javascript/jquery.min-3.3.1.js" type="text/javascript"></script> 
         <script src="${pageContext.request.contextPath}/resources/javascript/bootstrap.min.js" type="text/javascript"></script>
         <script src="${pageContext.request.contextPath}/resources/javascript/selectShipAddress.js"></script>
