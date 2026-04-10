@@ -125,6 +125,8 @@ public class CartController implements Serializable{
         map.addAttribute("applicationAttributes", this.applicationAttributes); //Side-bar
         
         map.addAttribute("cartController", this); //Success message, Category object
+        
+        map.addAttribute(CustomerAttributes.DECODED_USER_COOKIE,customerAttrs.decodeNameCookie());
     }      
     
     

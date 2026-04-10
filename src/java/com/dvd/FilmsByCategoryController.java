@@ -165,6 +165,7 @@ public class FilmsByCategoryController implements Serializable{
         
         map.addAttribute("categoryController", this); //provide EL access to filmList, selectedCategory, messages                  
         
+        map.addAttribute(CustomerAttributes.DECODED_USER_COOKIE,customerAttrs.decodeNameCookie());
     }
             
 }

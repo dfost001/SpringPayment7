@@ -64,10 +64,10 @@
                              name="${constantUtil.commandName}"
                              class="btn btn-link" 
                              style="color: #045491; font-weight : bold;"/> 
-                    </form>
+                   
                   </c:if>   
                  <span class="glyphicon glyphicon-user"></span>
-                 &nbsp; ${cookie.customerName.value}  
+                 &nbsp; ${decodedUserCookie}  
                 </div>          
            </form>
     </div><!--end panel body-->     

@@ -11,6 +11,7 @@ import dao.CustomerManager;
 import dao.exception.CustomerNotFoundException;
 import exceptions.ConfirmCartException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -150,7 +151,7 @@ public class CustomerRequestController implements Serializable {
          } 
          else {              
             
-            customerAttrs.addNameCookie(customer, request, response);            
+            customerAttrs.addNameCookie(customer, request, response);   //throws UnsupportedEncodingException         
             
             customerAttrs.setPrevCustomer(customer);           
            

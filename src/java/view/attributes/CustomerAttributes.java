@@ -9,6 +9,10 @@ package view.attributes;
 import error_util.EhrLogger;
 import exception_handler.LoggerResource;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -22,6 +26,9 @@ import model.customer.ShipAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import restAddressService.AddressControllerRest;
 import restAddressService.addressService.SvcAnalysis;
 import validation.CompareAddressUtil2;
@@ -38,7 +45,11 @@ public class CustomerAttributes implements Serializable{
     public enum MessageType {CREATED, 
     UPDATED, DELETED, RESET, SUBMITTED, CANCELLED};
     
-    private final String pathToLogFile = "C:\\Users\\dinah\\myLogs\\Spring7\\is_equal_logger.txt";
+    private final String COOKIE_NAME = "customerName";
+    
+    public static final String DECODED_USER_COOKIE = "decodedUserCookie" ;
+    
+   // private final String pathToLogFile = "C:\\Users\\dinah\\myLogs\\Spring7\\is_equal_logger.txt"; -debugging
     
     @Autowired
     private CloneUtil cloneUtil;
@@ -244,23 +255,67 @@ public class CustomerAttributes implements Serializable{
     }
    
     
+    
     public void addNameCookie(Customer customer, HttpServletRequest request,HttpServletResponse response) {
-        
-        String name = customer.getFirstName() + " " + customer.getLastName();
-        
-        Cookie cookie = new Cookie("customerName", name );     
-        
-        System.out.println("CustomerAttributes#addNameCookie:localAddr=" + request.getLocalAddr());
-        
-        String path =  request.getContextPath();
-        
-        cookie.setPath(path);
-        
-        cookie.setMaxAge(cookieAge);
-        
-        response.addCookie(cookie);        
-        
+            
+    	   try {
+            String name = customer.getFirstName() + " " + customer.getLastName();
+            
+            String encodedValue = URLEncoder.encode(name, StandardCharsets.UTF_8.toString());
+            
+            Cookie cookie = new Cookie(this.COOKIE_NAME, encodedValue);     
+            
+            System.out.println("CustomerAttributes#addNameCookie:localAddr=" + request.getLocalAddr());
+            
+            String path =  request.getContextPath();
+            
+            cookie.setPath(path);
+            
+            cookie.setMaxAge(cookieAge);
+            
+            response.addCookie(cookie);     
+    	   } catch (UnsupportedEncodingException encException) {
+    	   
+    	        EhrLogger.throwIllegalArg(this.getClass().getName(), "addNameCookie", encException.getMessage());
+    	   }   
+      }
+    
+  public HttpServletRequest currentHttpRequest() {
+    	
+    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
+    			.getRequestAttributes() ).getRequest();
+    	
+    	return request;
+    	
     }
+  
+	public String decodeNameCookie() {
+		
+		HttpServletRequest request = this.currentHttpRequest();
+		
+		Cookie[] cookies = request.getCookies();
+		
+		String decoded = "";
+		
+		if(cookies == null)
+			return decoded;
+		
+		for(Cookie cookie : cookies)
+			if(cookie.getName().equals(this.COOKIE_NAME)) {
+				 try {
+					decoded = URLDecoder.decode(cookie.getValue(),StandardCharsets.UTF_8.toString() );
+				} catch (UnsupportedEncodingException e) { //Will not happen
+					
+					EhrLogger.throwIllegalArg(this.getClass().getName(), "decodeNameCookie", 
+							e.getMessage(), e);
+				}
+				 break;
+			} 
+			
+		return decoded;	
+	}
+
+
     /* Fixed?
      * Not working: try setting value, path and domain to empty, age to a negative value
      * Or possible that cookie is deleted after the window is closed?

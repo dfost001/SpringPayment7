@@ -10,6 +10,8 @@ import dao.SearchManager;
 import java.util.List;
 import java.io.Serializable;
 import model.Film;
+import view.attributes.CustomerAttributes;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -32,6 +34,9 @@ public class SearchController implements Serializable{
     
     @Autowired
     private SearchManager searchManager;
+    
+    @Autowired
+    private CustomerAttributes customerAttrs; //User-Name cookie methods
 
     public String getMessage() {
         return message;
@@ -43,7 +48,8 @@ public class SearchController implements Serializable{
     
     @RequestMapping(value="search/request", method=RequestMethod.GET)
     public String searchRequest(ModelMap map) {
-        map.addAttribute("searchController", this);
+    	
+        addModelAttributes(map);
         return "searchResult_tile";
     }
     
@@ -60,10 +66,17 @@ public class SearchController implements Serializable{
         
         //System.out.println("SearchController:size=" + films.size());
         
-        map.addAttribute("searchController", this);
+        addModelAttributes(map);
         
         return "searchResult_tile";
         
     }
     
-}
+    private void addModelAttributes(ModelMap map) {
+    	
+      	map.addAttribute("searchController", this);
+      	
+      	map.addAttribute(CustomerAttributes.DECODED_USER_COOKIE,customerAttrs.decodeNameCookie());
+    
+    }
+} 

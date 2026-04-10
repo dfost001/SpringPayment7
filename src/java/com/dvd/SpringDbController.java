@@ -182,6 +182,8 @@ public class SpringDbController implements Serializable{
        
       model.addAttribute("springDbController", this); //this.filmList
       
-      model.addAttribute("pageCalculator", calculator);       
+      model.addAttribute("pageCalculator", calculator);  
+      
+      model.addAttribute(CustomerAttributes.DECODED_USER_COOKIE,customerAttrs.decodeNameCookie());
     } 
 }

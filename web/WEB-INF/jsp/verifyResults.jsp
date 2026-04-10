@@ -235,7 +235,7 @@
                                     <td>
                                        <form action="<c:url value='/shippingAddress/showSelect' />" method="get">
                                           <input type="submit" value="Edit" class="btn btn-info btn-sm" />
-                                       </form> </td>
+                                       </form> 
                                     </td>
                                 </tr>    
                         </table> 

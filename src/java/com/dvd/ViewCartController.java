@@ -155,6 +155,8 @@ public class ViewCartController {
         
         map.addAttribute("constantUtil", this.constantUtil); 
         
+        map.addAttribute(CustomerAttributes.DECODED_USER_COOKIE,customerAttrs.decodeNameCookie());
+        
         
     }
     

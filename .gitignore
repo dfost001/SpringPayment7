@@ -3,6 +3,13 @@
 /build
 build.xml
 
+#Eclipse IDE
+.settings/
+.classpath
+.project
+
+pom.xml
+
 # Compiled class file
 *.class
 
@@ -33,3 +40,4 @@ hs_err_pid*
 replay_pid*
 /bin/
 /target/
+
