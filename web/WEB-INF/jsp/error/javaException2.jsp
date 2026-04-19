@@ -29,8 +29,8 @@
             <c:if test="${not empty exception.message}">
                <p>Exception Message: <c:out value="${exception.message}" escapeXml="true" /></p>
             </c:if>
-            <p>Exception Class: ${exception.class.name} </p>
-            <c:if test="${fn:contains(exception.class.name, 'HttpClientException')}">
+            <p>Exception Class: ${exceptionName} </p>
+            <c:if test="${fn:contains(exceptionName, 'HttpClientException')}">
                   <p>Response Code: ${exception.responseCode}</p>
                   <p>Raw Response: ${exception.debug} </p>
             </c:if>

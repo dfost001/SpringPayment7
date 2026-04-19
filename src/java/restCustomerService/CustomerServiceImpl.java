@@ -27,7 +27,7 @@ public class CustomerServiceImpl implements ICustomerServiceRest{
     @Autowired
     private CustomerDAO customer;
     
-    private boolean testCitiesByCountryRecoverable = true;
+    private boolean testCitiesByCountryRecoverable = false;
 
     @Override
     @Transactional

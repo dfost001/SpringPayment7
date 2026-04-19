@@ -47,7 +47,9 @@ public class PaymentAccessExceptionResolver
 
     @Override
     protected ModelAndView doResolveException(HttpServletRequest request, 
-            HttpServletResponse response, Object o, Exception ex) {           
+            HttpServletResponse response, Object o, Exception ex) {   
+    	
+      EhrLogger.printToConsole(this.getClass(), "doResolveException", "executing");     	
        
        if(!exceptionList.contains(ex.getClass()))
            return null;                 
@@ -58,7 +60,9 @@ public class PaymentAccessExceptionResolver
         
         String url = request.getRequestURL().toString();       
     
-        mav = EhrLogger.initErrorView(url, ex, viewName, this.getClass().getCanonicalName());       
+        mav = EhrLogger.initErrorView(url, ex, viewName, this.getClass().getCanonicalName());      
+        
+        EhrLogger.printToConsole(this.getClass(), "doResolveException", "Completed 'initErrorView'");
         
         HttpSession session = request.getSession();
         
@@ -80,6 +84,10 @@ public class PaymentAccessExceptionResolver
         mav.addObject("paymentAttributes", paymentAttrs);  // paymentAttrs#paymentTime on link to authorize view    
         
         mav.addObject("title", ex.getClass().getSimpleName());
+        
+        
+        EhrLogger.printToConsole(this.getClass(), "doResolveException",
+        		"Returning the ModelAndView");
         
         return mav;
         

@@ -26,7 +26,7 @@
             <p>Handler: ${handler}</p>
             <p>Request Url: ${url}</p>
             <p>Exception Message: <c:out value="${exception.message}" escapeXml="true" /></p>
-            <p>Exception Class: ${exception.class.name} </p>
+            <p>Exception Class: ${exceptionName} </p>
             <p>Message Trace:</p>
             <p><c:out value="${messages}" escapeXml="false" /></p>
             <p>Stack Trace:</p>

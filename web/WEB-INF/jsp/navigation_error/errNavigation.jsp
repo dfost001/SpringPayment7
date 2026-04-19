@@ -79,10 +79,9 @@
         <div id="top">
              <span class="captionTop" style="padding-left:50px;">DVD Store</span>
         </div> 
-        
-         <div class="alert alert-danger">  
+          <div class="alert alert-danger">  
             <c:choose>
-                <c:when test="${fn:contains(exception.class.canonicalName, 'ConfirmCartException')}">
+                <c:when test="${fn:contains(exceptionName, 'ConfirmCartException')}">
                     <c:choose>
                        <c:when test="${cart.count eq 0}">
                           Please add items to your cart. <a href="<c:url value='/home' />" class="alert-link">
@@ -94,14 +93,14 @@
                            Home </a><br/>                    
                        </c:when>
                     </c:choose>           
-                </c:when>               
-               <c:when
-                   test="${fn:contains(exception.class.canonicalName, 'ExpiredLoginRequest')}">
+                </c:when> 
+                 <c:when
+                   test="${fn:contains(exceptionName, 'ExpiredLoginRequest')}">
                         Please use the checkout button on the navigation panel.
                         <a href="<c:url value="/home" />" class="alert-link">
                         Home</a>                    
                 </c:when>  
-                <c:when test="${fn:contains(exception.class.canonicalName, 'HttpSessionRequired')}">
+                <c:when test="${fn:contains(exceptionName, 'HttpSessionRequired')}">
                     <c:choose>
                          <c:when test="${empty customer}">
                              Please log in using the checkout button.
@@ -118,13 +117,13 @@
                         </c:when>     
                     </c:choose>        
                </c:when>                            
-               <c:when test="${fn:contains(exception.class.canonicalName, 'NonCurrentUpdateRequest')}">
+               <c:when test="${fn:contains(exceptionName, 'NonCurrentUpdateRequest')}">
                    Expired request for a Customer or Shipping Address update.
                      <a href="<c:url value='/home' />" class="alert-link"> Home</a><br/>
                </c:when>  
-               <c:when test="${fn:contains(exception.class.canonicalName, 'MethodNotSupported')
-                  or fn:contains(exception.class.canonicalName, 'ReceiptCartNotEmpty')
-                  or fn:contains(exception.class.canonicalName, 'PaymentTimeException')}">
+               <c:when test="${fn:contains(exceptionName, 'MethodNotSupported')
+                  or fn:contains(exceptionName, 'ReceiptCartNotEmpty')
+                  or fn:contains(exceptionName, 'PaymentTimeException')}">
                    You may have used the Browser Back/Forward, History or Favorites to navigate. &nbsp;&nbsp;
                    <a href="<c:url value='/home' />" class="alert-link"> Home</a><br/>
                </c:when>     
@@ -133,17 +132,18 @@
                     <a href="<c:url value='/home' />"  class='alert-link'>
                              Return Home</a>
                 </c:otherwise>
-           </c:choose> 
-               <br/>         
-               View your most recent payments. 
+                 
+             </c:choose> 
+             <br/>  
+              View your most recent payments. 
                    <a href="<c:url value='/orderHistory/login' />"
-                      class="alert-link">Order History</a><br/>        
-         </div>  <!--end alert -->      
-        <div class="message">  
+                      class="alert-link">Order History</a><br/>                 
+           </div> <!-- end alert -->
+            <div class="message">  
             
-             <c:if test="${not fn:contains(exception.class.canonicalName, 'MethodNotSupported')
-                  and not fn:contains(exception.class.canonicalName, 'HttpSessionRequired')
-                  and not fn:contains(exception.class.canonicalName, 'MissingServletRequestParameter')}">
+             <c:if test="${not fn:contains(exceptionName, 'MethodNotSupported')
+                  and not fn:contains(exceptionName, 'HttpSessionRequired')
+                  and not fn:contains(exceptionName, 'MissingServletRequestParameter')}">
            
                 <h5 class="title">${exception.message}</h5> 
             
@@ -156,28 +156,25 @@
             
             <p><a href="${pageContext.request.contextPath}/customerSupport">Customer Support</a></p>     
            
-            <hr/>
-                           
+             <p style="font-weight:bolder">(123) 123-1234</p>                           
                            
             <p><a href="${pageContext.request.contextPath}/home">Continue Shopping</a></p>
             
             <c:url var="ordersUrl" value="/orderHistory/login" />            
             
-            <p><a href="${ordersUrl}">Recent Payments</a></p>
-            
-            <p style="font-weight:bolder">Customer Support: (123) 123-1234</p>
+            <p><a href="${ordersUrl}">Recent Payments</a></p>           
                     
         </div><!-- end message --> 
         <br/>
-        <h5 id="support" class="plus">Support</h5>
+         <h5 id="support" class="plus">Support</h5>
         <div class="divSupport" style="display:none">
             <p>${url}</p>
             <p>Handler: ${handler}</p>
-            <p>Exception: ${exception.class.simpleName}</p>
+            <p>Exception: ${exceptionName}</p>
             <p>Message: ${exception.message} </p>
-           <c:if test="${not fn:contains(exception.class.canonicalName, 'MethodNotSupported')
-                  and not fn:contains(exception.class.canonicalName, 'HttpSessionRequired')
-                  and not fn:contains(exception.class.canonicalName, 'MissingServletRequestParameter')}">
+           <c:if test="${not fn:contains(exceptionName, 'MethodNotSupported')
+                  and not fn:contains(exceptionName, 'HttpSessionRequired')
+                  and not fn:contains(exceptionName, 'MissingServletRequestParameter')}">
                <p>Technical: ${exception.technical}</p> 
             </c:if>
             <p>Message Trace:</p>
@@ -185,15 +182,15 @@
             <p>Stack Trace:</p>
             <p>${trace}</p>
         </div>           
-       
-        <script>
+         <script>
             
             $("#support").click(function(){
                 $(this).toggleClass("plus minus");
                 $(this).next().toggle(500);
             });
         </script>
-        </div><!--end container -->
+        
+        </div><!-- end container -->
     </body>
 </html>
 
