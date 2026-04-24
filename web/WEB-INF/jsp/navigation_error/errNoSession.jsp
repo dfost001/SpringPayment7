@@ -73,12 +73,9 @@
            
                 <h4>${requestScope.message}</h4>
                 <p>The page you requested cannot be accessed via the browser history/favorites:</p>
-                <p>${requestScope.url}</p>
-           
-            
+                <p>${requestScope.url}</p>           
            
            
-            <hr/>
             <p>To continue use the link below</p>
                                              
                     <p><a href="${pageContext.request.contextPath}/home">Continue Shopping</a></p>
@@ -91,17 +88,17 @@
         
         <h5 id="support" class="plus">Support</h5>
         <div class="divSupport" style="display:none">
-           
-            <p>Message: ${pageContext.errorData.throwable.message}</p>
-            <p>Exception Class: ${pageContext.exception.class.name} </p>
-            <p>Request Uri: ${pageContext.errorData.requestURI}</p>
-            <p>Stack Trace:</p>
+           <h3>Error Information</h3>
+           <p>Message: ${pageContext.errorData.throwable.message}</p>
+           <p>Exception Class: ${pageContext.exception} </p>
+           <p>Stack Trace:</p>
             <div style="margin-left:20px">
                 <c:forEach var="el" items="${pageContext.exception.stackTrace}">
                     <p> ${el.className}.${el.methodName}()[${el.fileName}:${el.lineNumber}]</p>
                 </c:forEach>
-            </div>
+            </div>            
         </div>
+        
         <script>
             $("#support").click(function(){
                 $(this).toggleClass("plus minus");
