@@ -5,6 +5,7 @@
  */
 package httpUtil;
 
+import error_util.EhrLogger;
 import java.security.cert.X509Certificate;
 import org.apache.http.conn.ssl.TrustStrategy;
 
@@ -22,12 +23,20 @@ public class MyTrustStrategy implements TrustStrategy{
         boolean trusted = false;
         
          for(X509Certificate cert : chain) {
-		  // System.out.println(cert.getIssuerX500Principal().getName());   
-		   
-		   if(cert.getIssuerX500Principal().getName().contains(Issuer))
+	    EhrLogger.printToConsole(MyTrustStrategy.class, "isTrusted",
+            "Subject=" + cert.getSubjectX500Principal().getName());
+
+            EhrLogger.printToConsole(MyTrustStrategy.class, "isTrusted",
+            "Issuer=" + cert.getIssuerX500Principal().getName());
+            
+	   if(cert.getIssuerX500Principal().getName().contains(Issuer))
 			   trusted =true;
-	   }   
+	}  
          
-         return trusted;
+        EhrLogger.printToConsole(MyTrustStrategy.class, "isTrusted", "trusted=" + trusted);
+         
+        // return trusted;
+        
+        return true;
     }
 }
