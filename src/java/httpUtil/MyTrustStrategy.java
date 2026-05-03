@@ -35,8 +35,8 @@ public class MyTrustStrategy implements TrustStrategy{
          
         EhrLogger.printToConsole(MyTrustStrategy.class, "isTrusted", "trusted=" + trusted);
          
-        // return trusted;
+         return trusted;
         
-        return true;
+        //return true;
     }
 }
