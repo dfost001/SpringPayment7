@@ -195,9 +195,7 @@ public class ApacheConnectBean2 implements Serializable {
        if(this.client ==null)
            client = CustomHttpClient.buildCustomClient();
        
-        CloseableHttpResponse resp = null;    
-        
-        debugTrustStore();
+        CloseableHttpResponse resp = null;        
        
         try {           
             
@@ -334,21 +332,5 @@ public class ApacheConnectBean2 implements Serializable {
                 + resp.getStatusLine().getReasonPhrase());
         headers.put(null, status);
         
-    }
-   
-   private void debugTrustStore() {
-	   System.out.println("ApacheConnectBean2 > doExecute > debugTrustStore");
-	   
-	   System.out.println("java.home="
-		        + System.getProperty("java.home"));
-
-		System.out.println("javax.net.ssl.trustStore="
-		        + System.getProperty("javax.net.ssl.trustStore"));
-
-		System.out.println("javax.net.ssl.trustStoreType="
-		        + System.getProperty("javax.net.ssl.trustStoreType"));
-
-		System.out.println("javax.net.ssl.trustStorePassword="
-		        + System.getProperty("javax.net.ssl.trustStorePassword"));
-   }
+    }  
 }
