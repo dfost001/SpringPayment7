@@ -94,9 +94,7 @@ public class ShippingAddressController {
      */    
     private HttpServletRequest servletRequest;
     
-    private RedirectAttributes redirectAttributes;
-    
-    private String expiredName;
+    private RedirectAttributes redirectAttributes;  
     
     public enum SelectShipAction {
         Create,
@@ -193,15 +191,14 @@ public class ShippingAddressController {
         
         this.selectShipAction = SelectShipAction.Create;
         
-        this.redirectAttributes = redirectAttrs;
-        
-        this.expiredName = "A new record" ;
+        this.redirectAttributes = redirectAttrs;        
         
         this.processCustomer(customer, customerResult, selectShipAction); 
         
         if(!time.equals(customerAttrs.getFormTime())) {
             
-           this.addExpiredMsgRequestAttribute(AddressTypeEnum.ShipAddress, null);
+           this.addExpiredMsgRequestAttribute(AddressTypeEnum.ShipAddress, 
+                   "Update requested from an expired view. ");
             
            return this.ALERT_REDIRECT_URL;
             
@@ -233,9 +230,7 @@ public class ShippingAddressController {
         this.redirectAttributes = redirectAttrs;
         
         this.selectShipAction = actionTypeEnum; //property read by UpdateShipAddressController
-        
-        this.expiredName = expiredName;
-        
+                
         this.processCustomer(customer, bindingResult, actionTypeEnum);
                    
         this.createAddressList(customer, customer.getShipAddressList());
