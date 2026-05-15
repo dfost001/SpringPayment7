@@ -321,7 +321,7 @@ public class UpdateShipAddressController {
         
         this.removeFromSessionIfSelected(cloned);
         
-        this.customerAttrs.setShipAddressSelected(false);  
+        // this.customerAttrs.setShipAddressSelected(false);  --BUG/Set false only if deleted
         
         customerAttrs.doAddressUpdatedMessage(cloned, CustomerAttributes.MessageType.DELETED,
                 "Successfully deleted.");
@@ -348,6 +348,8 @@ public class UpdateShipAddressController {
                 .intValue() != deletedShipTo.getShipId().intValue()) return;  
         
         this.session.removeAttribute(ShippingAddressController.SELECTED_POSTALADDRESS);
+        
+        this.customerAttrs.setShipAddressSelected(false);
         
         
     }
